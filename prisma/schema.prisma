@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role{
+  Office
+  Supervisor
+  SeniorSupervisor
+  Invigilator
+  SeniorInvigilator
+  Tech
+  Examiner
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  drivingLicense String
+  note      String?
+  adminNote String?
+  role      Role
+  active    Boolean  @default(false)
+  supervisedExams Exam[] @relation("ExamToSupervisor") 
+  invigilatedExams Exam[] @relation("ExamToInvigilator")
+  examinedExams Exam[] @relation("ExamToExaminer")
+  dayOfExams DayOfExams[]
+}
+
+model DayOfExams{
+  id Int @id @default(autoincrement())
+  date DateTime
+  users User[]
+}
+
+model Exam {
+  id        Int      @id @default(autoincrement())
+  name      String
+  startTime DateTime
+  endTime   DateTime
+  supervisors User[] @relation("ExamToSupervisor")
+  invigilators User[] @relation("ExamToInvigilator")
+  examiners User[] @relation("ExamToExaminer")
+  candidates Candidate[]
+}
+
+model Candidate {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String
+  phone     String
+  note      String?
+  exams     Exam[]
+}
