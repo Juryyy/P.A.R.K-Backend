@@ -25,8 +25,13 @@
     "prisma": "^5.6.0",
     "swagger": "^0.7.5",
     "swagger-jsdoc": "^6.2.8",
+    "swagger-json": "^2.0.0",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/swagger-jsdoc": "^6.0.3"
   }
 }

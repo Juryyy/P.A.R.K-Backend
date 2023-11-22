@@ -34,7 +34,7 @@ model User {
   supervisedExams Exam[] @relation("ExamToSupervisor") 
   invigilatedExams Exam[] @relation("ExamToInvigilator")
   examinedExams Exam[] @relation("ExamToExaminer")
-  dayOfExams DayOfExams[]
+  availabilityDays DayOfExams[]
 }
 
 model DayOfExams{
@@ -48,6 +48,7 @@ model Exam {
   name      String
   startTime DateTime
   endTime   DateTime
+  note      String?
   supervisors User[] @relation("ExamToSupervisor")
   invigilators User[] @relation("ExamToInvigilator")
   examiners User[] @relation("ExamToExaminer")
@@ -61,5 +62,7 @@ model Candidate {
   email     String
   phone     String
   note      String?
+  Partner   String?
+  idForExam Int?
   exams     Exam[]
 }
