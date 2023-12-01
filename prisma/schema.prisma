@@ -10,23 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role{
-  Office
-  Supervisor
-  SeniorSupervisor
-  Invigilator
-  SeniorInvigilator
-  Tech
-  Examiner
-}
-
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String
   firstName String
   lastName  String
-  drivingLicense String
+  drivingLicense Boolean @default(false)
   note      String?
   adminNote String?
   role      Role
@@ -34,18 +24,22 @@ model User {
   supervisedExams Exam[] @relation("ExamToSupervisor") 
   invigilatedExams Exam[] @relation("ExamToInvigilator")
   examinedExams Exam[] @relation("ExamToExaminer")
-  availabilityDays DayOfExams[]
+  availabilityDays DayOfExams[] @relation("UserToAvailabilityDays")
 }
 
 model DayOfExams{
   id Int @id @default(autoincrement())
   date DateTime
-  users User[]
+  userId Int
+  user User @relation("UserToAvailabilityDays", fields: [userId], references:[id])
+  response Response @default(No)
 }
 
 model Exam {
   id        Int      @id @default(autoincrement())
-  name      String
+  venue     String
+  type    TypeOfExam
+  levels   Level[]
   startTime DateTime
   endTime   DateTime
   note      String?
@@ -60,9 +54,46 @@ model Candidate {
   firstName String
   lastName  String
   email     String
+  dateOfBirth DateTime
   phone     String
+  mockTest  Boolean @default(false)
+  paid      Boolean @default(false)
   note      String?
-  Partner   String?
+  partnerId Int? @unique
+  partner   Candidate? @relation("PartnerToCandidate", fields: [partnerId], references: [id])
+  partneredBy Candidate? @relation("PartnerToCandidate")
   idForExam Int?
   exams     Exam[]
+}
+
+enum Role{
+  Office
+  Supervisor
+  SeniorSupervisor
+  Invigilator
+  SeniorInvigilator
+  Tech
+  Examiner
+}
+
+enum TypeOfExam{
+  Mock
+  Paper
+  Computer
+  Speaking
+}
+
+enum Response{
+  Yes
+  No
+  Maybe
+}
+
+enum Level{
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
 }
