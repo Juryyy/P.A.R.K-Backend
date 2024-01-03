@@ -10,10 +10,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String  @unique
+generator erd {
+  provider = "prisma-erd-generator"
 }
 
 model User {
@@ -26,6 +24,7 @@ model User {
   note      String?
   adminNote String?
   role      Role
+  avatarUrl String?
   active    Boolean  @default(false)
   supervisedExams Exam[] @relation("ExamToSupervisor") 
   invigilatedExams Exam[] @relation("ExamToInvigilator")
@@ -72,7 +71,7 @@ model Candidate {
   exams     Exam[]
 }
 
-enum Role{
+enum Role {
   Office
   Supervisor
   SeniorSupervisor
@@ -82,20 +81,20 @@ enum Role{
   Examiner
 }
 
-enum TypeOfExam{
+enum TypeOfExam {
   Mock
   Paper
   Computer
   Speaking
 }
 
-enum Response{
+enum Response {
   Yes
   No
   Maybe
 }
 
-enum Level{
+enum Level {
   A1
   A2
   B1
