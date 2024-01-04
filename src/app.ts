@@ -1,6 +1,6 @@
 import cors from 'cors';
-import express, { Express, Request, Response } from 'express';
-import router from './src/router';
+import express, { Express } from 'express';
+import router from './router';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
@@ -16,7 +16,7 @@ const options = {
       version: '1.0.0',
     },
   },
-  apis: ['./src/routes/*.ts'], // files containing annotations as above
+  apis: ['./src/router.ts'], // files containing annotations as above
 };
 
 const openapiSpecification = swaggerJsdoc(options);

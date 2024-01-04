@@ -25,7 +25,8 @@ model User {
   adminNote String?
   role      Role
   avatarUrl String?
-  active    Boolean  @default(false)
+  activatedAccount  Boolean  @default(false)
+
   supervisedExams Exam[] @relation("ExamToSupervisor") 
   invigilatedExams Exam[] @relation("ExamToInvigilator")
   examinedExams Exam[] @relation("ExamToExaminer")
