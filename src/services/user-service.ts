@@ -11,7 +11,8 @@ export default {
         });
     },
 
-    async createUser(user : User){
+    //create user but remove id, driving license from the parameter
+    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" >){
         return await prisma.user.create({
             data: user
         });

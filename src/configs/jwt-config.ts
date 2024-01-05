@@ -4,7 +4,7 @@ import { Params } from 'express-jwt';
 
 const accessJwtSecret = envConfig.getEnv('JWT_SECRET') as Params['secret'];
 const accessJwtOptions: SignOptions = {
-    expiresIn: "15m", 
+    expiresIn: "15d", 
     algorithm: "HS256"
 };
 
