@@ -1,8 +1,11 @@
-import {User, RoleEnum, Prisma, PrismaClient} from '@prisma/client';
+import {User, RoleEnum, Prisma, PrismaClient, ResponseEnum} from '@prisma/client';
 import authService from '../services/auth-service';
 import {Request, Response} from 'express';
 import userService from '../services/user-service';
 import { Tokens } from '../types/auth-types';
+import dayOfExamsService from '../services/dayOfExams-service';
+import responseService from '../services/response-service';
+
 
 export default {
     register: async (req: Request, res: Response) => {
@@ -28,7 +31,7 @@ export default {
 
         const hash = authService.hashPassword(password);
 
-        await userService.createUser({
+        const newUser = await userService.createUser({
             firstName,
             lastName,
             email,
@@ -37,9 +40,17 @@ export default {
             activatedAccount: false, 
         });
 
+        const dayOfExams = await dayOfExamsService.getDayOfExams();
+        const currentDate = new Date();
+        for (let dayOfExam of dayOfExams) {
+            if (dayOfExam.date > currentDate) {
+                await responseService.createResponse(dayOfExam.id, newUser.id, ResponseEnum.No);
+            }
+        }
 
-        return res.status(201).json({ success: 'User created' });
-},
+        return res.status(201).json({ success: 'User registered' });
+    },
+
     login: async (req: Request, res: Response) => {
         const {email, password} = req.body;
         if(!email || !password || email === '' || password === '') {

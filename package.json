@@ -31,12 +31,12 @@
     "nodemon": "^3.0.2",
     "pg": "^8.11.3",
     "prisma": "^5.6.0",
-    "swagger": "^0.0.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-json": "^2.0.0",
     "swagger-ui-express": "^5.0.0",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "^10.6.1",

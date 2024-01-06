@@ -8,10 +8,9 @@ const responseSchema = {
         type: 'object',
         properties: {
             dayofExamsId: {type: 'number'},
-            userId: {type: 'number'},
             response: {type: 'string'},
         },
-        required: ['dayofExamsId', 'userId', 'response'],
+        required: ['dayofExamsId', 'response'],
         additionalProperties: false
     }
 };
