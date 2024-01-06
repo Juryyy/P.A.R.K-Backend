@@ -1,0 +1,16 @@
+### Update responses
+PUT http://localhost:4000/responses/update
+Content-Type: application/json
+
+[
+    {
+        "dayofExamsId": 2,
+        "userId": 34,
+        "response": "Yes"
+    },
+    {
+        "dayofExamsId": 2,
+        "userId": 35,
+        "response": "Maybe"
+    }
+]

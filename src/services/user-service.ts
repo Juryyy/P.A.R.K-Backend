@@ -1,4 +1,4 @@
-import {User, Role, PrismaClient} from '@prisma/client';
+import {User, RoleEnum, PrismaClient} from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -11,7 +11,6 @@ export default {
         });
     },
 
-    //create user but remove id, driving license from the parameter
     async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" >){
         return await prisma.user.create({
             data: user

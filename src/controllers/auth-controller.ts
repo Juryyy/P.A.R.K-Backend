@@ -1,9 +1,8 @@
-import {User, Role, Prisma, PrismaClient} from '@prisma/client';
+import {User, RoleEnum, Prisma, PrismaClient} from '@prisma/client';
 import authService from '../services/auth-service';
 import {Request, Response} from 'express';
 import userService from '../services/user-service';
 import { Tokens } from '../types/auth-types';
-import { jwtRefreshVerify }  from '../middlewares/tokenVerify-middleware';
 
 export default {
     register: async (req: Request, res: Response) => {
@@ -13,7 +12,7 @@ export default {
             return res.status(401).json({ error: 'Please fill all the fields' });
         }
 
-        if (!(role in Role)) {
+        if (!(role in RoleEnum)) {
             return res.status(401).json({ error: 'Invalid role' });
         }
 
@@ -34,7 +33,7 @@ export default {
             lastName,
             email,
             password: hash,
-            role: role as Role,
+            role: role as RoleEnum,
             activatedAccount: false, 
         });
 

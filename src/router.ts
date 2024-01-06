@@ -1,5 +1,7 @@
 import express from 'express';
 import authRouter from './routes/auth-router';
+import dayOfExamsRouter from './routes/dayOfExams-router';
+import responseRouter from './routes/response-router';
 
 const router = express.Router();
 
@@ -8,5 +10,7 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth/', authRouter)
+router.use('/dayofexams/', dayOfExamsRouter)
+router.use('/responses/', responseRouter)
 
 export default router;

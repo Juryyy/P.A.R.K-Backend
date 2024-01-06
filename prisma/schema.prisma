@@ -23,36 +23,48 @@ model User {
   drivingLicense Boolean @default(false)
   note      String?
   adminNote String?
-  role      Role
+  role      RoleEnum
   avatarUrl String?
   activatedAccount  Boolean  @default(false)
 
   supervisedExams Exam[] @relation("ExamToSupervisor") 
   invigilatedExams Exam[] @relation("ExamToInvigilator")
   examinedExams Exam[] @relation("ExamToExaminer")
-  availabilityDays DayOfExams[] @relation("UserToAvailabilityDays")
+  responses Response[]
 }
 
-model DayOfExams{
-  id Int @id @default(autoincrement())
-  date DateTime
-  userId Int
-  user User @relation("UserToAvailabilityDays", fields: [userId], references:[id])
-  response Response @default(No)
+model DayOfExams {
+  id        Int      @id @default(autoincrement())
+  date      DateTime 
+  responses  Response[]
+  exams     Exam[]
+}
+
+model Response {
+  id            Int         @id @default(autoincrement())
+  dayOfExamsId  Int
+  dayOfExams    DayOfExams  @relation(fields: [dayOfExamsId], references: [id])
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id])
+  response      ResponseEnum @default(No)
+
+  @@unique([dayOfExamsId, userId])
 }
 
 model Exam {
-  id        Int      @id @default(autoincrement())
-  venue     String
-  type    TypeOfExam
-  levels   Level[]
-  startTime DateTime
-  endTime   DateTime
-  note      String?
-  supervisors User[] @relation("ExamToSupervisor")
-  invigilators User[] @relation("ExamToInvigilator")
-  examiners User[] @relation("ExamToExaminer")
-  candidates Candidate[]
+  id            Int      @id @default(autoincrement())
+  venue         String
+  type          TypeOfExamEnum
+  levels        LevelEnum[]
+  startTime     DateTime
+  endTime       DateTime
+  note          String?
+  supervisors   User[] @relation("ExamToSupervisor")
+  invigilators  User[] @relation("ExamToInvigilator")
+  examiners     User[] @relation("ExamToExaminer")
+  candidates    Candidate[]
+  dayOfExamsId  Int
+  dayOfExams    DayOfExams @relation(fields: [dayOfExamsId], references: [id])
 }
 
 model Candidate {
@@ -72,7 +84,7 @@ model Candidate {
   exams     Exam[]
 }
 
-enum Role {
+enum RoleEnum {
   Office
   Supervisor
   SeniorSupervisor
@@ -82,20 +94,20 @@ enum Role {
   Examiner
 }
 
-enum TypeOfExam {
+enum TypeOfExamEnum {
   Mock
   Paper
   Computer
   Speaking
 }
 
-enum Response {
+enum ResponseEnum {
   Yes
   No
   Maybe
 }
 
-enum Level {
+enum LevelEnum {
   A1
   A2
   B1
