@@ -5,6 +5,7 @@ import userService from '../services/user-service';
 import { Tokens } from '../types/auth-types';
 import dayOfExamsService from '../services/dayOfExams-service';
 import responseService from '../services/response-service';
+import { URequest } from '../configs/URequest';
 
 
 export default {
@@ -37,7 +38,7 @@ export default {
             email,
             password: hash,
             role: role as RoleEnum,
-            activatedAccount: false, 
+            activatedAccount: false,
         });
 
         const dayOfExams = await dayOfExamsService.getDayOfExams();
@@ -70,7 +71,7 @@ export default {
         return res.status(200).json({ tokens });
     },
 
-    refreshTokens: async (req: Request & { user?: User }, res: Response) => {
+    refreshTokens: async (req: URequest, res: Response) => {
         if (!req.user || !req.user.email) {
             return res.status(401).json({ error: 'Invalid refresh token' });
         }   

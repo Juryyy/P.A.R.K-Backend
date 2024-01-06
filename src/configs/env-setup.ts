@@ -11,6 +11,7 @@ export function checkAndCreateEnv() {
             DATABASE_URL=
             JWT_SECRET=
             JWT_SALT=
+            NODE_ENV=
             `;
         fs.writeFileSync(envPath, template);
         console.log('.env file created with template');

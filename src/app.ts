@@ -25,11 +25,6 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 app.use(cors());
 
 app.use(express.json());
-
 app.use(router);
-
-app.listen(4000, () => {
-  console.log('Server running on port 4000');
-});
 
 export default app;

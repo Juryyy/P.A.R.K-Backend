@@ -1,5 +1,5 @@
 import { SignOptions } from 'jsonwebtoken';
-import envConfig from '../helpers/configs/env-config';
+import envConfig from './env-config';
 import { Params } from 'express-jwt';
 
 const accessJwtSecret = envConfig.getEnv('JWT_SECRET') as Params['secret'];

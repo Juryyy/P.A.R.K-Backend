@@ -4,10 +4,10 @@ import responseService from '../services/response-service'
 import dayOfExamsService from '../services/dayOfExams-service'
 import userService from '../services/user-service'
 import responseSchema from '../helpers/response-helper'
+import { URequest } from '../configs/URequest';
 
-export default {
-    
-    updateResponses: async (req: Request & { user?: User }, res: Response) => {
+export default { 
+    updateResponses: async (req: URequest, res: Response) => {
         const responses = req.body;
         const userId = req.user?.id;
 

@@ -1,4 +1,4 @@
-import envConfig from "../helpers/configs/env-config";
+import envConfig from "./env-config";
 
 const JWT_SALT = envConfig.getEnv('JWT_SALT');
 

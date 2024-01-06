@@ -24,7 +24,7 @@ model User {
   note      String?
   adminNote String?
   role      RoleEnum
-  avatarUrl String?
+  avatarUrl String? @default("testMan.jpg")
   activatedAccount  Boolean  @default(false)
 
   supervisedExams Exam[] @relation("ExamToSupervisor") 
