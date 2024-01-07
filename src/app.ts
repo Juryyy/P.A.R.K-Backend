@@ -3,6 +3,7 @@ import express, { Express } from 'express';
 import router from './router';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import logger from './configs/logger';
 
 
 const tokenFilePath = '../back-end/token.json';
@@ -21,6 +22,7 @@ const options = {
 
 const openapiSpecification = swaggerJsdoc(options);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+logger.info('Swagger docs available at /docs');
 
 app.use(cors());
 

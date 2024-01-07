@@ -4,7 +4,7 @@ import responseService from '../services/response-service'
 import dayOfExamsService from '../services/dayOfExams-service'
 import userService from '../services/user-service'
 import responseSchema from '../helpers/response-helper'
-import { URequest } from '../configs/URequest';
+import { URequest } from '../types/URequest';
 
 export default { 
     updateResponses: async (req: URequest, res: Response) => {

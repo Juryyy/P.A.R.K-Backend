@@ -33,6 +33,7 @@
     "nodemon": "^3.0.2",
     "pg": "^8.11.3",
     "prisma": "^5.6.0",
+    "sharp": "^0.33.1",
     "supertest": "^6.3.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-json": "^2.0.0",

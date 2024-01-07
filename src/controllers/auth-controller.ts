@@ -5,7 +5,7 @@ import userService from '../services/user-service';
 import { Tokens } from '../types/auth-types';
 import dayOfExamsService from '../services/dayOfExams-service';
 import responseService from '../services/response-service';
-import { URequest } from '../configs/URequest';
+import { URequest } from '../types/URequest';
 
 
 export default {

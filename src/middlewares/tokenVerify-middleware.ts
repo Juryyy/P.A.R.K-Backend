@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { Secret } from 'jsonwebtoken';
 import { accessJwtSecret, refreshJwtSecret} from '../configs/jwt-config';
 import { User } from "@prisma/client";
-import { URequest } from "../configs/URequest";
+import { URequest } from "../types/URequest";
 
 const jwtAccessVerify = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;

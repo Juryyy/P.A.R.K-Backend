@@ -1,14 +1,20 @@
 import multer from 'multer';
-import { URequest } from '../configs/URequest';
+import { URequest } from '../types/URequest';
 
 const avatarStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
+    destination: function (req, file, cb) {
         cb(null, 'static/');
     },
-    filename: (req: URequest, file, cb) => {
+    filename: function (req: URequest, file, cb) {
         cb(null, req.user?.id + '.jpg');
-    }
+    },
 });
 
+const upload = multer({
+    storage: avatarStorage,
+    limits: {
+        fileSize: 1024 * 1024 * 5, // 5MB
+    },
+});
 
-export const uploadAvatar = multer({ storage: avatarStorage }).single('avatar');
+export const uploadAvatar = upload.single('avatar');
