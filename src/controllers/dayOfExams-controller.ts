@@ -16,7 +16,7 @@ export default {
     
         const dayOfExamsExists = await dayOfExamsService.getDayOfExamsByDate(dateObj);
         if(dayOfExamsExists) {
-            logger.error(`Day of exams already exists`);
+            logger.error(`Day of exams already exists: ${dateObj}`);
             return res.status(400).json({ error: 'Day of exams already exists' });
         }
     

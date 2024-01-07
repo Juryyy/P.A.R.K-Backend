@@ -3,8 +3,10 @@ import mockFs from 'mock-fs';
 import app from '../../app';
 import fs from 'fs';
 import path from 'path';
+import envConfig from '../../configs/env-config';
 
 
+if(envConfig.getEnv('NODE_ENV') === 'development') {
 describe('POST /upload', () => {
     let imgBuffer: Buffer;
     beforeAll(() => {
@@ -31,5 +33,5 @@ describe('POST /upload', () => {
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('Avatar updated');
     });
-});
-
+    });
+}

@@ -9,7 +9,7 @@ const logger = winston.createLogger({
         }),
         winston.format.json()
     ),
-    defaultMeta: { service: 'your-service-name' },
+    defaultMeta: { service: 'P.A.R.K Back-end' },
     transports: [
         new winston.transports.File({ filename: 'combined.log' }),
         new winston.transports.File({ filename: 'error.log', level: 'error' }),

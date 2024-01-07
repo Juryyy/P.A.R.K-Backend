@@ -10,7 +10,6 @@ export default {
     updateAvatar: async (req: MURequest, res: Response) => {
         const userId = req.user?.id;
         const avatar = req.file;
-        logger.info(avatar)
 
         if(!userId) {
             return res.status(401).json({ error: 'Please login' });
