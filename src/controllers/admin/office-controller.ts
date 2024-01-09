@@ -11,6 +11,9 @@ import { URequest } from '../../types/URequest';
 export default {
     adminRegister: async (req: URequest, res: Response) => {
         const {firstName, lastName, email, role} = req.body;
+
+        //? Předělat do AJV/ZOD
+        
         if(!email || !firstName || !lastName || !role ||
             firstName === '' || lastName === '' || email === '' || role === '') {
             return res.status(401).json({ error: 'Please fill all the fields' });
