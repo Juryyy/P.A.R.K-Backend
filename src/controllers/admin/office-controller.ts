@@ -6,6 +6,8 @@ import { RoleEnum, User, ResponseEnum } from '@prisma/client';
 import dayOfExamsService from '../../services/dayOfExams-service';
 import logger from '../../configs/logger';
 import { URequest } from '../../types/URequest';
+import crypto from 'crypto';
+import sendEmail from '../../middlewares/email-middleware';
 
 
 export default {
@@ -33,7 +35,7 @@ export default {
             return res.status(402).json({ error: 'Email taken' });
         }
         //! Send password to email
-        const password = "12345678";
+        const password = crypto.randomBytes(8).toString('hex');
 
         const hash = authService.hashPassword(password);
 
@@ -53,6 +55,8 @@ export default {
                 await responseService.createResponse(dayOfExam.id, newUser.id, ResponseEnum.No);
             }
         }
+        await sendEmail(email, 'P.A.R.K Exams center login details', password, newUser.firstName, newUser.lastName);
+
         logger.info(`New user registered: ${newUser.email} by ${req.user?.firstName} ${req.user?.lastName}`);
         return res.status(201).json({ success: 'New user registered' });
     },
