@@ -3,7 +3,7 @@ import {Request, Response} from 'express'
 import responseService from '../services/response-service'
 import dayOfExamsService from '../services/dayOfExams-service'
 import userService from '../services/user-service'
-import responseSchema from '../helpers/response-helper'
+import ResponseSchema from '../helpers/Schemas/response-schemas'
 import { URequest } from '../types/URequest';
 
 export default { 
@@ -19,10 +19,10 @@ export default {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
 
-        const valid = responseSchema.validateResponses(responses);
-
-        if(!valid) {
-            return res.status(400).json({ error: 'Scheme is not valid' });
+        try{
+             ResponseSchema.parse(responses);
+        } catch (error : unknown) {
+            return res.status(401).json({ error: 'Invalid data' });
         }
 
         for (let i = 0; i < responses.length; i++) {

@@ -1,13 +1,13 @@
 import express from 'express';
 import officeMiddleware from '../../middlewares/admin/office-middleware';
 import { jwtAccessVerify } from '../../middlewares/tokenVerify-middleware';
-import officeController from '../../controllers/admin/office-controller';
+import examController from '../../controllers/exam-controller';
 
 
 const router = express.Router();
 
-router.put('/update', jwtAccessVerify, officeMiddleware.isOffice);
-router.post('/registerUser', jwtAccessVerify, officeController.adminRegister );
+router.post('/createExam', jwtAccessVerify, examController.createExam);
+router.get('/getAllExams', jwtAccessVerify, examController.getAllExams);
 
 
 export default router;

@@ -37,4 +37,12 @@ export default {
             }
         });
     },
+
+    async getResponsesForDay(dayOfExamsId: number) {
+        return await prisma.response.findMany({
+            where: {
+                dayOfExamsId: dayOfExamsId
+            }
+        });
+    }
 }

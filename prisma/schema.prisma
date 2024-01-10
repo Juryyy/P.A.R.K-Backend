@@ -99,6 +99,7 @@ enum TypeOfExamEnum {
   Paper
   Computer
   Speaking
+  NonSpeaking
 }
 
 enum ResponseEnum {

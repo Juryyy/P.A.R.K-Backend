@@ -8,33 +8,25 @@ import logger from '../../configs/logger';
 import { URequest } from '../../types/URequest';
 import crypto from 'crypto';
 import sendEmail from '../../middlewares/email-middleware';
+import RegisterSchema from '../../helpers/Schemas/office-schemas';
 
 
 export default {
     adminRegister: async (req: URequest, res: Response) => {
         const {firstName, lastName, email, role} = req.body;
-
-        //? Předělat do AJV/ZOD
+       
+        try {
+            RegisterSchema.parse({ email, firstName, lastName, role });
+        } catch (error : unknown) {
+            logger.error(error);
+            return res.status(401).json({ error: 'Invalid data' });
+        }
         
-        if(!email || !firstName || !lastName || !role ||
-            firstName === '' || lastName === '' || email === '' || role === '') {
-            return res.status(401).json({ error: 'Please fill all the fields' });
-        }
-
-        if (!(role in RoleEnum)) {
-            return res.status(401).json({ error: 'Invalid role' });
-        }
-
-        const emailRegex = /\S+@\S+\.\S+/;
-        if(!emailRegex.test(email)) {
-            return res.status(401).json({ error: 'Invalid email' });
-        }
-
         const userExists = await userService.getUserByEmail(email);
         if(userExists) {
             return res.status(402).json({ error: 'Email taken' });
         }
-        //! Send password to email
+
         const password = crypto.randomBytes(8).toString('hex');
 
         const hash = authService.hashPassword(password);
