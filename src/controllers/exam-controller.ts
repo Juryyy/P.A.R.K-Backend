@@ -157,7 +157,7 @@ export default{
         const day = String(dateObj.getDate()).padStart(2, '0');
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const year = String(dateObj.getFullYear()).substr(-2); 
-        const date = `${day}-${month}-${year}`
+        const date = `${day}.${month}.${year}`
 
         const supervisors = await examService.getSupervisorsByExamId(examId);
         const invigilators = await examService.getInvigilatorsByExamId(examId);
