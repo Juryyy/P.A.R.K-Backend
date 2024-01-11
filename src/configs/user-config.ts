@@ -3,7 +3,7 @@ import { URequest } from '../types/URequest';
 
 const avatarStorage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'static/');
+        cb(null, 'static/images/');
     },
     filename: function (req: URequest, file, cb) {
         cb(null, req.user?.id + '.jpg');

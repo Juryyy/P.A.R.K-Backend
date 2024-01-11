@@ -65,6 +65,7 @@ model Exam {
   candidates    Candidate[]
   dayOfExamsId  Int
   dayOfExams    DayOfExams @relation(fields: [dayOfExamsId], references: [id])
+  pdfUrl        String?
 }
 
 model Candidate {

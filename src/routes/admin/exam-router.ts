@@ -8,6 +8,11 @@ const router = express.Router();
 
 router.post('/createExam', jwtAccessVerify, examController.createExam);
 router.get('/getAllExams', jwtAccessVerify, examController.getAllExams);
+router.post('/addWorker', jwtAccessVerify, examController.addWorker);
+router.delete('/removeWorker', jwtAccessVerify, examController.removeWorker);
+router.post('/createDayReport', jwtAccessVerify, examController.createDayReport);
+router.get('/getDayReport/:id', jwtAccessVerify, examController.getDayReport);
+
 
 
 export default router;

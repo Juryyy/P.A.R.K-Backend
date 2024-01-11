@@ -4,7 +4,10 @@ import userService from '../services/user-service'
 import { MURequest } from '../types/URequest';
 import sharp from 'sharp';
 import logger from '../configs/logger';
-import { log } from 'winston';
+import util from 'util';
+import fs from 'fs';
+
+const unlink = util.promisify(fs.unlink); // Promisify the unlink function
 
 export default {
     updateAvatar: async (req: MURequest, res: Response) => {
@@ -19,19 +22,28 @@ export default {
             return res.status(400).json({ error: 'Please upload a file' });
         }
 
+        const userExists = await userService.getUserById(userId);
+        if(!userExists) {
+            return res.status(401).json({ error: 'User does not exists' });
+        }
+
         try {
             await sharp(req.file?.path)
                 .resize(300, 300)
                 .jpeg({ quality: 100})
-                .toFile(`static/resized_${req.file?.filename}`);
+                .toFile(`static/images/resized_${req.file?.filename}`);
+
         } catch (err : any) {
             logger.error(err?.message);
             return res.status(500).send(err?.message);
         }
 
-        const userExists = await userService.getUserById(userId);
-        if(!userExists) {
-            return res.status(401).json({ error: 'User does not exists' });
+        if (userExists.avatarUrl) {
+            try {
+                await unlink(`static/images/${userExists.avatarUrl}`);
+            } catch (err) {
+                logger.error(err);
+            }
         }
 
         await userService.updateAvatarUrl(userId, avatar.filename);

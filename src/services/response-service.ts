@@ -44,5 +44,16 @@ export default {
                 dayOfExamsId: dayOfExamsId
             }
         });
+    },
+
+    async getResponseByExamIDAndUserId(dayOfExamsId: number, userId: number) {
+        return await prisma.response.findUnique({
+            where: {
+                dayOfExamsId_userId: {
+                    dayOfExamsId: dayOfExamsId,
+                    userId: userId
+                }
+            }
+        });
     }
 }
