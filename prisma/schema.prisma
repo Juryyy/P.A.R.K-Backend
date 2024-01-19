@@ -26,6 +26,7 @@ model User {
   role      RoleEnum
   avatarUrl String? @default("testMan.jpg")
   activatedAccount  Boolean  @default(false)
+  deactivated       Boolean  @default(false)
 
   supervisedExams Exam[] @relation("ExamToSupervisor") 
   invigilatedExams Exam[] @relation("ExamToInvigilator")
@@ -66,6 +67,10 @@ model Exam {
   dayOfExamsId  Int
   dayOfExams    DayOfExams @relation(fields: [dayOfExamsId], references: [id])
   pdfUrl        String?
+  comments      String?
+  issues        String?
+  ScheduleForDayId Int?
+  ScheduleForDay ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
 }
 
 model Candidate {
@@ -83,6 +88,33 @@ model Candidate {
   partneredBy Candidate? @relation("PartnerToCandidate")
   idForExam Int?
   exams     Exam[]
+  ScheduleId Int?
+  Schedule   Schedule? @relation(fields: [ScheduleId], references: [id])
+}
+
+model Schedule {
+  id          Int      @id @default(autoincrement())
+  startTime   DateTime
+  endTime     DateTime
+  candidates  Candidate[]
+  ScheduleForDayId Int?
+  ScheduleForDay ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
+}
+
+model ScheduleForDay {
+  id          Int      @id @default(autoincrement())
+  date        DateTime
+  schedules   Schedule[]
+  breaks      Break[]
+  exams       Exam[]
+}
+
+model Break {
+  id          Int      @id @default(autoincrement())
+  startTime   DateTime
+  endTime     DateTime
+  ScheduleForDayId Int?
+  ScheduleForDay ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
 }
 
 enum RoleEnum {
