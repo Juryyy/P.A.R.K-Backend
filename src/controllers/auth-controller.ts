@@ -39,6 +39,7 @@ export default {
             password: hash,
             role: role as RoleEnum,
             activatedAccount: false,
+            deactivated: false,
         });
 
         const dayOfExams = await dayOfExamsService.getDayOfExams();
@@ -57,7 +58,7 @@ export default {
         if(!email || !password || email === '' || password === '') {
             return res.status(401).json({ error: 'Please fill all the fields' });
         }
-
+    
         const user = await userService.getUserByEmail(email);
         if(!user) {
             return res.status(401).json({ error: 'Invalid email' });
@@ -66,22 +67,43 @@ export default {
         if(authService.hashPassword(password) !== user.password) {
             return res.status(401).json({ error: 'Invalid password' });
         }
-
+    
         const tokens : Tokens = authService.generateTokens(user);
-        return res.status(200).json({ tokens });
+    
+        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true });
+        res.cookie('accessToken', tokens.accessToken, { httpOnly: true });
+      
+        const { password: pass, ...userWithoutPassword } = user;
+        // Send userinfo in response body
+        return res.status(200).json(userWithoutPassword);
     },
-
+    
     refreshTokens: async (req: URequest, res: Response) => {
+        console.log(req.cookies.refreshToken)
         if (!req.user || !req.user.email) {
             return res.status(401).json({ error: 'Invalid refresh token' });
         }   
-
+    
         const user = await userService.getUserByEmail(req.user.email);
         if(!user) {
             return res.status(401).json({ error: 'Invalid refresh token' });
         }   
-
+    
         const tokens : Tokens = authService.generateTokens(user);
-        return res.status(200).json({ tokens });
-    }
+    
+        // Set the refresh token in an HttpOnly cookie
+        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true });
+        res.cookie('accessToken', tokens.accessToken, { httpOnly: true });
+
+        const { password, ...userWithoutPassword } = user;        
+
+        // Send userinfo in response body
+        return res.status(200).json(userWithoutPassword);
+    },
+
+    logout: async (req: Request, res: Response) => {
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        return res.status(200).json({ success: 'Logged out' });
+    },
 }

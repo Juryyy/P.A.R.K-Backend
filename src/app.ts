@@ -4,6 +4,7 @@ import router from './router';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import logger from './configs/logger';
+import cookieParser from 'cookie-parser';
 
 
 const tokenFilePath = '../back-end/token.json';
@@ -27,6 +28,7 @@ logger.info('Swagger docs available at /docs');
 app.use(cors());
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(router);
 
 

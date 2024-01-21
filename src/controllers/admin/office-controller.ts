@@ -38,6 +38,7 @@ export default {
             password: hash,
             role: role as RoleEnum,
             activatedAccount: false,
+            deactivated: false,
         });
 
         const dayOfExams = await dayOfExamsService.getDayOfExams();

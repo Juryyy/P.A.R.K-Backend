@@ -4,10 +4,10 @@ import { accessJwtSecret, refreshJwtSecret} from '../configs/jwt-config';
 import { User } from "@prisma/client";
 import { URequest } from "../types/URequest";
 
+
 const jwtAccessVerify = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-        const token = authHeader.split(" ")[1];
+    const token = req.cookies.accessToken;
+    if (token) {
         try {
             const decoded = jwt.verify(token, accessJwtSecret as Secret);
             (req as URequest).user = decoded as User; 
@@ -21,7 +21,7 @@ const jwtAccessVerify = (req: Request, res: Response, next: NextFunction) => {
 }
 
 const jwtRefreshVerify = (req: Request, res: Response, next: NextFunction) => {
-    const refreshToken = req.body.refreshToken;
+    const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
         try {
             const decoded = jwt.verify(refreshToken, refreshJwtSecret as Secret);
