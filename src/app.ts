@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import logger from './configs/logger';
 import cookieParser from 'cookie-parser';
+import envConfig from './configs/env-config';
 
 
 const tokenFilePath = '../back-end/token.json';
@@ -25,10 +26,15 @@ const openapiSpecification = swaggerJsdoc(options);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 logger.info('Swagger docs available at /docs');
 
-app.use(cors());
+const cookieSecret = envConfig.getEnv('COOKIE_SECRET') as string;
+app.use(cookieParser(cookieSecret));
 
+//app.use(cors({
+//  origin: 'http://localhost:8080', // replace with your client's origin
+//  credentials: true
+//}));
+app.use(cors({origin: 'http://localhost:8080', credentials: true}))
 app.use(express.json());
-app.use(cookieParser());
 app.use(router);
 
 

@@ -3,10 +3,12 @@ import { DayOfExams, PrismaClient, User, Response, Exam} from "@prisma/client";
 const prisma = new PrismaClient();
 
 export default {
-    async createDayOfExams(date: Date) {
+    async createDayOfExams(date: Date, isForInvigilators: boolean, isForExaminers: boolean) {
         return await prisma.dayOfExams.create({
             data: {
-                date: date
+                date: date,
+                isForInvigilators: isForInvigilators,
+                isForExaminers: isForExaminers
             }
         });
     },
@@ -38,5 +40,22 @@ export default {
             }
         });
     },
+
+    async getDayOfExamsForInvigilators() {
+        return await prisma.dayOfExams.findMany({
+            where: {
+                isForInvigilators: true
+            }
+        });
+    },
+
+    async getDayOfExamsForExaminers() {
+        return await prisma.dayOfExams.findMany({
+            where: {
+                isForExaminers: true
+            }
+        });
+    },
+
 
 }

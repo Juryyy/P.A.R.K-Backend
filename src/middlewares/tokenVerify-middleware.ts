@@ -6,7 +6,7 @@ import { URequest } from "../types/URequest";
 
 
 const jwtAccessVerify = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.accessToken;
+    const token = req.signedCookies.accessToken;
     if (token) {
         try {
             const decoded = jwt.verify(token, accessJwtSecret as Secret);
@@ -21,7 +21,7 @@ const jwtAccessVerify = (req: Request, res: Response, next: NextFunction) => {
 }
 
 const jwtRefreshVerify = (req: Request, res: Response, next: NextFunction) => {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.signedCookies.refreshToken;
     if (refreshToken) {
         try {
             const decoded = jwt.verify(refreshToken, refreshJwtSecret as Secret);

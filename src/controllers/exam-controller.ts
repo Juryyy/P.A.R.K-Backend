@@ -144,7 +144,7 @@ export default{
             examSchema.examDayReportSchema.parse({examId, comment, issues});
        } catch (error : unknown) {
               logger.error(error);
-           return res.status(401).json({ error: 'Invalid data' });
+           return res.status(400).json({ error: 'Invalid data' });
        }
 
         const e = await examService.getExamById(examId);

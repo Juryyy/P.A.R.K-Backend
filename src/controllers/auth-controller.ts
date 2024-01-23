@@ -56,22 +56,22 @@ export default {
     login: async (req: Request, res: Response) => {
         const {email, password} = req.body;
         if(!email || !password || email === '' || password === '') {
-            return res.status(401).json({ error: 'Please fill all the fields' });
+            return res.status(400).json({ error: 'Please fill all the fields' });
         }
     
         const user = await userService.getUserByEmail(email);
         if(!user) {
-            return res.status(401).json({ error: 'Invalid email' });
+            return res.status(400).json({ error: 'Invalid email' });
         }
         
         if(authService.hashPassword(password) !== user.password) {
-            return res.status(401).json({ error: 'Invalid password' });
+            return res.status(400).json({ error: 'Invalid password' });
         }
     
         const tokens : Tokens = authService.generateTokens(user);
     
-        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true });
-        res.cookie('accessToken', tokens.accessToken, { httpOnly: true });
+        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: 60 * 60 * 1000, signed: true});
+        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: 60 * 60 * 1000, signed: true });
       
         const { password: pass, ...userWithoutPassword } = user;
         // Send userinfo in response body
@@ -79,7 +79,6 @@ export default {
     },
     
     refreshTokens: async (req: URequest, res: Response) => {
-        console.log(req.cookies.refreshToken)
         if (!req.user || !req.user.email) {
             return res.status(401).json({ error: 'Invalid refresh token' });
         }   
@@ -92,8 +91,8 @@ export default {
         const tokens : Tokens = authService.generateTokens(user);
     
         // Set the refresh token in an HttpOnly cookie
-        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true });
-        res.cookie('accessToken', tokens.accessToken, { httpOnly: true });
+        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: 60 * 60 * 1000, signed: true});
+        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: 60 * 60 * 1000, signed: true });
 
         const { password, ...userWithoutPassword } = user;        
 

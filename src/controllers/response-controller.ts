@@ -20,13 +20,22 @@ export default {
         }
 
         try{
+            console.log(responses)
              ResponseSchema.parse(responses);
         } catch (error : unknown) {
-            return res.status(401).json({ error: 'Invalid data' });
+            console.log(error)
+            return res.status(400).json({ error: 'Invalid data' });
         }
 
         for (let i = 0; i < responses.length; i++) {
-            const {dayofExamsId, response} = responses[i];
+            const {id, response} = responses[i];
+
+            const responseExists = await responseService.getResponseById(id);
+            if(!responseExists) {
+                return res.status(400).json({ error: 'Response does not exists' });
+            }
+
+            const dayofExamsId = responseExists.dayOfExamsId;
 
             const dayOfExamsExists = await dayOfExamsService.getDayOfExamsById(dayofExamsId);
             if(!dayOfExamsExists) {
@@ -46,5 +55,33 @@ export default {
         }
 
         return res.status(200).json({ message: 'Responses updated' });
+    },
+
+    getResponses: async (req: URequest, res: Response) => {
+        //this function should return all the responses for the user that are not for the the past
+        const userId = req.user?.id;
+        if(!userId) {
+            return res.status(401).json({ error: 'Please login' });
+        }
+
+        const userExists = await userService.getUserById(userId);
+        if(!userExists) {
+            return res.status(401).json({ error: 'User does not exists' });
+        }
+
+        const responses = await responseService.getResponsesForUser(userId);
+        const currentDate = new Date();
+        let responsesForUser: {id: number , response: ResponseEnum, date: Date}[] = [];
+        for (let response of responses) {
+            const dayOfExams = await dayOfExamsService.getDayOfExamsById(response.dayOfExamsId);
+            if(!dayOfExams) {
+                return res.status(400).json({ error: 'Day of exams does not exists' });
+            }
+            if (dayOfExams.date > currentDate) {
+                responsesForUser.push({id: response.id, response: response.response, date: dayOfExams.date});
+            }
+        }
+        return res.status(200).json(responsesForUser);
     }
+
 }

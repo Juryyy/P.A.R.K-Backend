@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const ResponseSchema = z.array(
   z.object({
-    dayofExamsId: z.number(),
+    id: z.number(),
     response: z.string(),
   })
 );

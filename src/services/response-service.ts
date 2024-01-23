@@ -46,6 +46,14 @@ export default {
         });
     },
 
+    async getResponsesForUser(userId: number) {
+        return await prisma.response.findMany({
+            where: {
+                userId: userId
+            }
+        });
+    },
+
     async getResponseByExamIDAndUserId(dayOfExamsId: number, userId: number) {
         return await prisma.response.findUnique({
             where: {
@@ -53,6 +61,14 @@ export default {
                     dayOfExamsId: dayOfExamsId,
                     userId: userId
                 }
+            }
+        });
+    },
+
+    async getResponseById(id: number) {
+        return await prisma.response.findUnique({
+            where: {
+                id: id
             }
         });
     }

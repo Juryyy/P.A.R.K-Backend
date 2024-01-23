@@ -37,6 +37,8 @@ model User {
 model DayOfExams {
   id        Int      @id @default(autoincrement())
   date      DateTime 
+  isForInvigilators Boolean
+  isForExaminers Boolean 
   responses  Response[]
   exams     Exam[]
 }
