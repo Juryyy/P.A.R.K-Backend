@@ -13,10 +13,10 @@ router.get('/', (req, res) => {
 });
 
 router.use('/auth', authRouter)
-router.use('/dayofexams', dayOfExamsRouter)
+router.use('/examDays', dayOfExamsRouter)
 router.use('/responses', responseRouter)
 router.use('/users', userRouter)
 router.use('/office', officeRouter)
-router.use('/exam', examRouter)
+router.use('/exams', examRouter)
 
 export default router;

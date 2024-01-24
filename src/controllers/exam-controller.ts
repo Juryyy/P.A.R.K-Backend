@@ -51,7 +51,7 @@ export default{
 
     getAllExams : async (req: URequest, res: Response) => {
         const exams = await examService.getAllExams();
-        return res.status(200).json({exams});
+        return res.status(200).json(exams);
     },
 
     addWorker: async(req: URequest, res: Response) => {
@@ -200,6 +200,11 @@ export default{
         const filePath = path.resolve(__dirname, '../../static/pdf', e.pdfUrl);
 
         res.sendFile(filePath);
+    },
+
+    getUpcomingExams : async (req: URequest, res: Response) => {
+        const exams = await examService.getUpcomingExams();
+        return res.status(200).json(exams);
     }
 
 }

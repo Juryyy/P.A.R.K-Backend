@@ -32,4 +32,15 @@ export default {
     
         return res.status(201).json({ success: 'Day of exams created' });
     },
+
+    getDayOfExams: async (req: Request, res: Response) => {
+        const dayOfExams = await dayOfExamsService.getDayOfExams();
+        //days that are today or in future
+        const today = new Date();
+        const filteredDayOfExams = dayOfExams.filter((day) => {
+            return day.date >= today;
+        });
+
+        return res.status(200).json(filteredDayOfExams);
+    },
 }

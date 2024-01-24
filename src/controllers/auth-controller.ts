@@ -6,6 +6,7 @@ import { Tokens } from '../types/auth-types';
 import dayOfExamsService from '../services/dayOfExams-service';
 import responseService from '../services/response-service';
 import { URequest } from '../types/URequest';
+import envConfig from '../configs/env-config';
 
 
 export default {
@@ -70,33 +71,30 @@ export default {
     
         const tokens : Tokens = authService.generateTokens(user);
     
-        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: 60 * 60 * 1000, signed: true});
-        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: 60 * 60 * 1000, signed: true });
+        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_REFRESH'), signed: true});
+        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_ACCESS') , signed: true });
       
         const { password: pass, ...userWithoutPassword } = user;
-        // Send userinfo in response body
+        
         return res.status(200).json(userWithoutPassword);
     },
     
     refreshTokens: async (req: URequest, res: Response) => {
         if (!req.user || !req.user.email) {
-            return res.status(401).json({ error: 'Invalid refresh token' });
+            return res.status(400).json({ error: 'Invalid refresh token' });
         }   
     
         const user = await userService.getUserByEmail(req.user.email);
         if(!user) {
-            return res.status(401).json({ error: 'Invalid refresh token' });
+            return res.status(400).json({ error: 'Invalid refresh token' });
         }   
     
         const tokens : Tokens = authService.generateTokens(user);
     
-        // Set the refresh token in an HttpOnly cookie
-        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: 60 * 60 * 1000, signed: true});
-        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: 60 * 60 * 1000, signed: true });
+        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_REFRESH'), signed: true});
+        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_ACCESS'), signed: true });
 
         const { password, ...userWithoutPassword } = user;        
-
-        // Send userinfo in response body
         return res.status(200).json(userWithoutPassword);
     },
 

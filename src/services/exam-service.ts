@@ -163,6 +163,16 @@ export default {
                 pdfUrl,
             },
         });
+    },
+
+    async getUpcomingExams() {
+        return await prisma.exam.findMany({
+            where: {
+                startTime: {
+                    gte: new Date(),
+                },
+            },
+        });
     }
 
 }
