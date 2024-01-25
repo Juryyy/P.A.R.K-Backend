@@ -202,8 +202,8 @@ export default{
         res.sendFile(filePath);
     },
 
-    getUpcomingExams : async (req: URequest, res: Response) => {
-        const exams = await examService.getUpcomingExams();
+    getUpcomingExamsWithAllData : async (req: URequest, res: Response) => {
+        const exams = await examService.getUpcomingExamsWithEverything();
         return res.status(200).json(exams);
     }
 

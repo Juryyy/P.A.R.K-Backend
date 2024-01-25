@@ -173,6 +173,22 @@ export default {
                 },
             },
         });
+    },
+
+    async getUpcomingExamsWithEverything(){
+        return await prisma.exam.findMany({
+            where: {
+                startTime: {
+                    gte: new Date(),
+                },
+            },
+            include: {
+                supervisors: true,
+                invigilators: true,
+                examiners: true,
+                candidates: true,
+            },
+        });
     }
 
 }

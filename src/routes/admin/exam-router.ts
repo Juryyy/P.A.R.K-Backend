@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post('/createExam', jwtAccessVerify, examController.createExam);
 router.get('/allExams', jwtAccessVerify, examController.getAllExams);
-router.get('/upcomingExams', jwtAccessVerify, examController.getUpcomingExams);
+router.get('/upcomingExams', jwtAccessVerify, examController.getUpcomingExamsWithAllData);
 router.post('/addWorker', jwtAccessVerify, examController.addWorker);
 router.delete('/removeWorker', jwtAccessVerify, examController.removeWorker);
 router.post('/createDayReport', jwtAccessVerify, examController.createDayReport);
