@@ -71,5 +71,18 @@ export default {
                 id: id
             }
         });
-    }
+    },
+
+    getUsersWithYesResponseForDayOfExams: async (dayOfExamsId: number) => {
+        const responses = await prisma.response.findMany({
+          where: {
+            dayOfExamsId: dayOfExamsId,
+            response: ResponseEnum.Yes
+          },
+          include: {
+            user: true
+          }
+        });      
+        return responses;
+      }
 }

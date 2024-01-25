@@ -82,6 +82,24 @@ export default {
             }
         }
         return res.status(200).json(responsesForUser);
+    },
+
+    getResponsesExamDay: async (req: URequest, res: Response) => {
+        const id = parseInt(req.params.id);
+
+        const dayOfExamsExists = await dayOfExamsService.getDayOfExamsById(id);
+        if(!dayOfExamsExists) {
+            return res.status(400).json({ error: 'Day of exams does not exists' });
+        }
+
+        const responses = await responseService.getUsersWithYesResponseForDayOfExams(id)
+
+        if(!responses) {
+            return res.status(400).json({ error: 'Responses do not exists' });
+        }
+
+        return res.status(200).json(responses);
+
     }
 
 }
