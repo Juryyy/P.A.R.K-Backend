@@ -1,4 +1,4 @@
-import { PrismaClient, ResponseEnum } from "@prisma/client";
+import { PrismaClient, ResponseEnum, RoleEnum } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -22,6 +22,37 @@ export default {
         for (let user of users) {
             await createResponse(dayOfExamsId, user.id, ResponseEnum.No);
         }
+    },
+
+    async createResponsesForDayInvigilators(dayOfExamsId: number) {
+        const users = await prisma.user.findMany({
+            where: {
+                role: {
+                    in: [
+                        RoleEnum.Invigilator,
+                        RoleEnum.SeniorInvigilator,
+                        RoleEnum.Supervisor,
+                        RoleEnum.SeniorSupervisor,
+                        RoleEnum.Office
+                    ]
+                }
+            }
+        });
+        for (let user of users) {
+            await createResponse(dayOfExamsId, user.id, ResponseEnum.No);
+        }
+    },
+
+    async createResponsesForDayExaminers(dayOfExamsId: number) {
+        const users = await prisma.user.findMany({
+            where: {
+                role: RoleEnum.Examiner
+            }
+        });
+        for (let user of users) {
+            await createResponse(dayOfExamsId, user.id, ResponseEnum.No);
+        }
+
     },
 
     async updateResponse(dayOfExamsId: number, userId: number, response: ResponseEnum) {
@@ -73,7 +104,7 @@ export default {
         });
     },
 
-    getUsersWithYesResponseForDayOfExams: async (dayOfExamsId: number) => {
+   async getUsersWithYesResponseForDayOfExams(dayOfExamsId: number)  {
         const responses = await prisma.response.findMany({
           where: {
             dayOfExamsId: dayOfExamsId,
@@ -84,5 +115,15 @@ export default {
           }
         });      
         return responses;
-      }
+      },
+
+    async deleteResponsesForDay(dayOfExamsId: number) {
+        return await prisma.response.deleteMany({
+            where: {
+                dayOfExamsId: dayOfExamsId
+            }
+        });
+    },
+
+     
 }

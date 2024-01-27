@@ -57,5 +57,13 @@ export default {
         });
     },
 
+    async deleteDayOfExams(id: number) {
+        return await prisma.dayOfExams.delete({
+            where: {
+                id: id
+            }
+        });
+    },
+
 
 }

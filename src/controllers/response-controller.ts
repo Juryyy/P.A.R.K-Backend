@@ -81,6 +81,11 @@ export default {
                 responsesForUser.push({id: response.id, response: response.response, date: dayOfExams.date});
             }
         }
+        
+        responsesForUser.sort((a, b) => {
+            return a.date.getTime() - b.date.getTime();
+        });
+
         return res.status(200).json(responsesForUser);
     },
 
