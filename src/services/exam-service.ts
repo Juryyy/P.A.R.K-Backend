@@ -189,6 +189,36 @@ export default {
                 candidates: true,
             },
         });
+    },
+
+    async getExamsForUser(userId: number) {
+        return await prisma.exam.findMany({
+            where: {
+                OR: [
+                    {
+                        supervisors: {
+                            some: {
+                                id: userId,
+                            },
+                        },
+                    },
+                    {
+                        invigilators: {
+                            some: {
+                                id: userId,
+                            },
+                        },
+                    },
+                    {
+                        examiners: {
+                            some: {
+                                id: userId,
+                            },
+                        },
+                    },
+                ],
+            },
+        });
     }
 
 }

@@ -5,6 +5,7 @@ import dayOfExamsService from '../services/dayOfExams-service'
 import userService from '../services/user-service'
 import ResponseSchema from '../helpers/Schemas/response-schemas'
 import { URequest } from '../types/URequest';
+import logger from '../configs/logger'
 
 export default { 
     updateResponses: async (req: URequest, res: Response) => {
@@ -20,10 +21,9 @@ export default {
         }
 
         try{
-            console.log(responses)
              ResponseSchema.parse(responses);
         } catch (error : unknown) {
-            console.log(error)
+            logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
         }
 

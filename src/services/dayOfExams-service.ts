@@ -58,12 +58,17 @@ export default {
     },
 
     async deleteDayOfExams(id: number) {
+        await prisma.exam.deleteMany({
+            where: {
+                dayOfExamsId: id
+            }
+        });
+    
         return await prisma.dayOfExams.delete({
             where: {
                 id: id
             }
         });
     },
-
 
 }

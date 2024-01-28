@@ -205,7 +205,22 @@ export default{
     getUpcomingExamsWithAllData : async (req: URequest, res: Response) => {
         const exams = await examService.getUpcomingExamsWithEverything();
         return res.status(200).json(exams);
-    }
+    },
+
+    getUsersExams : async (req: URequest, res: Response) => {
+        const userId = req.user?.id;
+        if(!userId) {
+            return res.status(401).json({ error: 'Please login' });
+        }
+
+        const userExists = await userService.getUserById(userId);
+        if(!userExists) {
+            return res.status(401).json({ error: 'User does not exists' });
+        }
+
+        const exams = await examService.getExamsForUser(userId);
+        return res.status(200).json(exams);
+    },
 
 }
 
