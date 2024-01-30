@@ -5,6 +5,7 @@ import responseRouter from './routes/response-router';
 import userRouter from './routes/user-router';
 import officeRouter from './routes/admin/office-router';
 import examRouter from './routes/exam-router';
+import staticRouter from './routes/static-router';
 
 const router = express.Router();
 
@@ -18,5 +19,7 @@ router.use('/responses', responseRouter)
 router.use('/users', userRouter)
 router.use('/office', officeRouter)
 router.use('/exams', examRouter)
+
+router.use('/static', staticRouter)
 
 export default router;

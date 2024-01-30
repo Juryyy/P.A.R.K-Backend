@@ -9,10 +9,11 @@ export default {
         return await prisma.exam.findMany();
     },
 
-    async createExam(venue : string , type : TypeOfExamEnum, levels: LevelEnum[] , startTime : Date, endTime : Date, note :string , dayOfExamsId : number){
+    async createExam(venue : string, location : string, type : TypeOfExamEnum, levels: LevelEnum[] , startTime : Date, endTime : Date, note :string , dayOfExamsId : number){
         return await prisma.exam.create({
             data: {
                 venue,
+                location,
                 type,
                 levels,
                 startTime,

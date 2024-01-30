@@ -63,6 +63,31 @@ export default {
                 avatarUrl: avatarUrl
             }
         });
+    },
+
+    async getAllUsers(){
+        return await prisma.user.findMany({
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                drivingLicense: true,
+                note: true,
+                adminNote: true,
+                role: true,
+                avatarUrl: true,
+                activatedAccount: true,
+                deactivated: true,
+                _count: {
+                    select: {
+                        supervisedExams: true,
+                        invigilatedExams: true,
+                        examinedExams: true
+                    }
+                }
+            }
+        });
     }
 
 }

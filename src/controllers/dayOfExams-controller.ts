@@ -17,22 +17,20 @@ export default {
         }
 
         const dateObj = new Date(date);
-                
-        const dayOfExamsExists = await dayOfExamsService.getDayOfExamsByDate(dateObj);
-        if(dayOfExamsExists) {
+        try{
+            const x = await dayOfExamsService.createDayOfExams(dateObj, isForInvigilators, isForExaminers);
+            if (isForExaminers && !isForInvigilators){
+                await responseService.createResponsesForDayExaminers(x.id);
+            }
+            else if (isForInvigilators && !isForExaminers){
+                await responseService.createResponsesForDayInvigilators(x.id);
+            }
+            else{
+                await responseService.createResponsesForDay(x.id);
+            }
+        }catch(error){
             logger.error(`Day of exams already exists: ${dateObj}`);
             return res.status(400).json({ error: 'Day of exams already exists' });
-        }
-    
-        const x = await dayOfExamsService.createDayOfExams(dateObj, isForInvigilators, isForExaminers);
-        if (isForExaminers && !isForInvigilators){
-            await responseService.createResponsesForDayExaminers(x.id);
-        }
-        else if (isForInvigilators && !isForExaminers){
-            await responseService.createResponsesForDayInvigilators(x.id);
-        }
-        else{
-            await responseService.createResponsesForDay(x.id);
         }
     
         return res.status(201).json({ success: 'Day of exams created' });
@@ -65,8 +63,13 @@ export default {
         if(!dayOfExams) {
             return res.status(400).json({ error: 'Day of exams does not exists' });
         }
-        await responseService.deleteResponsesForDay(parsedId);
-        await dayOfExamsService.deleteDayOfExams(parsedId);
+        try{
+            await responseService.deleteResponsesForDay(parsedId);
+            await dayOfExamsService.deleteDayOfExams(parsedId);
+        }catch(error){
+            logger.error(`Day of exams does not exists: ${parsedId}`);
+            return res.status(400).json({ error: 'Day of exams does not exists' });
+        }
         return res.status(200).json({ success: 'Day of exams deleted' });
     }
 }

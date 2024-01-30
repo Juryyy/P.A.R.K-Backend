@@ -12,7 +12,7 @@ import path from 'path';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
-        const {venue, type, levels, startTime, endTime, note, dayOfExamsId} = req.body;
+        const {venue, location, type, levels, startTime, endTime, note, dayOfExamsId} = req.body;
 
         try{
             examSchema.examInfoSchema.parse({venue, type, levels, startTime, endTime, note, dayOfExamsId});
@@ -36,6 +36,7 @@ export default{
 
         const newExam = await examService.createExam(
             venue,
+            location,
             type,
             levels,
             start,
@@ -84,16 +85,32 @@ export default{
 
         switch (role) {
             case RoleEnum.Supervisor:
-                const supExam = await examService.addSupervisor(examId, userId);
-                logger.info(`Supervisor added to exam: ${supExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                try{
+                    const supExam = await examService.addSupervisor(examId, userId);
+                    logger.info(`Supervisor added to exam: ${supExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                }catch(error){
+                    logger.error(error);
+                    return res.status(400).json({ error: 'Invalid data' });
+                }
+
                 break;
             case RoleEnum.Invigilator:
+                try{
                 const invigExam = await examService.addInvigilator(examId, userId);
                 logger.info(`Invigilator added to exam: ${invigExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                }catch(error){
+                    logger.error(error);
+                    return res.status(400).json({ error: 'Invalid data' });
+                }
                 break;
             case RoleEnum.Examiner:
-                const examinerExam = await examService.addExaminer(examId, userId);
-                logger.info(`Examiner added to exam: ${examinerExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                try{
+                    const examinerExam = await examService.addExaminer(examId, userId);
+                    logger.info(`Examiner added to exam: ${examinerExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                }catch(error){
+                    logger.error(error);
+                    return res.status(400).json({ error: 'Invalid data' });
+                }
                 break;
         }
 
@@ -120,19 +137,33 @@ export default{
 
         switch (role) {
             case RoleEnum.Supervisor:
-                const supExam = await examService.removeSupervisor(examId, userId);
-                logger.info(`Supervisor removed from exam: ${supExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                try{
+                    const supExam = await examService.removeSupervisor(examId, userId);
+                    logger.info(`Supervisor removed from exam: ${supExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                }catch(error){
+                    logger.error(error);
+                    return res.status(400).json({ error: 'Invalid data' });
+                }
                 break;
             case RoleEnum.Invigilator:
-                const invigExam = await examService.removeInvigilator(examId, userId);
-                logger.info(`Invigilator removed from exam: ${invigExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                try{
+                    const invigExam = await examService.removeInvigilator(examId, userId);
+                    logger.info(`Invigilator removed from exam: ${invigExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                }catch(error){
+                    logger.error(error);
+                    return res.status(400).json({ error: 'Invalid data' });
+                }
                 break;
             case RoleEnum.Examiner:
-                const examinerExam = await examService.removeExaminer(examId, userId);
-                logger.info(`Examiner removed from exam: ${examinerExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                try{
+                    const examinerExam = await examService.removeExaminer(examId, userId);
+                    logger.info(`Examiner removed from exam: ${examinerExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+                }catch(error){
+                    logger.error(error);
+                    return res.status(400).json({ error: 'Invalid data' });
+                }
                 break;
         }
-
         return res.status(200).json({ message: 'Worker removed' });
 
     },
@@ -203,8 +234,13 @@ export default{
     },
 
     getUpcomingExamsWithAllData : async (req: URequest, res: Response) => {
-        const exams = await examService.getUpcomingExamsWithEverything();
-        return res.status(200).json(exams);
+        try{
+            const exams = await examService.getUpcomingExamsWithEverything();
+            return res.status(200).json(exams);
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
     },
 
     getUsersExams : async (req: URequest, res: Response) => {
@@ -213,13 +249,13 @@ export default{
             return res.status(401).json({ error: 'Please login' });
         }
 
-        const userExists = await userService.getUserById(userId);
-        if(!userExists) {
-            return res.status(401).json({ error: 'User does not exists' });
+        try{
+            const exams = await examService.getExamsForUser(userId);
+            return res.status(200).json(exams);
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
         }
-
-        const exams = await examService.getExamsForUser(userId);
-        return res.status(200).json(exams);
     },
 
 }

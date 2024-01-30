@@ -50,8 +50,12 @@ export default {
             if(!(response in ResponseEnum)) {
                 return res.status(400).json({ error: 'Invalid response option' });
             }
-
-            await responseService.updateResponse(dayofExamsId, userId, response);
+            try{
+                await responseService.updateResponse(dayofExamsId, userId, response);
+            }catch(error){
+                logger.error(error);
+                return res.status(400).json({ error: 'Invalid data' });
+            }
         }
 
         return res.status(200).json({ message: 'Responses updated' });
@@ -97,14 +101,16 @@ export default {
             return res.status(400).json({ error: 'Day of exams does not exists' });
         }
 
-        const responses = await responseService.getUsersWithYesResponseForDayOfExams(id)
-
-        if(!responses) {
-            return res.status(400).json({ error: 'Responses do not exists' });
+        try{
+            const responses = await responseService.getResponsesForDay(id);
+            if(!responses) {
+                return res.status(400).json({ error: 'Responses do not exists' });
+            }
+            return res.status(200).json(responses);
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
         }
-
-        return res.status(200).json(responses);
-
     }
 
 }

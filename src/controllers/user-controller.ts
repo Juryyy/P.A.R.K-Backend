@@ -46,8 +46,12 @@ export default {
             }
         }
 
-        await userService.updateAvatarUrl(userId, avatar.filename);
-
-        return res.status(200).json({ message: 'Avatar updated' });
+        try{
+            await userService.updateAvatarUrl(userId, avatar.filename);
+            return res.status(200).json({ message: 'Avatar updated' });
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
     }
 }

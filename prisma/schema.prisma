@@ -36,7 +36,7 @@ model User {
 
 model DayOfExams {
   id        Int      @id @default(autoincrement())
-  date      DateTime 
+  date      DateTime @unique
   isForInvigilators Boolean
   isForExaminers Boolean 
   responses  Response[]
@@ -56,6 +56,7 @@ model Response {
 
 model Exam {
   id            Int      @id @default(autoincrement())
+  location      String
   venue         String
   type          TypeOfExamEnum
   levels        LevelEnum[]
