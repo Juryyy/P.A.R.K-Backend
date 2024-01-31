@@ -88,6 +88,17 @@ export default {
                 }
             }
         });
+    },
+
+    async updateUserRole(id : number, role : RoleEnum){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                role: role
+            }
+        });
     }
 
 }

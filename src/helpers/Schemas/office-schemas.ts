@@ -10,5 +10,4 @@ const RegisterSchema = z.object({
   role: Roles,
 });
 
-
 export default RegisterSchema ;

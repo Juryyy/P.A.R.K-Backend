@@ -9,6 +9,7 @@ const router = express.Router();
 router.put('/update', jwtAccessVerify, officeMiddleware.isOffice);
 router.post('/registerUser', jwtAccessVerify, officeController.adminRegister );
 router.get('/allUsers', jwtAccessVerify, officeMiddleware.isOffice, officeController.getAllUsers);
+router.post('/updateUserRole', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserRole)
 
 
 export default router;

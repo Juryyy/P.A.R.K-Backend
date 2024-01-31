@@ -14,12 +14,14 @@ import RegisterSchema from '../../helpers/Schemas/office-schemas';
 export default {
     adminRegister: async (req: URequest, res: Response) => {
         const {firstName, lastName, email, role} = req.body;
-       
+        console.log(req.body)
+        //console.log('firstName', firstName, 'lastName', lastName, 'email', email, 'role', role);
+
         try {
             RegisterSchema.parse({ email, firstName, lastName, role });
         } catch (error : unknown) {
             logger.error(error);
-            return res.status(401).json({ error: 'Invalid data' });
+            return res.status(400).json({ error: 'Invalid data' });
         }
         
         const userExists = await userService.getUserByEmail(email);
@@ -58,4 +60,26 @@ export default {
         const users = await userService.getAllUsers();
         return res.status(200).json(users);
     },
+
+    updateUserRole : async (req: URequest, res: Response) => {
+        const { id, role } = req.body;
+        if (!id || !role || id === '' || role === '') {
+            console.log('id', id, 'role', role);
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+
+        if (!(role in RoleEnum)) {
+            console.log('role', role);
+            return res.status(400).json({ error: 'Invalid role' });
+        }
+
+        try{
+            const user = await userService.updateUserRole(id, role as RoleEnum);
+            logger.info(`User ${user.email} role updated by ${req.user?.firstName} ${req.user?.lastName}`);
+            return res.status(200).json({ success: 'User role updated' });
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+    }
 }

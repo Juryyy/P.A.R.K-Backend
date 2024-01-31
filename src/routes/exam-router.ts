@@ -14,7 +14,7 @@ router.delete('/removeWorker', jwtAccessVerify, examController.removeWorker);
 router.post('/createDayReport', jwtAccessVerify, examController.createDayReport);
 router.get('/dayReport/:id', jwtAccessVerify, examController.getDayReport);
 
-router.get('/usersExams', jwtAccessVerify, examController.getUsersExams);
+
 
 
 

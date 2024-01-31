@@ -120,6 +120,19 @@ model Break {
   ScheduleForDay ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
 }
 
+model ExamLocation {
+  id     Int      @id @default(autoincrement())
+  name   String
+  venues ExamVenue[]
+}
+
+model ExamVenue {
+  id         Int      @id @default(autoincrement())
+  name       String
+  locationId Int
+  location   ExamLocation @relation(fields: [locationId], references: [id])
+}
+
 enum RoleEnum {
   Office
   Supervisor
