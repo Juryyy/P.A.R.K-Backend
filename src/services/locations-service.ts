@@ -3,7 +3,7 @@ import { PrismaClient, ExamLocation, ExamVenue } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export default {
-  async getLocations() {
+  async getLocationsWithVenues() {
     return await prisma.examLocation.findMany({
       include: {
         venues: true,
@@ -11,17 +11,28 @@ export default {
     });
   },
 
+  async getLocations() {
+    return await prisma.examLocation.findMany();
+  },
+
   async getVenues() {
     return await prisma.examVenue.findMany();
   },
-  async addLocation(location: ExamLocation) {
+
+  async addLocation(location : string) {
     return await prisma.examLocation.create({
-      data: location,
+      data: {
+        name : location
+      }
     });
-  },
-  async addVenue(venue: ExamVenue) {
+},
+
+  async addVenue(name : string, locationId : number) {
     return await prisma.examVenue.create({
-      data: venue,
+      data: {
+        name,
+        locationId
+      }
     });
   },
   async updateLocation(location: ExamLocation) {
@@ -54,4 +65,11 @@ export default {
       },
     });
   },
+  async getLocationByName(name: string) {
+    return await prisma.examLocation.findFirst({
+      where: {
+        name,
+      },
+    });
+  }
 };

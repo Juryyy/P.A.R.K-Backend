@@ -37,6 +37,7 @@ export default {
             firstName,
             lastName,
             email,
+            phone: null,
             password: hash,
             role: role as RoleEnum,
             activatedAccount: false,

@@ -7,7 +7,7 @@ const RegisterSchema = z.object({
   email: z.string().email(),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  role: Roles,
+  Srole: Roles,
 });
 
 export default RegisterSchema ;

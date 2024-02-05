@@ -8,8 +8,11 @@ const router = express.Router();
 
 router.put('/update', jwtAccessVerify, officeMiddleware.isOffice);
 router.post('/registerUser', jwtAccessVerify, officeController.adminRegister );
-router.get('/allUsers', jwtAccessVerify, officeMiddleware.isOffice, officeController.getAllUsers);
 router.post('/updateUserRole', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserRole)
+router.get('/locationsWithVenues', jwtAccessVerify, officeMiddleware.isOffice, officeController.getLocationsWithVenues)
+
+router.post('/addLocation', jwtAccessVerify, officeMiddleware.isOffice, officeController.addLocation)
+router.post('/addVenue', jwtAccessVerify, officeMiddleware.isOffice, officeController.addVenue)
 
 
 export default router;

@@ -73,6 +73,7 @@ export default {
                 firstName: true,
                 lastName: true,
                 drivingLicense: true,
+                phone: true,
                 note: true,
                 adminNote: true,
                 role: true,
@@ -99,6 +100,35 @@ export default {
                 role: role
             }
         });
-    }
+    },
+
+    async getProfileById(id : number){
+        return await prisma.user.findUnique({
+            where: {
+                id: id
+            },
+            select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+                drivingLicense: true,
+                phone: true,
+                note: true,
+                adminNote: true,
+                role: true,
+                avatarUrl: true,
+                activatedAccount: true,
+                deactivated: true,
+                _count: {
+                    select: {
+                        supervisedExams: true,
+                        invigilatedExams: true,
+                        examinedExams: true
+                    }
+                }
+            }
+        });
+    },
 
 }

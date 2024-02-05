@@ -1,7 +1,7 @@
 import {ResponseEnum, User} from '@prisma/client'
 import {Request, Response} from 'express'
 import userService from '../services/user-service'
-import { MURequest } from '../types/URequest';
+import { MURequest, URequest } from '../types/URequest';
 import sharp from 'sharp';
 import logger from '../configs/logger';
 import util from 'util';
@@ -24,7 +24,7 @@ export default {
 
         const userExists = await userService.getUserById(userId);
         if(!userExists) {
-            return res.status(401).json({ error: 'User does not exists' });
+            return res.status(402).json({ error: 'User does not exists' });
         }
 
         try {
@@ -53,5 +53,25 @@ export default {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
         }
+    },
+
+    getAllUsers: async (req: URequest, res: Response) => {
+        const users = await userService.getAllUsers();
+        return res.status(200).json(users);
+    },
+
+    getProfile: async (req: URequest, res: Response) => {
+        const profileId = Number(req.params.id);
+
+        if(!profileId) {
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+
+        const user = await userService.getProfileById(profileId);
+        if(!user) {
+            return res.status(402).json({ error: 'User does not exists' });
+        }
+        return res.status(200).json(user);
     }
+
 }

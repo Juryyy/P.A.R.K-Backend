@@ -20,6 +20,7 @@ model User {
   password  String
   firstName String
   lastName  String
+  phone     String?
   drivingLicense Boolean @default(false)
   note      String?
   adminNote String?
@@ -122,7 +123,7 @@ model Break {
 
 model ExamLocation {
   id     Int      @id @default(autoincrement())
-  name   String
+  name   String @unique
   venues ExamVenue[]
 }
 
@@ -131,12 +132,13 @@ model ExamVenue {
   name       String
   locationId Int
   location   ExamLocation @relation(fields: [locationId], references: [id])
+  @@unique([name, locationId])
 }
 
 enum RoleEnum {
   Office
   Supervisor
-  SeniorSupervisor
+  SeniorSupervisor 
   Invigilator
   SeniorInvigilator
   Tech
