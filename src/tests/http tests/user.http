@@ -1,0 +1,40 @@
+### Create user
+POST http://localhost:4000/auth/register
+Content-Type: application/json
+
+{
+    "firstName": "Test",
+    "lastName": "User",
+    "email": "bagr@gmail.com",
+    "password": "bagr",
+    "role": "Supervisor"
+}
+
+### Login
+POST http://localhost:4000/auth/login
+Content-Type: application/json
+
+{
+    "email": "bagr2@gmail.com",
+    "password": "bagr2"
+}
+
+### Refresh token
+POST http://localhost:4000/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJiYWdyMkBnbWFpbC5jb20iLCJmaXJzdE5hbWUiOiJUZXN0MiIsImxhc3ROYW1lIjoiVXNlciIsImRyaXZpbmdMaWNlbnNlIjpmYWxzZSwibm90ZSI6bnVsbCwiYWRtaW5Ob3RlIjpudWxsLCJyb2xlIjoiT2ZmaWNlIiwiYXZhdGFyVXJsIjpudWxsLCJhY3RpdmF0ZWRBY2NvdW50IjpmYWxzZSwiaWF0IjoxNzA0NDcxMzE1LCJleHAiOjE3MDU2ODA5MTV9.ePNLsj3eQnye15XubghmKpUfkzd7E4ltVH30JgTmP20"
+}
+
+### Upload avatar
+POST http://localhost:4000/users/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsIjoiYmFncjJAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiVGVzdDIiLCJsYXN0TmFtZSI6IlVzZXIiLCJkcml2aW5nTGljZW5zZSI6ZmFsc2UsIm5vdGUiOm51bGwsImFkbWluTm90ZSI6bnVsbCwicm9sZSI6Ik9mZmljZSIsImF2YXRhclVybCI6bnVsbCwiYWN0aXZhdGVkQWNjb3VudCI6ZmFsc2UsImlhdCI6MTcwNDU1MzkyOSwiZXhwIjoxNzA1ODQ5OTI5fQ.DsiKvgnZ_2W5BOOCuXOnp71Ozr0FVJEAFMTPXdmZkOg
+
+--WebAppBoundary
+Content-Disposition: form-data; name="avatar"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ../../static/test.jpg
+--WebAppBoundary--

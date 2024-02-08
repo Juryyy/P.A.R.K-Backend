@@ -1,0 +1,67 @@
+### Get all exams
+GET http://localhost:4000/exam/getAllExams
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsIjoiYmFncjJAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiVGVzdDIiLCJsYXN0TmFtZSI6IlVzZXIiLCJkcml2aW5nTGljZW5zZSI6ZmFsc2UsIm5vdGUiOm51bGwsImFkbWluTm90ZSI6bnVsbCwicm9sZSI6Ik9mZmljZSIsImF2YXRhclVybCI6bnVsbCwiYWN0aXZhdGVkQWNjb3VudCI6ZmFsc2UsImlhdCI6MTcwNDU1MzkyOSwiZXhwIjoxNzA1ODQ5OTI5fQ.DsiKvgnZ_2W5BOOCuXOnp71Ozr0FVJEAFMTPXdmZkOg
+
+### Create new exam
+POST http://localhost:4000/exam/createExam
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsIjoiYmFncjJAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiVGVzdDIiLCJsYXN0TmFtZSI6IlVzZXIiLCJkcml2aW5nTGljZW5zZSI6ZmFsc2UsIm5vdGUiOm51bGwsImFkbWluTm90ZSI6bnVsbCwicm9sZSI6Ik9mZmljZSIsImF2YXRhclVybCI6bnVsbCwiYWN0aXZhdGVkQWNjb3VudCI6ZmFsc2UsImlhdCI6MTcwNDU1MzkyOSwiZXhwIjoxNzA1ODQ5OTI5fQ.DsiKvgnZ_2W5BOOCuXOnp71Ozr0FVJEAFMTPXdmZkOg
+
+{
+    "venue": "ICT Pro Brno",
+    "type": "Computer",
+    "levels": ["B2", "C1"],
+    "startTime": "07:00:00",
+    "endTime": "18:00:00",
+    "note": "See you there!",
+    "dayOfExamsId": 2
+
+}
+
+
+### Add supervisor
+POST http://localhost:4000/exam/addWorker
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsIjoiYmFncjJAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiVGVzdDIiLCJsYXN0TmFtZSI6IlVzZXIiLCJkcml2aW5nTGljZW5zZSI6ZmFsc2UsIm5vdGUiOm51bGwsImFkbWluTm90ZSI6bnVsbCwicm9sZSI6Ik9mZmljZSIsImF2YXRhclVybCI6bnVsbCwiYWN0aXZhdGVkQWNjb3VudCI6ZmFsc2UsImlhdCI6MTcwNDU1MzkyOSwiZXhwIjoxNzA1ODQ5OTI5fQ.DsiKvgnZ_2W5BOOCuXOnp71Ozr0FVJEAFMTPXdmZkOg
+
+{
+    "userId": 35,
+    "examId": 1,
+    "role": "Supervisor",
+    "override": false
+}
+
+### Add invigilator
+POST http://localhost:4000/exam/addWorker
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsIjoiYmFncjJAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiVGVzdDIiLCJsYXN0TmFtZSI6IlVzZXIiLCJkcml2aW5nTGljZW5zZSI6ZmFsc2UsIm5vdGUiOm51bGwsImFkbWluTm90ZSI6bnVsbCwicm9sZSI6Ik9mZmljZSIsImF2YXRhclVybCI6bnVsbCwiYWN0aXZhdGVkQWNjb3VudCI6ZmFsc2UsImlhdCI6MTcwNDU1MzkyOSwiZXhwIjoxNzA1ODQ5OTI5fQ.DsiKvgnZ_2W5BOOCuXOnp71Ozr0FVJEAFMTPXdmZkOg
+
+{
+    "userId": 35,
+    "examId": 1,
+    "role": "Invigilator",
+    "override": false
+}
+
+### Remove worker
+DELETE http://localhost:4000/exam/removeWorker
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsIjoiYmFncjJAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiVGVzdDIiLCJsYXN0TmFtZSI6IlVzZXIiLCJkcml2aW5nTGljZW5zZSI6ZmFsc2UsIm5vdGUiOm51bGwsImFkbWluTm90ZSI6bnVsbCwicm9sZSI6Ik9mZmljZSIsImF2YXRhclVybCI6bnVsbCwiYWN0aXZhdGVkQWNjb3VudCI6ZmFsc2UsImlhdCI6MTcwNDU1MzkyOSwiZXhwIjoxNzA1ODQ5OTI5fQ.DsiKvgnZ_2W5BOOCuXOnp71Ozr0FVJEAFMTPXdmZkOg
+
+{
+    "userId": 35,
+    "examId": 1,
+    "role": "Invigilator"
+}
+
+### Create exam day report
+POST http://localhost:4000/exam/createDayReport
+Content-Type: application/json
+Authorization: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsIjoiYmFncjJAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiVGVzdDIiLCJsYXN0TmFtZSI6IlVzZXIiLCJkcml2aW5nTGljZW5zZSI6ZmFsc2UsIm5vdGUiOm51bGwsImFkbWluTm90ZSI6bnVsbCwicm9sZSI6Ik9mZmljZSIsImF2YXRhclVybCI6bnVsbCwiYWN0aXZhdGVkQWNjb3VudCI6ZmFsc2UsImlhdCI6MTcwNDU1MzkyOSwiZXhwIjoxNzA1ODQ5OTI5fQ.DsiKvgnZ_2W5BOOCuXOnp71Ozr0FVJEAFMTPXdmZkOg
+
+{
+    "examId": 1,
+    "comment": "This is test of too long line, This is test of too long line This is test of too long line, This is test of too long line This is test of too long line, This is test of too long lineThis is test of too long line, This is test of too long lineThis is test of too long line, This is test of too long line",
+    "issues": "None"
+}
