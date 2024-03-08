@@ -6,25 +6,11 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import logger from './configs/logger';
 import cookieParser from 'cookie-parser';
 import envConfig from './configs/env-config';
+import swaggerConfig from "./docs/swagger";
 
 
 const tokenFilePath = '../back-end/token.json';
 const app: Express = express();
-
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Park Backend API',
-      version: '1.0.0',
-    },
-  },
-  apis: ['./src/router.ts'], // files containing annotations as above
-};
-
-const openapiSpecification = swaggerJsdoc(options);
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
-logger.info('Swagger docs available at /docs');
 
 const cookieSecret = envConfig.getEnv('COOKIE_SECRET') as string;
 app.use(cookieParser(cookieSecret));
@@ -39,6 +25,7 @@ app.use(router);
 
 
 app.listen(4000, '0.0.0.0', () => {
+  swaggerConfig(app);
   console.log('Server is running on port 4000');
 });
 
