@@ -1,7 +1,7 @@
 import authPaths from "./auth-paths";
 
 const paths = {
-    ...authPaths,
+    ...authPaths
 }
 
 export default paths;

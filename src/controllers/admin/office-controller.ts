@@ -61,12 +61,10 @@ export default {
     updateUserRole : async (req: URequest, res: Response) => {
         const { id, role } = req.body;
         if (!id || !role || id === '' || role === '') {
-            console.log('id', id, 'role', role);
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
 
         if (!(role in RoleEnum)) {
-            console.log('role', role);
             return res.status(400).json({ error: 'Invalid role' });
         }
 

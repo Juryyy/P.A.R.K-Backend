@@ -30,13 +30,12 @@ export default {
             },
             schemas: {
                 ...schemas,
-            }
-        },
-        paths: {
-            ...paths,
-        },
-    apis: [
-        './paths/user-paths',
-    ]
+            },
+    },
+    apis:
+        [
+            './src/docs/paths/*.ts',
+            './src/docs/schemas/*.ts'
+        ]
 }
 

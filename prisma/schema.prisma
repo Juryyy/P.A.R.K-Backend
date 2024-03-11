@@ -96,6 +96,32 @@ model Candidate {
   Schedule   Schedule? @relation(fields: [ScheduleId], references: [id])
 }
 
+model ImportedCandidate {
+  id        Int      @id @default(autoincrement())
+  level     LevelEnum
+  dateOfExam DateTime
+  location String
+  venue    String?
+  candidateId Int?
+  typeOfExam TypeOfExamEnum
+  firstName String
+  lastName  String
+  birthDate DateTime
+  email     String
+  phone     String
+  code      String?
+  partner   String?
+  mock      Boolean @default(false)
+  paid      Boolean @default(false)
+  orderId   Int?
+  requirements String?
+  crfToSchool Boolean @default(false)
+  note      String?
+
+  @@unique([firstName, lastName, birthDate, dateOfExam, location, typeOfExam, level])
+
+}
+
 model Schedule {
   id          Int      @id @default(autoincrement())
   startTime   DateTime

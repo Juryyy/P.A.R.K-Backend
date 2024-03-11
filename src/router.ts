@@ -6,6 +6,7 @@ import userRouter from './routes/user-router';
 import officeRouter from './routes/admin/office-router';
 import examRouter from './routes/exam-router';
 import staticRouter from './routes/static-router';
+import candidatesRouter from './routes/admin/candidates-router';
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.use('/examDays', dayOfExamsRouter)
 router.use('/responses', responseRouter)
 router.use('/users', userRouter)
 router.use('/office', officeRouter)
+router.use('/candidates', candidatesRouter)
 router.use('/exams', examRouter)
 
 router.use('/static', staticRouter)
