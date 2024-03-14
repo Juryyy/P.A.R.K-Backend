@@ -15,24 +15,25 @@ generator erd {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  firstName String
-  lastName  String
-  phone     String?
-  drivingLicense Boolean @default(false)
-  note      String?
-  adminNote String?
-  role      RoleEnum
-  avatarUrl String? @default("testMan.jpg")
-  activatedAccount  Boolean  @default(false)
-  deactivated       Boolean  @default(false)
-
-  supervisedExams Exam[] @relation("ExamToSupervisor") 
-  invigilatedExams Exam[] @relation("ExamToInvigilator")
-  examinedExams Exam[] @relation("ExamToExaminer")
-  responses Response[]
+  id                Int        @id @default(autoincrement())
+  email             String     @unique
+  password          String
+  firstName         String
+  lastName          String
+  phone             String?
+  drivingLicense    Boolean    @default(false)
+  note              String?
+  adminNote         String?
+  role              RoleEnum
+  avatarUrl         String?    @default("testMan.jpg")
+  activatedAccount  Boolean    @default(false)
+  deactivated       Boolean    @default(false)
+  posts             Post[]     @relation(name: "PostAuthor")
+  taggedPosts       Post[]     @relation("TaggedUsers")
+  supervisedExams   Exam[]     @relation("ExamToSupervisor") 
+  invigilatedExams  Exam[]     @relation("ExamToInvigilator")
+  examinedExams     Exam[]     @relation("ExamToExaminer")
+  responses         Response[]
 }
 
 model DayOfExams {
@@ -163,6 +164,28 @@ model ExamVenue {
   @@unique([name, locationId])
 }
 
+model Post {
+  id            Int        @id @default(autoincrement())
+  title         String
+  content       String
+  driveLink     DriveLink[]
+  authorId      Int
+  author        User       @relation(name: "PostAuthor", fields: [authorId], references: [id])
+  published     Boolean    @default(false)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  taggedUsers   User[]     @relation("TaggedUsers")
+  taggedRoles   RoleEnum[]
+}
+
+model DriveLink{
+  id        Int      @id @default(autoincrement())
+  link      String
+  name      String
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id]) 
+}
+
 enum RoleEnum {
   Office
   Supervisor
@@ -196,3 +219,4 @@ enum LevelEnum {
   C1
   C2
 }
+
