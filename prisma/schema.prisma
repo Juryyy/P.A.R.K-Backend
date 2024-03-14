@@ -39,9 +39,10 @@ model DayOfExams {
   id        Int      @id @default(autoincrement())
   date      DateTime @unique
   isForInvigilators Boolean
-  isForExaminers Boolean 
+  isForExaminers Boolean
   responses  Response[]
   exams     Exam[]
+  isLocked  Boolean @default(false)
 }
 
 model Response {
@@ -158,6 +159,7 @@ model ExamVenue {
   name       String
   locationId Int
   location   ExamLocation @relation(fields: [locationId], references: [id])
+  gLink      String @default("https://www.google.com/maps")
   @@unique([name, locationId])
 }
 

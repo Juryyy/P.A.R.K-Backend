@@ -71,5 +71,22 @@ export default {
             return res.status(400).json({ error: 'Day of exams does not exists' });
         }
         return res.status(200).json({ success: 'Day of exams deleted' });
+    },
+
+    changeLock: async (req: Request, res: Response) => {
+        const {id} = req.params;
+        const parsedId = parseInt(id);
+
+        if(!parsedId) {
+            return res.status(400).json({ error: 'Invalid id' });
+        }
+        
+        try{
+            await dayOfExamsService.changeLock(parsedId);
+        }catch(error){
+            logger.error(`Day of exams does not exists: ${parsedId}`);
+            return res.status(400).json({ error: 'Day of exams does not exists' });
+        }
+        return res.status(200).json({ success: 'Lock changed' });
     }
 }

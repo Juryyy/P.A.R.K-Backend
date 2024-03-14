@@ -13,6 +13,7 @@ router.get('/locationsWithVenues', jwtAccessVerify, officeMiddleware.isOffice, o
 
 router.post('/addLocation', jwtAccessVerify, officeMiddleware.isOffice, officeController.addLocation)
 router.post('/addVenue', jwtAccessVerify, officeMiddleware.isOffice, officeController.addVenue)
-
+router.delete('/deleteLocation/:id', jwtAccessVerify, officeMiddleware.isOffice, officeController.deleteLocation)
+router.delete('/deleteVenue/:id', jwtAccessVerify, officeMiddleware.isOffice, officeController.deleteVenue)
 
 export default router;

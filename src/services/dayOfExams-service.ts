@@ -8,7 +8,7 @@ export default {
             data: {
                 date: date,
                 isForInvigilators: isForInvigilators,
-                isForExaminers: isForExaminers
+                isForExaminers: isForExaminers,
             }
         });
     },
@@ -71,4 +71,20 @@ export default {
         });
     },
 
+    async changeLock(id: number) {
+        const dayOfExams = await prisma.dayOfExams.findUnique({
+            where: {
+                id: id
+            }
+        });
+
+        return await prisma.dayOfExams.update({
+            where: {
+                id: id
+            },
+            data: {
+                isLocked: !dayOfExams?.isLocked
+            }
+        });
+    }
 }
