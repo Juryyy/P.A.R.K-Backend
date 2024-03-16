@@ -67,11 +67,20 @@ export default {
     });
   },
   
-  async getLocation(id: number) {
+  async getLocation(data : Prisma.ExamLocationWhereUniqueInput) {
     return await prisma.examLocation.findUnique({
-      where: {
-        id,
-      },
+      where: data
     });
-  }
+  }, 
+
+  async getVenue(nameVenue: string, locationId: number) {
+    return await prisma.examVenue.findUnique({
+      where: {
+        name_locationId: {
+          name: nameVenue,
+          locationId
+        }
+      }
+    });
+  },
 };

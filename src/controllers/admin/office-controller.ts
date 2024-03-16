@@ -84,8 +84,14 @@ export default {
     //* Locations and Venues
 
     getLocationsWithVenues: async (req: URequest, res: Response) => {
-        const locationsWithVenues = await locationsService.getLocationsWithVenues();
-        return res.status(200).json(locationsWithVenues);
+        try{
+            const locationsWithVenues = await locationsService.getLocationsWithVenues();
+            return res.status(200).json(locationsWithVenues);
+        }
+        catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
     },
 
     addLocation: async (req: URequest, res: Response) => {

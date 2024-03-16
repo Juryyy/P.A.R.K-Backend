@@ -9,6 +9,8 @@ import examSchema from '../helpers/Schemas/exam-schemas';
 import logger from '../configs/logger';
 import { createDayReportPdf } from '../middlewares/pdf-middleware';
 import path from 'path';
+import locationsService from '../services/locations-service';
+import { ExamWithVenueLink } from '../helpers/extraTypes';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
@@ -251,7 +253,17 @@ export default{
 
         try{
             const exams = await examService.getExamsForUser(userId);
-            return res.status(200).json(exams);
+            const filteredExams : ExamWithVenueLink[] = exams.filter((exam) => {
+                const date = new Date(exam.startTime);
+                return date > new Date();
+            });
+            //For each filtered exam, add there venue link by finding location by name and then venue by name and locationId
+            for (const exam of filteredExams) {
+                const location = await locationsService.getLocation({name: exam.location});
+                const venue = await locationsService.getVenue(exam.venue, location!.id);
+                exam.venueLink = venue?.gLink;
+            }
+            return res.status(200).json(filteredExams);
         }catch(error){
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
