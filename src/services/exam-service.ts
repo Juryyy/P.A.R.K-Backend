@@ -29,6 +29,12 @@ export default {
             where: {
                 id,
             },
+            include: {
+                supervisors: true,
+                invigilators: true,
+                examiners: true,
+                candidates: true,
+            },
         });
     },
 

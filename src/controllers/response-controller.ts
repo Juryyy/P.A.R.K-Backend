@@ -94,9 +94,16 @@ export default {
     },
 
     getResponsesExamDay: async (req: URequest, res: Response) => {
+        let dayOfExamsExists;
         const id = parseInt(req.params.id);
+        
+        try{
+            dayOfExamsExists = await dayOfExamsService.getDayOfExamsById(id);
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
 
-        const dayOfExamsExists = await dayOfExamsService.getDayOfExamsById(id);
         if(!dayOfExamsExists) {
             return res.status(400).json({ error: 'Day of exams does not exists' });
         }
@@ -106,7 +113,15 @@ export default {
             if(!responses) {
                 return res.status(400).json({ error: 'Responses do not exists' });
             }
-            return res.status(200).json(responses);
+            const responsesWithUser: {dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string}[] = [];
+            for (let response of responses) {
+                const user = await userService.getUserById(response.userId);
+                if(!user) {
+                    return res.status(400).json({ error: 'User does not exists' });
+                }
+                responsesWithUser.push({dayOfExamsId: response.dayOfExamsId, id: response.id, response: response.response, userName: user.firstName + ' ' + user.lastName, userRole: user.role});
+            }
+            return res.status(200).json(responsesWithUser);
         }catch(error){
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });

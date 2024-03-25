@@ -258,5 +258,16 @@ export default{
         }
     },
 
+    getExam : async (req: URequest, res: Response) => {
+        const id = parseInt(req.params.id);
+        try{
+            const exam = await examService.getExamById(id);
+            return res.status(200).json(exam);
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Exam does not exists' });
+        }
+    },
+
 }
 
