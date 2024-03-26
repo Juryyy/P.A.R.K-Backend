@@ -117,7 +117,8 @@ export default {
         }
 
         try{
-            existLocation = await locationsService.getLocation(location);
+            const nLocation = parseInt(location);
+            existLocation = await locationsService.getLocationById(nLocation)
         }catch(error){
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
@@ -131,7 +132,6 @@ export default {
                 },
                 gLink : link
             }
-            console.log(data)
             const newVenue = await locationsService.addVenue(data);
             logger.info(`New venue created: ${newVenue.name} by ${req.user?.firstName} ${req.user?.lastName}`);
             return res.status(201).json({ success: 'New venue created' });
