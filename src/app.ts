@@ -7,6 +7,7 @@ import logger from './configs/logger';
 import cookieParser from 'cookie-parser';
 import envConfig from './configs/env-config';
 import swaggerDocs from './docs/swaggerConfig';
+import fileUpload from 'express-fileupload';
 
 
 const tokenFilePath = '../back-end/token.json';
@@ -15,6 +16,7 @@ const app: Express = express();
 const cookieSecret = envConfig.getEnv('COOKIE_SECRET') as string;
 app.use(cookieParser(cookieSecret));
 
+app.use(fileUpload())
 app.use(cors({origin: envConfig.getEnv('FRONTEND_URL'), credentials: true}))
 app.use(express.json());
 app.use(router);

@@ -7,7 +7,7 @@ import dayOfExamsService from '../../services/dayOfExams-service';
 import logger from '../../configs/logger';
 import { URequest } from '../../types/URequest';
 import crypto from 'crypto';
-import sendEmail from '../../middlewares/email-middleware';
+import {sendEmail} from '../../middlewares/email-middleware';
 import RegisterSchema from '../../helpers/Schemas/office-schemas';
 import locationsService from '../../services/locations-service';
 
@@ -36,6 +36,7 @@ export default {
             lastName,
             email,
             phone: null,
+            dateOfBirth: new Date(),
             password: hash,
             role: Srole as RoleEnum,
             activatedAccount: false,

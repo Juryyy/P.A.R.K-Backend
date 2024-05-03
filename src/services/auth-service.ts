@@ -1,10 +1,11 @@
-import { User } from '@prisma/client';
+import { User, Authorization, PrismaClient} from '@prisma/client';
 import jwt, { Secret } from 'jsonwebtoken';
 import crypto from 'crypto';
 import passwordConfig from '../configs/password-config';
 import { accessJwtOptions, accessJwtSecret, refreshJwtOptions, refreshJwtSecret} from '../configs/jwt-config';
+import logger from '../configs/logger';
 
-
+const prisma = new PrismaClient();
 
 export default {
     generateTokens: (user: User) => {
@@ -33,5 +34,46 @@ export default {
             passwordConfig.keylen as number,
             passwordConfig.digest as string
         ).toString('hex');
+    },
+
+    storeCode: async (userId : number, code : string) => {
+        const expiresAt = new Date().getTime() + 10 * 60 * 1000;
+        try{
+        await prisma.authorization.create({
+            data: {
+                code: code,
+                userId: userId,
+                expiresAt: new Date(expiresAt)
+            }
+        });
+        }catch(err){
+            logger.error(err);
+        }
+    },
+
+    verifyCode: async (userId : number, code : string) => {
+        try{
+            const authorization : Authorization | null = await prisma.authorization.findFirst({
+                where: {
+                    userId: userId,
+                    code: code
+                }
+            });
+
+            if(authorization){
+                if(authorization.expiresAt > new Date())
+                {
+                    await prisma.authorization.delete({
+                        where: {
+                            id: authorization.id
+                        }
+                    });
+                    return true;
+            }
+        }
+        }catch(err){
+            logger.error(err);
+        }
+        return false;
     }
 }

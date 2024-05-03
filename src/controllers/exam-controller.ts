@@ -10,7 +10,7 @@ import logger from '../configs/logger';
 import { createDayReportPdf } from '../middlewares/pdf-middleware';
 import path from 'path';
 import locationsService from '../services/locations-service';
-import { ExamWithVenueLink } from '../helpers/extraTypes';
+import { ExamWithVenueLink } from '../types/extraTypes';
 
 export default{
     createExam: async (req: URequest, res: Response) => {

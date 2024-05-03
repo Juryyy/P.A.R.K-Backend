@@ -7,6 +7,7 @@ import dayOfExamsService from '../services/dayOfExams-service';
 import responseService from '../services/response-service';
 import { URequest } from '../types/URequest';
 import envConfig from '../configs/env-config';
+import {sendCode} from '../middlewares/email-middleware';
 
 
 export default {
@@ -37,6 +38,7 @@ export default {
             firstName,
             lastName,
             email,
+            dateOfBirth: new Date(),
             phone: null,
             password: hash,
             role: role as RoleEnum,
@@ -79,6 +81,54 @@ export default {
         
         return res.status(200).json(userWithoutPassword);
     },
+
+    tfalogin: async (req: Request, res: Response) => {
+        const {email, password} = req.body;
+        if(!email || !password || email === '' || password === '') {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+    
+        const user = await userService.getUserByEmail(email);
+        if(!user) {
+            return res.status(400).json({ error: 'Invalid email' });
+        }
+        
+        if(authService.hashPassword(password) !== user.password) {
+            return res.status(400).json({ error: 'Invalid password' });
+        }
+    
+        const code = Math.floor(100000 + Math.random() * 900000).toString(); // generates a six digit number
+
+        await authService.storeCode(user.id, code);
+        await sendCode(email, 'P.A.R.K Exams center 2FA code', code, user.firstName, user.lastName);
+
+        return res.status(200).json({ message: 'A verification code has been sent to your email.' });
+    },
+
+    verify: async (req: Request, res: Response) => {
+        const {email, code} = req.body;
+
+        const user = await userService.getUserByEmail(email);
+        if(!user) {
+            return res.status(400).json({ error: 'Invalid email' });
+        }
+
+        // Check if the code is correct and hasn't expired
+        const isValid = await authService.verifyCode(user.id, code);
+        if (!isValid) {
+            return res.status(400).json({ error: 'Invalid or expired code' });
+        }
+
+        const tokens : Tokens = authService.generateTokens(user);
+    
+        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_REFRESH'), signed: true, secure: true});
+        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_ACCESS'), signed: true, secure: true});
+      
+        const { password: pass, ...userWithoutPassword } = user;
+        
+        return res.status(200).json(userWithoutPassword);
+    },
+
     
     refreshTokens: async (req: URequest, res: Response) => {
         if (!req.user || !req.user.email) {
@@ -92,8 +142,8 @@ export default {
     
         const tokens : Tokens = authService.generateTokens(user);
     
-        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_REFRESH'), signed: true});
-        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_ACCESS'), signed: true });
+        res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_REFRESH'), signed: true, secure: true});
+        res.cookie('accessToken', tokens.accessToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_ACCESS'), signed: true, secure: true});
 
         const { password, ...userWithoutPassword } = user;        
         return res.status(200).json(userWithoutPassword);

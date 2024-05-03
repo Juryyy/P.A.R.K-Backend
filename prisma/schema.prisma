@@ -15,181 +15,193 @@ generator erd {
 }
 
 model User {
-  id                Int        @id @default(autoincrement())
-  email             String     @unique
-  password          String
-  firstName         String
-  lastName          String
-  phone             String?
-  drivingLicense    Boolean    @default(false)
-  note              String?
-  adminNote         String?
-  role              RoleEnum
-  avatarUrl         String?    @default("testMan.jpg")
-  activatedAccount  Boolean    @default(false)
-  deactivated       Boolean    @default(false)
-  posts             Post[]     @relation(name: "PostAuthor")
-  taggedPosts       Post[]     @relation("TaggedUsers")
-  supervisedExams   Exam[]     @relation("ExamToSupervisor") 
-  invigilatedExams  Exam[]     @relation("ExamToInvigilator")
-  examinedExams     Exam[]     @relation("ExamToExaminer")
-  responses         Response[]
+  id               Int        @id @default(autoincrement())
+  email            String     @unique
+  password         String
+  firstName        String
+  lastName         String
+  phone            String?
+  drivingLicense   Boolean    @default(false)
+  dateOfBirth      DateTime?
+  note             String?
+  adminNote        String?
+  role             RoleEnum
+  avatarUrl        String?    @default("testMan.jpg")
+  activatedAccount Boolean    @default(false)
+  deactivated      Boolean    @default(false)
+  posts            Post[]     @relation(name: "PostAuthor")
+  taggedPosts      Post[]     @relation("TaggedUsers")
+  supervisedExams  Exam[]     @relation("ExamToSupervisor")
+  invigilatedExams Exam[]     @relation("ExamToInvigilator")
+  examinedExams    Exam[]     @relation("ExamToExaminer")
+  responses        Response[]
+
+  authorizations   Authorization[]
 }
 
 model DayOfExams {
-  id        Int      @id @default(autoincrement())
-  date      DateTime @unique
+  id                Int        @id @default(autoincrement())
+  date              DateTime   @unique
   isForInvigilators Boolean
-  isForExaminers Boolean
-  responses  Response[]
-  exams     Exam[]
-  isLocked  Boolean @default(false)
+  isForExaminers    Boolean
+  responses         Response[]
+  exams             Exam[]
+  isLocked          Boolean    @default(false)
 }
 
 model Response {
-  id            Int         @id @default(autoincrement())
-  dayOfExamsId  Int
-  dayOfExams    DayOfExams  @relation(fields: [dayOfExamsId], references: [id])
-  userId        Int
-  user          User        @relation(fields: [userId], references: [id])
-  response      ResponseEnum @default(No)
+  id           Int          @id @default(autoincrement())
+  dayOfExamsId Int
+  dayOfExams   DayOfExams   @relation(fields: [dayOfExamsId], references: [id])
+  userId       Int
+  user         User         @relation(fields: [userId], references: [id])
+  response     ResponseEnum @default(No)
 
   @@unique([dayOfExamsId, userId])
 }
 
 model Exam {
-  id            Int      @id @default(autoincrement())
-  location      String
-  venue         String
-  type          TypeOfExamEnum
-  levels        LevelEnum[]
-  startTime     DateTime
-  endTime       DateTime
-  note          String?
-  supervisors   User[] @relation("ExamToSupervisor")
-  invigilators  User[] @relation("ExamToInvigilator")
-  examiners     User[] @relation("ExamToExaminer")
-  candidates    Candidate[]
-  dayOfExamsId  Int
-  dayOfExams    DayOfExams @relation(fields: [dayOfExamsId], references: [id])
-  pdfUrl        String?
-  comments      String?
-  issues        String?
+  id               Int             @id @default(autoincrement())
+  location         String
+  venue            String      //@relation(fields: [examVenueId], references: [id])
+  type             TypeOfExamEnum
+  levels           LevelEnum[]
+  startTime        DateTime
+  endTime          DateTime
+  note             String?
+  supervisors      User[]          @relation("ExamToSupervisor")
+  invigilators     User[]          @relation("ExamToInvigilator")
+  examiners        User[]          @relation("ExamToExaminer")
+  candidates       Candidate[]
+  dayOfExamsId     Int
+  dayOfExams       DayOfExams      @relation(fields: [dayOfExamsId], references: [id])
+  pdfUrl           String?
+  comments         String?
+  issues           String?
   ScheduleForDayId Int?
-  ScheduleForDay ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
+  ScheduleForDay   ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
+  //examVenueId      Int
 }
 
 model Candidate {
-  id        Int      @id @default(autoincrement())
-  firstName String
-  lastName  String
-  email     String
+  id          Int        @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String
   dateOfBirth DateTime
-  phone     String
-  mockTest  Boolean @default(false)
-  paid      Boolean @default(false)
-  note      String?
-  partnerId Int? @unique
-  partner   Candidate? @relation("PartnerToCandidate", fields: [partnerId], references: [id])
+  phone       String
+  mockTest    Boolean    @default(false)
+  paid        Boolean    @default(false)
+  note        String?
+  partnerId   Int?       @unique
+  partner     Candidate? @relation("PartnerToCandidate", fields: [partnerId], references: [id])
   partneredBy Candidate? @relation("PartnerToCandidate")
-  idForExam Int?
-  exams     Exam[]
-  ScheduleId Int?
-  Schedule   Schedule? @relation(fields: [ScheduleId], references: [id])
+  idForExam   Int?
+  exams       Exam[]
+  ScheduleId  Int?
+  Schedule    Schedule?  @relation(fields: [ScheduleId], references: [id])
 }
 
 model ImportedCandidate {
-  id        Int      @id @default(autoincrement())
-  level     LevelEnum
-  dateOfExam DateTime
-  location String
-  venue    String?
-  candidateId Int?
-  typeOfExam TypeOfExamEnum
-  firstName String
-  lastName  String
-  birthDate DateTime
-  email     String
-  phone     String
-  code      String?
-  partner   String?
-  mock      Boolean @default(false)
-  paid      Boolean @default(false)
-  orderId   Int?
+  id           Int            @id @default(autoincrement())
+  level        LevelEnum
+  dateOfExam   DateTime
+  location     String
+  venue        String?
+  candidateId  Int?
+  typeOfExam   TypeOfExamEnum
+  firstName    String
+  lastName     String
+  birthDate    DateTime
+  email        String
+  phone        String
+  code         String?
+  partner      String?
+  mock         Boolean        @default(false)
+  paid         Boolean        @default(false)
+  orderId      Int?
   requirements String?
-  crfToSchool Boolean @default(false)
-  note      String?
+  crfToSchool  Boolean        @default(false)
+  note         String?
 
   @@unique([firstName, lastName, birthDate, dateOfExam, location, typeOfExam, level])
-
 }
 
 model Schedule {
-  id          Int      @id @default(autoincrement())
-  startTime   DateTime
-  endTime     DateTime
-  candidates  Candidate[]
+  id               Int             @id @default(autoincrement())
+  startTime        DateTime
+  endTime          DateTime
+  candidates       Candidate[]
   ScheduleForDayId Int?
-  ScheduleForDay ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
+  ScheduleForDay   ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
 }
 
 model ScheduleForDay {
-  id          Int      @id @default(autoincrement())
-  date        DateTime
-  schedules   Schedule[]
-  breaks      Break[]
-  exams       Exam[]
+  id        Int        @id @default(autoincrement())
+  date      DateTime
+  schedules Schedule[]
+  breaks    Break[]
+  exams     Exam[]
 }
 
 model Break {
-  id          Int      @id @default(autoincrement())
-  startTime   DateTime
-  endTime     DateTime
+  id               Int             @id @default(autoincrement())
+  startTime        DateTime
+  endTime          DateTime
   ScheduleForDayId Int?
-  ScheduleForDay ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
+  ScheduleForDay   ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
 }
 
 model ExamLocation {
-  id     Int      @id @default(autoincrement())
-  name   String @unique
+  id     Int         @id @default(autoincrement())
+  name   String      @unique
   venues ExamVenue[]
 }
 
 model ExamVenue {
-  id         Int      @id @default(autoincrement())
+  id         Int          @id @default(autoincrement())
   name       String
   locationId Int
   location   ExamLocation @relation(fields: [locationId], references: [id])
-  gLink      String @default("https://www.google.com/maps")
+  gLink      String       @default("https://www.google.com/maps")
+  //exams      Exam[]
+
   @@unique([name, locationId])
 }
 
 model Post {
-  id            Int        @id @default(autoincrement())
-  title         String
-  content       String
-  driveLink     DriveLink[]
-  authorId      Int
-  author        User       @relation(name: "PostAuthor", fields: [authorId], references: [id])
-  published     Boolean    @default(false)
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  taggedUsers   User[]     @relation("TaggedUsers")
-  taggedRoles   RoleEnum[]
+  id          Int         @id @default(autoincrement())
+  title       String
+  content     String
+  driveLink   DriveLink[]
+  authorId    Int
+  author      User        @relation(name: "PostAuthor", fields: [authorId], references: [id])
+  published   Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  taggedUsers User[]      @relation("TaggedUsers")
+  taggedRoles RoleEnum[]
 }
 
-model DriveLink{
+model DriveLink {
+  id     Int    @id @default(autoincrement())
+  link   String
+  name   String
+  postId Int
+  post   Post   @relation(fields: [postId], references: [id])
+}
+model Authorization {
   id        Int      @id @default(autoincrement())
-  link      String
-  name      String
-  postId    Int
-  post      Post     @relation(fields: [postId], references: [id]) 
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  code      String
 }
 
 enum RoleEnum {
   Office
   Supervisor
-  SeniorSupervisor 
+  SeniorSupervisor
   Invigilator
   SeniorInvigilator
   Tech
@@ -219,4 +231,3 @@ enum LevelEnum {
   C1
   C2
 }
-

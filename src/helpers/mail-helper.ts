@@ -65,3 +65,15 @@ export function generatedHtml(password: string, user: string, email: string) {
     </html>
     `;
 }
+
+export function authorizationCode(code: string, user: string, email: string) {
+    return `
+    <html>
+        <body>
+            <p>Hi ${user},</p>
+            <p>Your authorization code is: ${code} </p>
+            <p>It will expire in 10 minutes.</p>
+        </body>
+    </html>
+    `;
+}
