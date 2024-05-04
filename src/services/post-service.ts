@@ -1,4 +1,4 @@
-import { Post, PrismaClient, Prisma, User, DriveLink} from "@prisma/client";
+import { Post, PrismaClient, Prisma, User, DriveLink, RoleEnum} from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -21,6 +21,22 @@ export default {
                         id : userId
                     }
                 }
+            },
+            include: {
+                driveLink: true
+            }
+        });
+    },
+
+    async getPostsForRole(role : RoleEnum){
+        return await prisma.post.findMany({
+            where : {
+                taggedRoles : {
+                    has : role
+                }
+            },
+            include: {
+                driveLink: true
             }
         });
     },
@@ -30,6 +46,12 @@ export default {
             where : {
                 id
             }
+        });
+    },
+
+    async createLink(data : Prisma.DriveLinkCreateInput){
+        return await prisma.driveLink.create({
+            data
         });
     }
 }

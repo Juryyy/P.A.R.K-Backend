@@ -131,4 +131,35 @@ export default {
         });
     },
 
+    async tagUserToPost(postId : number, userId : number){
+        return await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                posts: {
+                    connect: {
+                        id: postId
+                    }
+                }
+            }
+        });
+    },
+
+    async tagUserToTaggedPost(postId : number, userId : number){
+        return await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                taggedPosts: {
+                    connect: {
+                        id: postId
+                    }
+                }
+            }
+        });
+    }
+
+
 }
