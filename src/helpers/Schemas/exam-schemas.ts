@@ -7,6 +7,7 @@ const types = z.enum(Object.values(TypeOfExamEnum) as [string, ...string[]]);
 const examInfoSchema = z.object({
     venue: z.string().min(1),
     type: types,
+    location: z.string().min(1),
     levels: z.array(levels),
     startTime: z.string(),
     endTime: z.string(),

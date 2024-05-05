@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.post('/create', jwtAccessVerify, officeMiddleware.isOffice, postController.createPost);
 router.get('/posts', jwtAccessVerify, postController.getPostsForUser);
-router.get('/post/:id', jwtAccessVerify, officeMiddleware.isOffice);
-router.put('/update/:id', jwtAccessVerify, officeMiddleware.isOffice);
-router.delete('/delete/:id', jwtAccessVerify, officeMiddleware.isOffice);
+//router.get('/post/:id', jwtAccessVerify, officeMiddleware.isOffice);
+//router.put('/update/:id', jwtAccessVerify, officeMiddleware.isOffice);
+//router.delete('/delete/:id', jwtAccessVerify, officeMiddleware.isOffice);
 
 export default router;

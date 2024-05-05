@@ -32,9 +32,9 @@ export default{
 
         const examDate = new Date(dayOfExamsExists.date).toISOString().split('T')[0];
 
-        // Combine the exam date with the provided times
-        const start = new Date(examDate + 'T' + startTime + 'Z');
-        const finish = new Date(examDate + 'T' + endTime + 'Z');
+        // Combine the exam date with the provided times, timezone in czechia is UTC+2
+        const start = new Date(examDate + 'T' + startTime + ':00.000Z');
+        const finish = new Date(examDate + 'T' + endTime + ':00.000Z');
 
         const newExam = await examService.createExam(
             venue,

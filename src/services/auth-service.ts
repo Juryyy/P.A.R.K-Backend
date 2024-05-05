@@ -36,9 +36,26 @@ export default {
         ).toString('hex');
     },
 
+    deleteCode: async (userId : number) => {
+        try{
+            await prisma.authorization.deleteMany({
+                where: {
+                    userId: userId
+                }
+            });
+        }catch(err){
+            logger.error(err);
+        }
+    },
+
     storeCode: async (userId : number, code : string) => {
         const expiresAt = new Date().getTime() + 10 * 60 * 1000;
         try{
+            await prisma.authorization.deleteMany({
+                where: {
+                    userId: userId
+                }
+            });
         await prisma.authorization.create({
             data: {
                 code: code,
@@ -75,5 +92,7 @@ export default {
             logger.error(err);
         }
         return false;
-    }
+    },
+
+
 }

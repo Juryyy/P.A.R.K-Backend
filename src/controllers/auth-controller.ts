@@ -119,6 +119,8 @@ export default {
             return res.status(400).json({ error: 'Invalid or expired code' });
         }
 
+        await authService.deleteCode(user.id);
+
         const tokens : Tokens = authService.generateTokens(user);
     
         res.cookie('refreshToken', tokens.refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: envConfig.getEnv('EXP_REFRESH'), signed: true, secure: true});

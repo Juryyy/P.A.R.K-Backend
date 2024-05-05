@@ -62,7 +62,6 @@ export default {
     },
 
     getResponses: async (req: URequest, res: Response) => {
-        //this function should return all the responses for the user that are not for the the past
         const userId = req.user?.id;
         if(!userId) {
             return res.status(401).json({ error: 'Please login' });
@@ -79,7 +78,7 @@ export default {
         for (let response of responses) {
             const dayOfExams = await dayOfExamsService.getDayOfExamsById(response.dayOfExamsId);
             if(!dayOfExams) {
-                return res.status(400).json({ error: 'Day of exams does not exists' });
+                return res.status(404).json({ error: 'Day of exams does not exists' });
             }
             if (dayOfExams.date > currentDate) {
                 responsesForUser.push({id: response.id, response: response.response, date: dayOfExams.date, isLocked: dayOfExams.isLocked});

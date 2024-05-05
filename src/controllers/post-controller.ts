@@ -53,8 +53,9 @@ export default {
                 await userService.tagUserToTaggedPost(newPost_x.id, user.value);
             }
 
-            return res.status(201).json(newPost_x);
+            return res.status(201).json({ message: 'Post created' });
         }catch(error){
+            console.log(error)
             return res.status(500).json({ error: 'Internal server error' });
         }
     },

@@ -69,7 +69,7 @@ export default {
 
         const user = await userService.getProfileById(profileId);
         if(!user) {
-            return res.status(402).json({ error: 'User does not exists' });
+            return res.status(404).json({ error: 'User does not exists' });
         }
         return res.status(200).json(user);
     }

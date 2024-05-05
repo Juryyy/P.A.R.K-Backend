@@ -22,9 +22,8 @@ app.use(express.json());
 app.use(router);
 
 
-app.listen(4000, '0.0.0.0', () => {
-  swaggerDocs(app);
+const server = app.listen(4000, '0.0.0.0', () => {
   console.log('Server is running on port 4000');
 });
 
-export default app;
+export {app, server};

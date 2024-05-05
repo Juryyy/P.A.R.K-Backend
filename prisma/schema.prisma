@@ -5,9 +5,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// = env("TEST_DATABASE_URL") for testing
+// = env("DATABASE_URL") for production
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL") 
 }
 
 generator erd {
