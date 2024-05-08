@@ -2,10 +2,6 @@ import request from "supertest";
 import { app, server } from "../../app";
 import envConfig from "../../configs/env-config";
 
-/* router.post('/create', jwtAccessVerify, officeMiddleware.isOffice, postController.createPost);
-router.get('/posts', jwtAccessVerify, postController.getPostsForUser);
- */
-
 if (
   envConfig.getEnv("NODE_ENV") === "development" ||
   envConfig.getEnv("NODE_ENV") === "test"

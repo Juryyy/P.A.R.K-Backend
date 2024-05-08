@@ -1,8 +1,10 @@
 import { z } from 'zod';
-import { ImportedCandidate, Candidate } from '@prisma/client';
+import { ImportedCandidate, Candidate, LevelEnum } from '@prisma/client';
+
+const levels = z.enum(Object.values(LevelEnum) as [string, ...string[]]);
 
 const importedCandidateSchema = z.object({
-    level: z.string(),
+    level: levels,
     dateOfExam: z.coerce.date(),
     location: z.string(),
     venue: z.string().optional(),

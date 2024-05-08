@@ -7,7 +7,7 @@
     "test:db": "docker-compose -f docker-compose.test.yml up -d",
     "test:seed": "ts-node prisma/seed.ts",
     "test:reset": "ts-node prisma/resetDb.ts",
-    "test": "cross-env NODE_ENV=test npm run test:db && npm run test:reset && npx prisma migrate dev && npm run test:seed && jest",
+    "test": "npm run test:db && npm run test:reset && npx prisma migrate dev && npm run test:seed && jest",
     "dev": "nodemon src/app.ts",
     "docker": "docker-compose down && docker-compose build && docker-compose up -d"
   },

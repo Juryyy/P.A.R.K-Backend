@@ -24,3 +24,6 @@ class WebsiteUser(HttpUser):
     @task
     def get_usersExams(self):
         self.client.get("users/usersExams", headers={"Cookie": "accessToken=" + token})
+
+
+#locust -f stress-test.py

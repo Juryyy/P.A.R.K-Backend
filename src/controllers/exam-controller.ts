@@ -257,7 +257,6 @@ export default{
                 const date = new Date(exam.startTime);
                 return date > new Date();
             });
-            //For each filtered exam, add there venue link by finding location by name and then venue by name and locationId
             for (const exam of filteredExams) {
                 const location = await locationsService.getLocation({name: exam.location});
                 const venue = await locationsService.getVenue(exam.venue, location!.id);
