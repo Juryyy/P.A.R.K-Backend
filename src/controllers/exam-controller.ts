@@ -17,11 +17,11 @@ export default{
         const {venue, location, type, levels, startTime, endTime, note, dayOfExamsId} = req.body;
 
         try{
-            examSchema.examInfoSchema.parse({venue, type, levels, startTime, endTime, note, dayOfExamsId});
+            examSchema.examInfoSchema.parse({venue, location, type, levels, startTime, endTime, note, dayOfExamsId});
 
        } catch (error : unknown) {
               logger.error(error);
-           return res.status(401).json({ error: 'Invalid data' });
+           return res.status(400).json({ error: 'Invalid data' });
        }
 
 
@@ -89,6 +89,7 @@ export default{
             case RoleEnum.Supervisor:
                 try{
                     const supExam = await examService.addSupervisor(examId, userId);
+                    await responseService.assign(examdayId, userId);
                     logger.info(`Supervisor added to exam: ${supExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
                 }catch(error){
                     logger.error(error);
@@ -99,6 +100,7 @@ export default{
             case RoleEnum.Invigilator:
                 try{
                 const invigExam = await examService.addInvigilator(examId, userId);
+                await responseService.assign(examdayId, userId);
                 logger.info(`Invigilator added to exam: ${invigExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
                 }catch(error){
                     logger.error(error);
@@ -108,6 +110,7 @@ export default{
             case RoleEnum.Examiner:
                 try{
                     const examinerExam = await examService.addExaminer(examId, userId);
+                    await responseService.assign(examdayId, userId);
                     logger.info(`Examiner added to exam: ${examinerExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
                 }catch(error){
                     logger.error(error);
@@ -141,6 +144,7 @@ export default{
             case RoleEnum.Supervisor:
                 try{
                     const supExam = await examService.removeSupervisor(examId, userId);
+                    await responseService.unAssign(examExists.dayOfExamsId, userId);
                     logger.info(`Supervisor removed from exam: ${supExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
                 }catch(error){
                     logger.error(error);
@@ -150,6 +154,7 @@ export default{
             case RoleEnum.Invigilator:
                 try{
                     const invigExam = await examService.removeInvigilator(examId, userId);
+                    await responseService.unAssign(examExists.dayOfExamsId, userId);
                     logger.info(`Invigilator removed from exam: ${invigExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
                 }catch(error){
                     logger.error(error);
@@ -159,6 +164,7 @@ export default{
             case RoleEnum.Examiner:
                 try{
                     const examinerExam = await examService.removeExaminer(examId, userId);
+                    await responseService.unAssign(examExists.dayOfExamsId, userId);
                     logger.info(`Examiner removed from exam: ${examinerExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
                 }catch(error){
                     logger.error(error);

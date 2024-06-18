@@ -58,6 +58,7 @@ model Response {
   userId       Int
   user         User         @relation(fields: [userId], references: [id])
   response     ResponseEnum @default(No)
+  assigned     Boolean      @default(false)
 
   @@unique([dayOfExamsId, userId])
 }

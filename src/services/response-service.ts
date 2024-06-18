@@ -125,5 +125,32 @@ export default {
         });
     },
 
+    async assign(dayOfExamsId: number, userId: number) {
+        return await prisma.response.update({
+            where: {
+                dayOfExamsId_userId: {
+                    dayOfExamsId: dayOfExamsId,
+                    userId: userId
+                }
+            },
+            data: {
+                assigned: true
+            }
+        });
+    },
+
+    async unAssign(dayOfExamsId: number, userId: number) {
+        return await prisma.response.update({
+            where: {
+                dayOfExamsId_userId: {
+                    dayOfExamsId: dayOfExamsId,
+                    userId: userId
+                }
+            },
+            data: {
+                assigned: false
+            }
+        });
+    },
      
 }
