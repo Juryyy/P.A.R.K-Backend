@@ -6,6 +6,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsI
 {
     "firstName": "Martin",
     "lastName": "Šulc",
-    "email": "someTestEmail",
-    "role": "Tech"
+    "email": "martin.sulc2551@gmail.com",
+    "Srole": "Supervisor"
 }

@@ -222,8 +222,9 @@ enum TypeOfExamEnum {
 
 enum ResponseEnum {
   Yes
+  AM
+  PM
   No
-  Maybe
 }
 
 enum LevelEnum {
