@@ -103,7 +103,7 @@ export default {
         try {
             const newLocation = await locationsService.addLocation(location);
             logger.info(`New location created: ${newLocation.name} by ${req.user?.firstName} ${req.user?.lastName}`);
-            return res.status(201).json({ success: 'New location created' });
+            return res.status(201).json({ success: `Location ${newLocation.name} created` });
         } catch (error) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
@@ -135,7 +135,7 @@ export default {
             }
             const newVenue = await locationsService.addVenue(data);
             logger.info(`New venue created: ${newVenue.name} by ${req.user?.firstName} ${req.user?.lastName}`);
-            return res.status(201).json({ success: 'New venue created' });
+            return res.status(201).json({ success: `Venue ${newVenue.name} created` });
         } catch (error) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
@@ -150,7 +150,7 @@ export default {
         try {
             const location = await locationsService.deleteLocation(parseInt(id));
             logger.info(`Location ${location.name} deleted by ${req.user?.firstName} ${req.user?.lastName}`);
-            return res.status(200).json({ success: 'Location deleted' });
+            return res.status(200).json({ success: `Location ${location.name} deleted` });
         } catch (error) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
@@ -166,7 +166,7 @@ export default {
 
             const venue = await locationsService.deleteVenue(parseInt(id));
             logger.info(`Venue ${venue.name} deleted by ${req.user?.firstName} ${req.user?.lastName}`);
-            return res.status(200).json({ success: 'Venue deleted' });
+            return res.status(200).json({ success: `Venue ${venue.name} deleted` });
         } catch (error) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
