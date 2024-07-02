@@ -58,10 +58,16 @@ export default{
     },
 
     addWorker: async(req: URequest, res: Response) => {
-        const {examId, userId, role, override} = req.body;
+        const {examId, userId, role, override, position} = req.body;
 
-        if (role !== RoleEnum.Supervisor && role !== RoleEnum.Invigilator && role !== RoleEnum.Examiner) {
+        console.log(position)
+
+        if (role !== RoleEnum.Supervisor && role !== RoleEnum.Invigilator && role !== RoleEnum.Examiner && role !== RoleEnum.Office) {
             return res.status(400).json({ error: 'Invalid role' });
+        }
+
+        if (position !== RoleEnum.Supervisor && position !== RoleEnum.Invigilator && position !== RoleEnum.Examiner) {
+            return res.status(400).json({ error: 'Invalid position' });
         }
 
         const examExists = await examService.getExamById(examId);
@@ -85,7 +91,7 @@ export default{
             return res.status(400).json({ error: 'User is not available' });
         }
 
-        switch (role) {
+        switch (position) {
             case RoleEnum.Supervisor:
                 try{
                     const supExam = await examService.addSupervisor(examId, userId);
@@ -124,7 +130,9 @@ export default{
     },
 
     removeWorker: async(req: URequest, res: Response) => {
-        const {examId, userId, role} = req.body;
+        const {examId, userId, position} = req.body;
+
+        console.log(examId, userId, position)
 
         const examExists = await examService.getExamById(examId);
         if(!examExists) {
@@ -135,12 +143,12 @@ export default{
         if(!userExists) {
             return res.status(400).json({ error: 'User does not exists' });
         }
-
-        if (role !== RoleEnum.Supervisor && role !== RoleEnum.Invigilator && role !== RoleEnum.Examiner) {
-            return res.status(400).json({ error: 'Invalid role' });
+        
+        if (position !== RoleEnum.Supervisor && position !== RoleEnum.Invigilator && position !== RoleEnum.Examiner) {
+            return res.status(400).json({ error: 'Invalid position' });
         }
 
-        switch (role) {
+        switch (position) {
             case RoleEnum.Supervisor:
                 try{
                     const supExam = await examService.removeSupervisor(examId, userId);

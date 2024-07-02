@@ -112,13 +112,13 @@ export default {
             if(!responses) {
                 return res.status(400).json({ error: 'Responses do not exists' });
             }
-            const responsesWithUser: {dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string, assigned: boolean}[] = [];
+            const responsesWithUser: {dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string, assigned: boolean, userId: number}[] = [];
             for (let response of responses) {
                 const user = await userService.getUserById(response.userId);
                 if(!user) {
                     return res.status(400).json({ error: 'User does not exists' });
                 }
-                responsesWithUser.push({dayOfExamsId: response.dayOfExamsId, id: response.id, response: response.response, userName: user.firstName + ' ' + user.lastName, userRole: user.role, assigned: response.assigned});
+                responsesWithUser.push({dayOfExamsId: response.dayOfExamsId, id: response.id, response: response.response, userName: user.firstName + ' ' + user.lastName, userRole: user.role, assigned: response.assigned, userId: user.id});
             }
             return res.status(200).json(responsesWithUser);
         }catch(error){
