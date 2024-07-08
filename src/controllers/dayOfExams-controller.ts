@@ -7,28 +7,20 @@ import { URequest } from "../types/URequest";
 
 export default {
     createDayOfExams: async (req: URequest, res: Response) => {
-        const {date, isForInvigilators, isForExaminers} = req.body;
-        if(!date || date === '') {
+        const { date, isForInvigilators, isForExaminers } = req.body;
+        if (!date || date === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
-
-        if(!isForInvigilators && !isForExaminers) {
+    
+        if (!isForInvigilators && !isForExaminers) {
             return res.status(400).json({ error: 'Please select at least one option' });
         }
-
+    
         const dateObj = new Date(date);
-        try{
+        try {
             const x = await dayOfExamsService.createDayOfExams(dateObj, isForInvigilators, isForExaminers);
-            if (isForExaminers && !isForInvigilators){
-                await responseService.createResponsesForDayExaminers(x.id);
-            }
-            else if (isForInvigilators && !isForExaminers){
-                await responseService.createResponsesForDayInvigilators(x.id);
-            }
-            else{
-                await responseService.createResponsesForDay(x.id);
-            }
-        }catch(error){
+            await responseService.createResponsesForDay(x.id, isForInvigilators, isForExaminers);
+        } catch (error) {
             logger.error(`Day of exams already exists: ${dateObj}`);
             return res.status(400).json({ error: 'Day of exams already exists' });
         }
