@@ -27,7 +27,7 @@ model User {
   dateOfBirth      DateTime?
   note             String?
   adminNote        String?
-  role             RoleEnum
+  role             RoleEnum[]
   avatarUrl        String?    @default("testMan.jpg")
   activatedAccount Boolean    @default(false)
   deactivated      Boolean    @default(false)
