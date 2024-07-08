@@ -58,13 +58,7 @@ export default{
     },
 
     addWorker: async(req: URequest, res: Response) => {
-        const {examId, userId, role, override, position} = req.body;
-
-        console.log(position)
-
-        if (role !== RoleEnum.Supervisor && role !== RoleEnum.Invigilator && role !== RoleEnum.Examiner && role !== RoleEnum.Office) {
-            return res.status(400).json({ error: 'Invalid role' });
-        }
+        const {examId, userId, override, position} = req.body;
 
         if (position !== RoleEnum.Supervisor && position !== RoleEnum.Invigilator && position !== RoleEnum.Examiner) {
             return res.status(400).json({ error: 'Invalid position' });
@@ -131,9 +125,7 @@ export default{
 
     removeWorker: async(req: URequest, res: Response) => {
         const {examId, userId, position} = req.body;
-
-        console.log(examId, userId, position)
-
+        
         const examExists = await examService.getExamById(examId);
         if(!examExists) {
             return res.status(400).json({ error: 'Exam does not exists' });

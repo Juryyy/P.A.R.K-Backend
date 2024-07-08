@@ -28,11 +28,11 @@ export default {
         });
     },
 
-    async getPostsForRole(role : RoleEnum){
+    async getPostsForRoles(role : RoleEnum[]){
         return await prisma.post.findMany({
             where : {
                 taggedRoles : {
-                    has : role
+                    hasSome : role
                 }
             },
             include: {

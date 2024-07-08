@@ -38,18 +38,23 @@ export default {
 
     getDayOfExams: async (req: Request, res: Response) => {
         const dayOfExams = await dayOfExamsService.getDayOfExams();
-        //days that are today or in future
+        
         const today = new Date();
+        today.setHours(0, 0, 0, 0);
+    
         const filteredDayOfExams = dayOfExams.filter((day) => {
-            return day.date >= today;
+            const examDate = new Date(day.date);
+            examDate.setHours(0, 0, 0, 0);
+            return examDate >= today;
         });
-
+    
         filteredDayOfExams.sort((a, b) => {
-            return a.date.getTime() - b.date.getTime();
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
         });
-
+    
         return res.status(200).json(filteredDayOfExams);
     },
+    
 
     deleteDayOfExams: async (req: Request, res: Response) => {
         const {id} = req.params;

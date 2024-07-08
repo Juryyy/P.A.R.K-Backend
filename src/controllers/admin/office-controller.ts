@@ -38,7 +38,7 @@ export default {
             phone: null,
             dateOfBirth: new Date(),
             password: hash,
-            role: Srole as RoleEnum,
+            role: Srole as RoleEnum[],
             activatedAccount: false,
             deactivated: false,
         });
@@ -61,21 +61,30 @@ export default {
         return res.status(201).json({ success: 'New user registered' });
     },
 
-    updateUserRole : async (req: URequest, res: Response) => {
+    updateUserRole: async (req: URequest, res: Response) => {
         const { id, role } = req.body;
-        if (!id || !role || id === '' || role === '') {
+        
+        // Check if id and role are provided
+        if (!id || !role || id === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
-
-        if (!(role in RoleEnum)) {
-            return res.status(400).json({ error: 'Invalid role' });
+        
+        // Check if role is an array
+        if (!Array.isArray(role) || role.length === 0) {
+            return res.status(400).json({ error: 'Role should be a non-empty array' });
         }
-
-        try{
-            const user = await userService.updateUserRole(id, role as RoleEnum);
-            logger.info(`User ${user.email} role updated by ${req.user?.firstName} ${req.user?.lastName}`);
-            return res.status(200).json({ success: 'User role updated' });
-        }catch(error){
+    
+        // Check if all roles in the array are valid
+        const invalidRoles = role.filter(r => !(r in RoleEnum));
+        if (invalidRoles.length > 0) {
+            return res.status(400).json({ error: `Invalid roles: ${invalidRoles.join(', ')}` });
+        }
+    
+        try {
+            const user = await userService.updateUserRoles(id, role as RoleEnum[]);
+            logger.info(`User ${user.email} roles updated by ${req.user?.firstName} ${req.user?.lastName}`);
+            return res.status(200).json({ success: 'User roles updated' });
+        } catch (error) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
         }

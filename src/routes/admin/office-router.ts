@@ -7,7 +7,7 @@ import officeController from '../../controllers/admin/office-controller';
 const router = express.Router();
 
 router.put('/update', jwtAccessVerify, officeMiddleware.isOffice);
-router.post('/registerUser', officeController.adminRegister );
+router.post('/registerUser', /*jwtAccessVerify,*/officeController.adminRegister);
 router.post('/updateUserRole', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserRole)
 router.get('/locationsWithVenues', jwtAccessVerify, officeMiddleware.isOffice, officeController.getLocationsWithVenues)
 

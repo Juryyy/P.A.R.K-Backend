@@ -11,51 +11,51 @@ import {sendCode} from '../middlewares/email-middleware';
 
 
 export default {
-    register: async (req: Request, res: Response) => {
-        const {firstName, lastName, email, password, role} = req.body;
-        if(!email || !password || !firstName || !lastName || !role ||
-            firstName === '' || lastName === '' || email === '' || password === '' || role === '') {
-            return res.status(401).json({ error: 'Please fill all the fields' });
-        }
-
-        if (!(role in RoleEnum)) {
-            return res.status(401).json({ error: 'Invalid role' });
-        }
-
-        const emailRegex = /\S+@\S+\.\S+/;
-        if(!emailRegex.test(email)) {
-            return res.status(401).json({ error: 'Invalid email' });
-        }
-
-        const userExists = await userService.getUserByEmail(email);
-        if(userExists) {
-            return res.status(402).json({ error: 'Email taken' });
-        }
-
-        const hash = authService.hashPassword(password);
-
-        const newUser = await userService.createUser({
-            firstName,
-            lastName,
-            email,
-            dateOfBirth: new Date(),
-            phone: null,
-            password: hash,
-            role: role as RoleEnum,
-            activatedAccount: false,
-            deactivated: false,
-        });
-
-        const dayOfExams = await dayOfExamsService.getDayOfExams();
-        const currentDate = new Date();
-        for (let dayOfExam of dayOfExams) {
-            if (dayOfExam.date > currentDate) {
-                await responseService.createResponse(dayOfExam.id, newUser.id, ResponseEnum.No);
-            }
-        }
-
-        return res.status(201).json({ success: 'User registered' });
-    },
+    //register: async (req: Request, res: Response) => {
+    //    const {firstName, lastName, email, password, role} = req.body;
+    //    if(!email || !password || !firstName || !lastName || !role ||
+    //        firstName === '' || lastName === '' || email === '' || password === '' || role === '') {
+    //        return res.status(401).json({ error: 'Please fill all the fields' });
+    //    }
+//
+    //    if (!(role in RoleEnum)) {
+    //        return res.status(401).json({ error: 'Invalid role' });
+    //    }
+//
+    //    const emailRegex = /\S+@\S+\.\S+/;
+    //    if(!emailRegex.test(email)) {
+    //        return res.status(401).json({ error: 'Invalid email' });
+    //    }
+//
+    //    const userExists = await userService.getUserByEmail(email);
+    //    if(userExists) {
+    //        return res.status(402).json({ error: 'Email taken' });
+    //    }
+//
+    //    const hash = authService.hashPassword(password);
+//
+    //    const newUser = await userService.createUser({
+    //        firstName,
+    //        lastName,
+    //        email,
+    //        dateOfBirth: new Date(),
+    //        phone: null,
+    //        password: hash,
+    //        role: role as RoleEnum[],
+    //        activatedAccount: false,
+    //        deactivated: false,
+    //    });
+//
+    //    const dayOfExams = await dayOfExamsService.getDayOfExams();
+    //    const currentDate = new Date();
+    //    for (let dayOfExam of dayOfExams) {
+    //        if (dayOfExam.date > currentDate) {
+    //            await responseService.createResponse(dayOfExam.id, newUser.id, ResponseEnum.No);
+    //        }
+    //    }
+//
+    //    return res.status(201).json({ success: 'User registered' });
+    //},
 
     login: async (req: Request, res: Response) => {
         const {email, password} = req.body;

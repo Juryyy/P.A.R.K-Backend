@@ -73,14 +73,17 @@ export default {
         }
 
         const responses = await responseService.getResponsesForUser(userId);
+
         const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+
         let responsesForUser: {id: number , response: ResponseEnum, date: Date, isLocked : boolean}[] = [];
         for (let response of responses) {
             const dayOfExams = await dayOfExamsService.getDayOfExamsById(response.dayOfExamsId);
             if(!dayOfExams) {
                 return res.status(404).json({ error: 'Day of exams does not exists' });
             }
-            if (dayOfExams.date > currentDate) {
+            if (dayOfExams.date >= currentDate) {
                 responsesForUser.push({id: response.id, response: response.response, date: dayOfExams.date, isLocked: dayOfExams.isLocked});
             }
         }
@@ -112,7 +115,7 @@ export default {
             if(!responses) {
                 return res.status(400).json({ error: 'Responses do not exists' });
             }
-            const responsesWithUser: {dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string, assigned: boolean, userId: number}[] = [];
+            const responsesWithUser: {dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string[], assigned: boolean, userId: number}[] = [];
             for (let response of responses) {
                 const user = await userService.getUserById(response.userId);
                 if(!user) {

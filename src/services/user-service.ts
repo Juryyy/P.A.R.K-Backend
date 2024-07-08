@@ -91,13 +91,13 @@ export default {
         });
     },
 
-    async updateUserRole(id : number, role : RoleEnum){
+    async updateUserRoles(id : number, roles : RoleEnum[]){
         return await prisma.user.update({
             where: {
                 id: id
             },
             data: {
-                role: role
+                role: roles
             }
         });
     },

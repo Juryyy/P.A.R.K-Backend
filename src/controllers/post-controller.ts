@@ -4,6 +4,7 @@ import postService from "../services/post-service";
 import PostSchema from "../helpers/Schemas/post-schemas";
 import { Post, RoleEnum } from "@prisma/client";
 import userService from "../services/user-service";
+import logger from "../configs/logger";
 
 /*     await api.post('/posts/create', {
     title: post.title,
@@ -55,22 +56,32 @@ export default {
 
             return res.status(201).json({ message: 'Post created' });
         }catch(error){
-            console.log(error)
+            logger.error(error);
             return res.status(500).json({ error: 'Internal server error' });
         }
     },
 
     getPostsForUser: async (req: URequest, res: Response) => {
-        try{
-            const UserPosts = await postService.getPostsForUser(req.user?.id as number);
-            const RolePosts = await postService.getPostsForRole(req.user?.role as RoleEnum);
-
-            const allPosts = UserPosts.concat(RolePosts.filter((rolePost) => !UserPosts.some((userPost) => userPost.id === rolePost.id)));
+        try {
+            const userId = req.user?.id as number;
+            const userRoles = req.user?.role as RoleEnum[];
+    
+            if (!Array.isArray(userRoles)) {
+                return res.status(400).json({ error: 'User roles must be an array' });
+            }
+    
+            const userPosts = await postService.getPostsForUser(userId);
+            const rolePosts = await postService.getPostsForRoles(userRoles);
+    
+            const allPosts = userPosts.concat(rolePosts.filter((rolePost) => !userPosts.some((userPost) => userPost.id === rolePost.id)));
+    
             allPosts.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-            
+    
             return res.status(200).json(allPosts);
-        }catch(error){
+        } catch (error) {
+            logger.error(error);
             return res.status(500).json({ error: 'Internal server error' });
         }
     }
+    
 }
