@@ -10,5 +10,6 @@ router.post('/upload', jwtAccessVerify, uploadAvatar, userController.updateAvata
 router.get('/usersExams', jwtAccessVerify, examController.getUsersExams);
 router.get('/allUsers', jwtAccessVerify, userController.getAllUsers);
 router.get('/profile/:id', jwtAccessVerify, userController.getProfile);
+router.get('/userInfo', jwtAccessVerify, userController.getUserInfo);
 
 export default router;

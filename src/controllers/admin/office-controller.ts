@@ -13,10 +13,10 @@ import locationsService from '../../services/locations-service';
 
 export default {
     adminRegister: async (req: URequest, res: Response) => {
-        const {firstName, lastName, email, Srole} = req.body;
+        const {firstName, lastName, email, role, isSenior} = req.body;
 
         try {
-            RegisterSchema.parse({ email, firstName, lastName, Srole });
+            RegisterSchema.parse({ email, firstName, lastName, role});
         } catch (error : unknown) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
@@ -38,9 +38,10 @@ export default {
             phone: null,
             dateOfBirth: new Date(),
             password: hash,
-            role: Srole as RoleEnum[],
+            role: role as RoleEnum[],
             activatedAccount: false,
             deactivated: false,
+            isSenior: isSenior
         });
 
         const dayOfExams = await dayOfExamsService.getDayOfExams();

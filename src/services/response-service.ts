@@ -20,9 +20,7 @@ export default {
     async createResponsesForDay(dayOfExamsId: number, isForInvigilators: boolean, isForExaminers: boolean) {
         const rolesForInvigilators = [
             RoleEnum.Invigilator,
-            RoleEnum.SeniorInvigilator,
             RoleEnum.Supervisor,
-            RoleEnum.SeniorSupervisor,
             RoleEnum.Office
         ];
         

@@ -7,7 +7,7 @@ const RegisterSchema = z.object({
   email: z.string().email(),
   firstName: z.string().min(1),
   lastName: z.string().min(1),
-  Srole: z.array(z.nativeEnum(RoleEnum)).nonempty(),
+  role: z.array(z.nativeEnum(RoleEnum)).nonempty(),
 });
 
 export default RegisterSchema ;

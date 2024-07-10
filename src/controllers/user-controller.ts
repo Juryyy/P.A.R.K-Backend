@@ -72,6 +72,23 @@ export default {
             return res.status(404).json({ error: 'User does not exists' });
         }
         return res.status(200).json(user);
-    }
+    },
+
+    getUserInfo: async (req: URequest, res: Response) => {
+        const userId = req.user?.id;
+
+        if(!userId) {
+            return res.status(401).json({ error: 'Please login' });
+        }
+
+        const user = await userService.getUserById(userId);
+        if(!user) {
+            return res.status(404).json({ error: 'User does not exists' });
+        }
+
+        const { password: pass, ...userWithoutPassword } = user;
+        console.log(userWithoutPassword)
+        return res.status(200).json(userWithoutPassword);
+    },
 
 }

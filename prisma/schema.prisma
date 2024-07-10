@@ -27,6 +27,7 @@ model User {
   dateOfBirth      DateTime?
   note             String?
   adminNote        String?
+  isSenior         Boolean    @default(false)
   role             RoleEnum[]
   avatarUrl        String?    @default("testMan.jpg")
   activatedAccount Boolean    @default(false)
@@ -204,10 +205,8 @@ model Authorization {
 enum RoleEnum {
   Office
   Supervisor
-  SeniorSupervisor
   Invigilator
-  SeniorInvigilator
-  Tech
+  Technician
   Examiner
 }
 
