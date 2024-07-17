@@ -8,6 +8,11 @@ import envConfig from "../configs/env-config";
 import client from "../configs/onedrive";
 
 
+interface FileInformation {
+  name: string;
+  route: string;
+}
+
 export default {
     downloadFile: async (req: URequest, res: Response) => {
         const siteId = envConfig.getEnv('SITE_ID');;
@@ -68,5 +73,76 @@ export default {
       logger.error(err);
       return res.status(500).send({ message: 'Error deleting file' });
     }
-  }
+  },
+  
+  getAllFiles: async (req: Request, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+  
+    // Recursive function to fetch files from a folder and its subfolders
+    const fetchFiles = async (folderPath: string): Promise<FileInformation[]> => {
+      let files: FileInformation[] = [];
+      try {
+        const response = await client.api(folderPath).get();
+        for (const item of response.value) {
+          if (item.folder) {
+            // If the item is a folder, recursively fetch its files
+            const subfolderFiles: FileInformation[] = await fetchFiles(`${folderPath}/${item.name}:/children`);
+            files = files.concat(subfolderFiles);
+          } else {
+            // If the item is a file, add it to the files array
+            files.push({ name: item.name, route: item.webUrl });
+          }
+        }
+      } catch (err) {
+        logger.error(err);
+        throw new Error('Error fetching files');
+      }
+      return files;
+    };
+  
+    try {
+      // Start the deep search from the 'Import' folder
+      const filesInfo: FileInformation[] = await fetchFiles(`/sites/${siteId}/drive/root:/Import:/children`);
+      res.send(filesInfo);
+    } catch (err : any) {
+      res.status(500).send({ message: err.message });
+    }
+  },
+
+  uploadTest: async (req: Request, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    // Define the content of the plain text file
+    const fileContent = "This is the content of Test.txt";
+    const fileName = "Test2.txt"; // Hardcoded file name
+  
+    try {
+      const response = await client
+        .api(`/sites/${siteId}/drive/root:/Import/${fileName}:/content`)
+        .put(Buffer.from(fileContent));
+  
+      return res.send(response);
+    } catch (err) {
+      logger.error(err);
+      return res.status(500).send({ message: 'Error uploading file' });
+    }
+  },
+
+  downloadTest: async (req: Request, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const fileName = "Test.txt"; // Hardcoded file name
+  
+    try {
+      // Get the file content
+      const response = await client
+        .api(`/sites/${siteId}/drive/root:/Import/${fileName}:/content`)
+        .get();
+  
+      // Set the content type to 'text/plain' for the response
+      res.setHeader('Content-Type', 'text/plain');
+      return res.send(response);
+    } catch (err) {
+      logger.error(err);
+      return res.status(500).send({ message: 'Error downloading file' });
+    }
+  },
 }

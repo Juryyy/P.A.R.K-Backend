@@ -7,7 +7,7 @@ import { URequest } from '../types/URequest';
 import examService from '../services/exam-service';
 import examSchema from '../helpers/Schemas/exam-schemas';
 import logger from '../configs/logger';
-import { createDayReportPdf } from '../middlewares/pdf-middleware';
+import { createDayReportPdf } from '../middlewares/report-middleware';
 import path from 'path';
 import locationsService from '../services/locations-service';
 import { ExamWithVenueLink } from '../types/extraTypes';

@@ -10,5 +10,8 @@ router.get('/onedrive/siteId', jwtAccessVerify, check.isOffice, onedriveControll
   
 router.post('/files/download', jwtAccessVerify, onedriveController.downloadFile);
 //router.delete('/onedrive/files/delete', jwtAccessVerify, check.isOffice, onedriveController.deleteFile);
+router.get('/files', onedriveController.getAllFiles);
+router.get('/files/upload/test', onedriveController.uploadTest);
+router.get('/files/download/test', onedriveController.downloadTest);
   
 export default router;
