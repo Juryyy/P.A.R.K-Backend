@@ -26,9 +26,11 @@ model User {
   drivingLicense   Boolean    @default(false)
   dateOfBirth      DateTime?
   note             String?
+  noteLonger       String?
   adminNote        String?
   isSenior         Boolean    @default(false)
   role             RoleEnum[]
+  level            LevelEnum[]
   avatarUrl        String?    @default("testMan.jpg")
   activatedAccount Boolean    @default(false)
   deactivated      Boolean    @default(false)
@@ -38,7 +40,6 @@ model User {
   invigilatedExams Exam[]     @relation("ExamToInvigilator")
   examinedExams    Exam[]     @relation("ExamToExaminer")
   responses        Response[]
-
   authorizations   Authorization[]
 }
 
@@ -206,7 +207,7 @@ enum RoleEnum {
   Office
   Supervisor
   Invigilator
-  Technician
+  Developer
   Examiner
 }
 

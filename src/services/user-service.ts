@@ -12,7 +12,7 @@ export default {
         });
     },
 
-    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" >){
+    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" >){
         return await prisma.user.create({
             data: user
         });

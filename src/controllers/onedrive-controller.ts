@@ -145,4 +145,21 @@ export default {
       return res.status(500).send({ message: 'Error downloading file' });
     }
   },
+
+  uploadPostFile: async (req: Request, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const file = req.file;
+    if (!file) return res.status(400).send({ message: 'File is required' });
+  
+    try {
+      const response = await client
+        .api(`/sites/${siteId}/drive/root:/Import/${file.originalname}:/content`)
+        .put(file.buffer);
+  
+      return res.send(response);
+    } catch (err) {
+      logger.error(err);
+      return res.status(500).send({ message: 'Error uploading file' });
+    }
+  }
 }
