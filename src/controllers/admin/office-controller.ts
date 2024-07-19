@@ -57,7 +57,7 @@ export default {
             }
         }
         await sendEmail(email, 'P.A.R.K Exams center login details', password, newUser.firstName, newUser.lastName);
-        console.log(password)
+        
         logger.info(`New user registered: ${newUser.email} by ${req.user?.firstName} ${req.user?.lastName}`);
         return res.status(201).json({ success: 'New user registered' });
     },

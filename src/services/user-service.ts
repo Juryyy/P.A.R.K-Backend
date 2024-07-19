@@ -120,6 +120,9 @@ export default {
                 avatarUrl: true,
                 activatedAccount: true,
                 deactivated: true,
+                dateOfBirth: true,
+                noteLonger: true,
+                level: true,
                 _count: {
                     select: {
                         supervisedExams: true,
