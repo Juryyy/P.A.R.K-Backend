@@ -4,8 +4,8 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MzQsImVtYWlsIjoiYmFncjJAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiVGVzdDIiLCJsYXN0TmFtZSI6IlVzZXIiLCJkcml2aW5nTGljZW5zZSI6ZmFsc2UsIm5vdGUiOm51bGwsImFkbWluTm90ZSI6bnVsbCwicm9sZSI6Ik9mZmljZSIsImF2YXRhclVybCI6bnVsbCwiYWN0aXZhdGVkQWNjb3VudCI6ZmFsc2UsImlhdCI6MTcwNDU1MzkyOSwiZXhwIjoxNzA1ODQ5OTI5fQ.DsiKvgnZ_2W5BOOCuXOnp71Ozr0FVJEAFMTPXdmZkOg
 
 {
-    "firstName": "Martin",
-    "lastName": "Šulc",
-    "email": "someTestEmail",
-    "role": "Tech"
+    "firstName": "Pepa",
+    "lastName": "Vojtek",
+    "email": "TESTaSDSADASDSADASDSADxdxdxd@TEST.COM",
+    "role": ["Examiner", "Invigilator"]
 }

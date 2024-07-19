@@ -4,8 +4,9 @@ import { jwtAccessVerify, jwtRefreshVerify } from '../middlewares/tokenVerify-mi
 
 const router = express.Router();
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+//router.post('/register', authController.register);
+router.post('/login', authController.tfalogin);
+router.post('/verify', authController.verify);
 router.post('/refresh-token', jwtRefreshVerify, authController.refreshTokens);
 router.delete('/logout', authController.logout)
 

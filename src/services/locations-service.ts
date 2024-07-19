@@ -1,4 +1,4 @@
-import { PrismaClient, ExamLocation, ExamVenue } from "@prisma/client";
+import { PrismaClient, ExamLocation, ExamVenue, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -27,14 +27,12 @@ export default {
     });
 },
 
-  async addVenue(name : string, locationId : number) {
+  async addVenue(data: Prisma.ExamVenueCreateInput) {
     return await prisma.examVenue.create({
-      data: {
-        name,
-        locationId
-      }
+      data
     });
   },
+
   async updateLocation(location: ExamLocation) {
     return await prisma.examLocation.update({
       where: {
@@ -43,6 +41,7 @@ export default {
       data: location,
     });
   },
+
   async updateVenue(venue: ExamVenue) {
     return await prisma.examVenue.update({
       where: {
@@ -51,25 +50,45 @@ export default {
       data: venue,
     });
   },
-  async deleteLocation(location: ExamLocation) {
+
+  async deleteLocation(id : number) {
     return await prisma.examLocation.delete({
       where: {
-        id: location.id,
+        id,
       },
     });
   },
-  async deleteVenue(venue: ExamVenue) {
+
+  async deleteVenue(id : number) {
     return await prisma.examVenue.delete({
       where: {
-        id: venue.id,
+        id,
       },
     });
   },
-  async getLocationByName(name: string) {
-    return await prisma.examLocation.findFirst({
-      where: {
-        name,
-      },
+  
+  async getLocation(data : Prisma.ExamLocationWhereUniqueInput) {
+    return await prisma.examLocation.findUnique({
+      where: data
     });
-  }
+  }, 
+
+  async getLocationById(id : number) {
+    return await prisma.examLocation.findUnique({
+      where: {
+        id
+      }
+    });
+  },
+
+  async getVenue(nameVenue: string, locationId: number) {
+    return await prisma.examVenue.findUnique({
+      where: {
+        name_locationId: {
+          name: nameVenue,
+          locationId
+        }
+      }
+    });
+  },
 };

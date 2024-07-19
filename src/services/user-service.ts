@@ -12,7 +12,7 @@ export default {
         });
     },
 
-    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" >){
+    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" >){
         return await prisma.user.create({
             data: user
         });
@@ -91,13 +91,13 @@ export default {
         });
     },
 
-    async updateUserRole(id : number, role : RoleEnum){
+    async updateUserRoles(id : number, roles : RoleEnum[]){
         return await prisma.user.update({
             where: {
                 id: id
             },
             data: {
-                role: role
+                role: roles
             }
         });
     },
@@ -130,5 +130,36 @@ export default {
             }
         });
     },
+
+    async tagUserToPost(postId : number, userId : number){
+        return await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                posts: {
+                    connect: {
+                        id: postId
+                    }
+                }
+            }
+        });
+    },
+
+    async tagUserToTaggedPost(postId : number, userId : number){
+        return await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                taggedPosts: {
+                    connect: {
+                        id: postId
+                    }
+                }
+            }
+        });
+    }
+
 
 }

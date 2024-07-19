@@ -63,12 +63,10 @@ export function createDayReportPdf(date: string, venue: string, type : string, e
     try {
     pdfDoc.getBuffer((buffer: Buffer) => {
         try {
-            console.log(filePath)
             fs.writeFile(filePath, buffer, (error: NodeJS.ErrnoException | null) => {
                 if (error) {
                   logger.error('Error occurred while writing PDF to file: %s', error.message);
                   logger.error(`Error code: %s`, [error.code]);
-                  console.error(error.code, error.message);
                 }
         });
     } catch (error) {

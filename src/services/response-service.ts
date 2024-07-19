@@ -2,7 +2,7 @@ import { PrismaClient, ResponseEnum, RoleEnum } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function createResponse(dayOfExamsId: number, userId: number, response: ResponseEnum) {
+async function createResponses(dayOfExamsId: number, userId: number, response: ResponseEnum) {
     return await prisma.response.create({
         data: {
             dayOfExamsId: dayOfExamsId,
@@ -14,45 +14,48 @@ async function createResponse(dayOfExamsId: number, userId: number, response: Re
 
 export default {
     async createResponse(dayOfExamsId: number, userId: number, response: ResponseEnum) {
-        return await createResponse(dayOfExamsId, userId, response);
+        return await createResponses(dayOfExamsId, userId, response);
     },
 
-    async createResponsesForDay(dayOfExamsId: number) {
-        const users = await prisma.user.findMany();
-        for (let user of users) {
-            await createResponse(dayOfExamsId, user.id, ResponseEnum.No);
-        }
-    },
+    async createResponsesForDay(dayOfExamsId: number, isForInvigilators: boolean, isForExaminers: boolean) {
+        const rolesForInvigilators = [
+            RoleEnum.Invigilator,
+            RoleEnum.Supervisor,
+            RoleEnum.Office
+        ];
+        
+        const rolesForExaminers = [RoleEnum.Examiner];
 
-    async createResponsesForDayInvigilators(dayOfExamsId: number) {
-        const users = await prisma.user.findMany({
-            where: {
-                role: {
-                    in: [
-                        RoleEnum.Invigilator,
-                        RoleEnum.SeniorInvigilator,
-                        RoleEnum.Supervisor,
-                        RoleEnum.SeniorSupervisor,
-                        RoleEnum.Office
-                    ]
+        let users: any[] = [];
+        
+        if (isForInvigilators) {
+            users = users.concat(await prisma.user.findMany({
+                where: {
+                    role: {
+                        hasSome: rolesForInvigilators
+                    }
                 }
-            }
-        });
-        for (let user of users) {
-            await createResponse(dayOfExamsId, user.id, ResponseEnum.No);
-        }
-    },
-
-    async createResponsesForDayExaminers(dayOfExamsId: number) {
-        const users = await prisma.user.findMany({
-            where: {
-                role: RoleEnum.Examiner
-            }
-        });
-        for (let user of users) {
-            await createResponse(dayOfExamsId, user.id, ResponseEnum.No);
+            }));
         }
 
+        if (isForExaminers) {
+            users = users.concat(await prisma.user.findMany({
+                where: {
+                    role: {
+                        hasSome: rolesForExaminers
+                    }
+                }
+            }));
+        }
+
+        const uniqueUsers = Array.from(new Set(users.map(u => u.id)))
+            .map(id => {
+                return users.find(u => u.id === id)
+            });
+
+        for (let user of uniqueUsers) {
+            await createResponses(dayOfExamsId, user.id, ResponseEnum.No);
+        }
     },
 
     async updateResponse(dayOfExamsId: number, userId: number, response: ResponseEnum) {
@@ -125,5 +128,32 @@ export default {
         });
     },
 
+    async assign(dayOfExamsId: number, userId: number) {
+        return await prisma.response.update({
+            where: {
+                dayOfExamsId_userId: {
+                    dayOfExamsId: dayOfExamsId,
+                    userId: userId
+                }
+            },
+            data: {
+                assigned: true
+            }
+        });
+    },
+
+    async unAssign(dayOfExamsId: number, userId: number) {
+        return await prisma.response.update({
+            where: {
+                dayOfExamsId_userId: {
+                    dayOfExamsId: dayOfExamsId,
+                    userId: userId
+                }
+            },
+            data: {
+                assigned: false
+            }
+        });
+    },
      
 }
