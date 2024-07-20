@@ -1,4 +1,4 @@
-import {User, RoleEnum, PrismaClient} from '@prisma/client';
+import {User, RoleEnum, PrismaClient, LevelEnum} from '@prisma/client';
 import logger from '../configs/logger';
 
 const prisma = new PrismaClient();
@@ -8,6 +8,23 @@ export default {
         return await prisma.user.findUnique({
             where: {
                 email: email
+            }
+        });
+    },
+    async updateUserProfile(id: number, email: string, firstName: string, lastName: string, dateOfBirth : Date,  note : string, noteLonger : string, drivingLicense : boolean, phone : string){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                email: email,
+                phone: phone,
+                note: note,
+                firstName: firstName,
+                lastName: lastName,
+                noteLonger: noteLonger,
+                drivingLicense: drivingLicense,
+                dateOfBirth: dateOfBirth
             }
         });
     },
@@ -80,6 +97,10 @@ export default {
                 avatarUrl: true,
                 activatedAccount: true,
                 deactivated: true,
+                dateOfBirth: true,
+                noteLonger: true,
+                level: true,
+                isSenior: true,
                 _count: {
                     select: {
                         supervisedExams: true,
@@ -123,6 +144,7 @@ export default {
                 dateOfBirth: true,
                 noteLonger: true,
                 level: true,
+                isSenior: true,
                 _count: {
                     select: {
                         supervisedExams: true,
@@ -162,7 +184,39 @@ export default {
                 }
             }
         });
-    }
+    },
 
+    async updatePassword(id : number, password : string){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                password: password
+            }
+        });
+    },
+
+    async updateSeniority(id : number, isSenior : boolean){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                isSenior: isSenior
+            }
+        });
+    },
+
+    async updateUserLevels(id : number, levels : LevelEnum[]){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                level: levels
+            }
+        });
+    }
 
 }

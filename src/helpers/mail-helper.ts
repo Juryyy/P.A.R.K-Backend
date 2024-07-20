@@ -77,3 +77,14 @@ export function authorizationCode(code: string, user: string, email: string) {
     </html>
     `;
 }
+
+export function passwordReset(password: string, user: string, email: string) {
+    return `
+    <html>
+        <body>
+            <p>Hi ${user},</p>
+            <p>Your password has been reset. Your new password is: ${password} </p>
+        </body>
+    </html>
+    `;
+}

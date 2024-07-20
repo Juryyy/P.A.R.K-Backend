@@ -8,14 +8,12 @@ import { parseLevelEnum, parseTypeOfExamEnum} from "../../middlewares/admin/cand
 export default{
     async createCandidates(req: URequest, res: Response){
         const importedCandidates = req.body;
-        console.log(importedCandidates);
     
         try {
             for (const importedCandidate of importedCandidates) {
                 const { id, ...candidateData } = importedCandidate;
     
                 try {
-                    console.log(candidateData)
                     importedCandidateSchema.parse(candidateData);
 
                     candidateData.level = parseLevelEnum(candidateData.level);

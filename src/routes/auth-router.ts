@@ -9,5 +9,7 @@ router.post('/login', authController.tfalogin);
 router.post('/verify', authController.verify);
 router.post('/refresh-token', jwtRefreshVerify, authController.refreshTokens);
 router.delete('/logout', authController.logout)
+router.post('/password-update', jwtAccessVerify, authController.passwordUpdate)
+router.post('/password-reset', authController.passwordReset)
 
 export default router;

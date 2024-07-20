@@ -7,7 +7,8 @@ import dayOfExamsService from '../services/dayOfExams-service';
 import responseService from '../services/response-service';
 import { URequest } from '../types/URequest';
 import envConfig from '../configs/env-config';
-import {sendCode} from '../middlewares/email-middleware';
+import {sendCode, sendPassword} from '../middlewares/email-middleware';
+import crypto from 'crypto';
 
 
 export default {
@@ -156,4 +157,43 @@ export default {
         res.clearCookie('refreshToken');
         return res.status(200).json({ success: 'Logged out' });
     },
-}
+
+    passwordUpdate: async (req: URequest, res: Response) => {
+        const {password} = req.body;
+        const userId = req.user?.id;
+    
+        if (!userId) {
+            return res.status(401).json({ error: 'Please login' });
+        }
+    
+        if(!password || password === '') {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+    
+        const hash = authService.hashPassword(password);
+    
+        await userService.updatePassword(userId, hash);
+    
+        return res.status(200).json({ message: 'Password updated' });
+    },
+
+    passwordReset: async (req: Request, res: Response) => {
+        const {email} = req.body;
+    
+        if(!email || email === '') {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+    
+        const user = await userService.getUserByEmail(email);
+        if(!user) {
+            return res.status(400).json({ error: 'Invalid email' });
+        }
+    
+        const password = crypto.randomBytes(8).toString('hex');
+    
+        await userService.updatePassword(user.id, authService.hashPassword(password));
+        await sendPassword(email, 'P.A.R.K Exams center password reset code', password, user.firstName, user.lastName);
+    
+        return res.status(200).json({ message: 'A verification code has been sent to your email.' });
+    }
+} 

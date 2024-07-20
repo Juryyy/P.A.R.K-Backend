@@ -12,4 +12,6 @@ router.get('/allUsers', jwtAccessVerify, userController.getAllUsers);
 router.get('/profile/:id', jwtAccessVerify, userController.getProfile);
 router.get('/userInfo', jwtAccessVerify, userController.getUserInfo);
 
+router.put('/update', jwtAccessVerify, userController.updateUser);
+
 export default router;

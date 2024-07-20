@@ -20,7 +20,7 @@ export default {
         try{
             PostSchema.parse(post);
         }catch(error: unknown){
-            console.log(error);
+            logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
         }
 

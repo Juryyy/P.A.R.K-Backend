@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import userService from '../../services/user-service';
 import authService from '../../services/auth-service';
 import responseService from '../../services/response-service';
-import { RoleEnum, User, ResponseEnum } from '@prisma/client';
+import { RoleEnum, User, ResponseEnum, LevelEnum } from '@prisma/client';
 import dayOfExamsService from '../../services/dayOfExams-service';
 import logger from '../../configs/logger';
 import { URequest } from '../../types/URequest';
@@ -65,17 +65,14 @@ export default {
     updateUserRole: async (req: URequest, res: Response) => {
         const { id, role } = req.body;
         
-        // Check if id and role are provided
         if (!id || !role || id === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
         
-        // Check if role is an array
         if (!Array.isArray(role) || role.length === 0) {
             return res.status(400).json({ error: 'Role should be a non-empty array' });
         }
     
-        // Check if all roles in the array are valid
         const invalidRoles = role.filter(r => !(r in RoleEnum));
         if (invalidRoles.length > 0) {
             return res.status(400).json({ error: `Invalid roles: ${invalidRoles.join(', ')}` });
@@ -181,5 +178,46 @@ export default {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
         }
-    }
+    },
+
+    updateUserSenior: async (req: URequest, res: Response) => {
+        const { id, isSenior } = req.body;
+        if (!id || id === '' || isSenior === undefined) {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+        try {
+            const user = await userService.updateSeniority(id, isSenior);
+            logger.info(`User ${user.email} seniority updated by ${req.user?.firstName} ${req.user?.lastName}`);
+            return res.status(200).json({ success: 'User seniority updated' });
+        } catch (error) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+    },
+
+    updateUserLevel: async (req: URequest, res: Response) => {
+        const { id, level } = req.body;
+
+        if (!Array.isArray(level) || level.length === 0) {
+            return res.status(400).json({ error: 'Level should be a non-empty array' });
+        }
+    
+        const invalidLevels = level.filter(r => !(r in LevelEnum));
+        if (invalidLevels.length > 0) {
+            return res.status(400).json({ error: `Invalid roles: ${invalidLevels.join(', ')}` });
+        }
+
+        if (!id || id === '') {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+
+        try {
+            const user = await userService.updateUserLevels(id, level as LevelEnum[]);
+            logger.info(`User ${user.email} levels updated by ${req.user?.firstName} ${req.user?.lastName}`);
+            return res.status(200).json({ success: 'User levels updated' });
+        } catch (error) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+    },
 }
