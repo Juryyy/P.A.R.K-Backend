@@ -7,23 +7,20 @@ import logger from './configs/logger';
 import cookieParser from 'cookie-parser';
 import envConfig from './configs/env-config';
 import swaggerDocs from './docs/swaggerConfig';
-import fileUpload from 'express-fileupload';
+import upload from '../src/configs/upload-config';
 
-
-const tokenFilePath = '../back-end/token.json';
 const app: Express = express();
 
 const cookieSecret = envConfig.getEnv('COOKIE_SECRET') as string;
 app.use(cookieParser(cookieSecret));
 
-app.use(fileUpload())
-app.use(cors({origin: envConfig.getEnv('FRONTEND_URL'), credentials: true}))
+app.use(cors({ origin: envConfig.getEnv('FRONTEND_URL'), credentials: true }));
 app.use(express.json());
+
 app.use(router);
 
-
 const server = app.listen(4000, '0.0.0.0', () => {
-  console.log('Server is running on port 4000');
+    console.log('Server is running on port 4000');
 });
 
-export {app, server};
+export { app, server };

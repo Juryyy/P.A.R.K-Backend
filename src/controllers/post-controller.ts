@@ -5,31 +5,35 @@ import PostSchema from "../helpers/Schemas/post-schemas";
 import { Post, RoleEnum } from "@prisma/client";
 import userService from "../services/user-service";
 import logger from "../configs/logger";
-
-/*     await api.post('/posts/create', {
-    title: post.title,
-    content: post.content,
-    roles: post.roles,
-    links: post.links,
-    users: post.users
-    }); */
+import { User } from "@prisma/client";
+import { uploadPostToOnedrive } from "../middlewares/admin/upload-post-middleware";
 
 export default {
     createPost: async (req: URequest, res: Response) => {
-        const post = req.body;
-        try{
-            PostSchema.parse(post);
-        }catch(error: unknown){
+        let { title, content, roles, users } = req.body;
+        console.log(title, content, roles, users);
+
+        try {
+            roles = JSON.parse(roles);
+            users = JSON.parse(users);
+        } catch (error) {
+            logger.error("Failed to parse roles or users", error);
+            return res.status(400).json({ error: "Invalid roles or users format" });
+        }
+    
+        try {
+            PostSchema.parse({ title, content, roles, users });
+        } catch (error: any) {
             logger.error(error);
-            return res.status(400).json({ error: 'Invalid data' });
+            return res.status(400).json({ error: error.errors[0].message });
         }
 
         const date = new Date();
 
-        const newPost = {
-            title: post.title,
-            content: post.content,
-            taggedRoles: post.roles,
+        const postRequest = {
+            title,
+            content,
+            taggedRoles: roles,
             author: {
                 connect: {
                     id: req.user?.id as number,
@@ -38,24 +42,27 @@ export default {
             createdAt: date,
             updatedAt: date,
             published: true
-        }
+        };
 
-        try{
-            const newPost_x = await postService.createPost(newPost);
-
-            await userService.tagUserToPost(newPost_x.id, req.user?.id as number);
-
-            for (let link of post.driveLink){
-                link.postId = newPost_x.id;
-                await postService.createLink(link);
+        try {
+            const newPost = await postService.createPost(postRequest);
+        
+            await userService.tagUserToPost(newPost.id, req.user?.id as number);
+        
+            for (let user of users) {
+                await userService.tagUserToTaggedPost(newPost.id, user.value);
             }
-
-            for (let user of post.users){
-                await userService.tagUserToTaggedPost(newPost_x.id, user.value);
+        
+            if (req.files) {
+                const files = req.files as Express.Multer.File[];
+            
+                for (const file of files) {
+                    await uploadPostToOnedrive(file, newPost.id, req.user as User);
+                }
             }
-
+        
             return res.status(201).json({ message: 'Post created' });
-        }catch(error){
+        } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Internal server error' });
         }
@@ -74,9 +81,10 @@ export default {
             const rolePosts = await postService.getPostsForRoles(userRoles);
     
             const allPosts = userPosts.concat(rolePosts.filter((rolePost) => !userPosts.some((userPost) => userPost.id === rolePost.id)));
-    
+            
             allPosts.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
     
+            console.log(allPosts);
             return res.status(200).json(allPosts);
         } catch (error) {
             logger.error(error);

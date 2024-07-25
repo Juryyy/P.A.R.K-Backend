@@ -5,7 +5,11 @@ import responseService from "../services/response-service";
 import logger from "../configs/logger";
 import { URequest } from "../types/URequest";
 import envConfig from "../configs/env-config";
-import client from "../configs/onedrive";
+import client from "../configs/onedrive-config";
+import { file } from "mock-fs/lib/filesystem";
+import fileService from "../services/file-service";
+import { string } from "zod";
+import userService from "../services/user-service";
 
 
 interface FileInformation {
@@ -77,7 +81,7 @@ export default {
   
   getAllFiles: async (req: Request, res: Response) => {
     const siteId = envConfig.getEnv('SITE_ID');
-  
+
     // Recursive function to fetch files from a folder and its subfolders
     const fetchFiles = async (folderPath: string): Promise<FileInformation[]> => {
       let files: FileInformation[] = [];
@@ -101,10 +105,12 @@ export default {
     };
   
     try {
-      // Start the deep search from the 'Import' folder
-      const filesInfo: FileInformation[] = await fetchFiles(`/sites/${siteId}/drive/root:/Import:/children`);
+      // Correctly specify the root path to start fetching files
+      const rootFolderPath = `/sites/${siteId}/drive/root:/Import:/children`;
+      const filesInfo: FileInformation[] = await fetchFiles(rootFolderPath);
       res.send(filesInfo);
-    } catch (err : any) {
+    } catch (err: any) {
+      logger.error(err);
       res.status(500).send({ message: err.message });
     }
   },
@@ -129,16 +135,17 @@ export default {
 
   downloadTest: async (req: Request, res: Response) => {
     const siteId = envConfig.getEnv('SITE_ID');
-    const fileName = "Test.txt"; // Hardcoded file name
+    const fileName = "Test2.txt"; // Hardcoded file name
   
     try {
       // Get the file content
       const response = await client
-        .api(`/sites/${siteId}/drive/root:/Import/${fileName}:/content`)
+        .api(`/sites/${siteId}/drive/root:/Import/Posts/${fileName}:/content`)
         .get();
   
       // Set the content type to 'text/plain' for the response
-      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
       return res.send(response);
     } catch (err) {
       logger.error(err);
@@ -146,20 +153,25 @@ export default {
     }
   },
 
-  uploadPostFile: async (req: Request, res: Response) => {
+  downloadPostFile: async (req: URequest, res: Response) => {
     const siteId = envConfig.getEnv('SITE_ID');
-    const file = req.file;
-    if (!file) return res.status(400).send({ message: 'File is required' });
-  
-    try {
+    const id = req.params.fileId;
+
+    try{
+      const file = await fileService.getFileById(parseInt(id));
+      if(!file) return res.status(404).send({ message: 'File not found' });
+
       const response = await client
-        .api(`/sites/${siteId}/drive/root:/Import/${file.originalname}:/content`)
-        .put(file.buffer);
-  
+        .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}:/content`)
+        .get();
+
+      res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
+      res.setHeader('Content-Type', 'application/octet-stream');
       return res.send(response);
-    } catch (err) {
+    }catch(err){
       logger.error(err);
-      return res.status(500).send({ message: 'Error uploading file' });
+      return res.status(500).send({ message: 'Error downloading file' });
     }
-  }
+  },    
+
 }

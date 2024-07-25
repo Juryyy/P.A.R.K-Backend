@@ -12,10 +12,6 @@ datasource db {
   url      = env("DATABASE_URL") 
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-}
-
 model User {
   id               Int        @id @default(autoincrement())
   email            String     @unique
@@ -41,6 +37,7 @@ model User {
   examinedExams    Exam[]     @relation("ExamToExaminer")
   responses        Response[]
   authorizations   Authorization[]
+  files            File[]
 }
 
 model DayOfExams {
@@ -178,7 +175,6 @@ model Post {
   id          Int         @id @default(autoincrement())
   title       String
   content     String
-  driveLink   DriveLink[]
   authorId    Int
   author      User        @relation(name: "PostAuthor", fields: [authorId], references: [id])
   published   Boolean     @default(false)
@@ -186,15 +182,18 @@ model Post {
   updatedAt   DateTime    @updatedAt
   taggedUsers User[]      @relation("TaggedUsers")
   taggedRoles RoleEnum[]
+  files       File[]
 }
 
-model DriveLink {
-  id     Int    @id @default(autoincrement())
-  link   String
-  name   String
-  postId Int
-  post   Post   @relation(fields: [postId], references: [id])
+model File {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  post      Post[]  
 }
+
 model Authorization {
   id        Int      @id @default(autoincrement())
   userId    Int

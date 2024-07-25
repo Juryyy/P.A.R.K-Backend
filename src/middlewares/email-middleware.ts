@@ -16,7 +16,6 @@ async function sendEmail(to: string, subject: string, password: string, firstNam
 
     try {
         const info = await transporter.sendMail(mailOptions);
-        logger.log('Message sent: %s', info.messageId);
     } catch (error) {
         logger.error('Error occurred while sending email: %s', error);
     }
@@ -35,7 +34,6 @@ async function sendCode(to: string, subject: string, code: string, firstName: st
 
     try {
         const info = await transporter.sendMail(mailOptions);
-        logger.log('Message sent: %s', info.messageId);
     } catch (error) {
         logger.error('Error occurred while sending email: %s', error);
     }
@@ -54,7 +52,6 @@ async function sendPassword(to: string, subject: string, password: string, first
 
     try {
         const info = await transporter.sendMail(mailOptions);
-        logger.log('Message sent: %s', info.messageId);
     } catch (error) {
         logger.error('Error occurred while sending email: %s', error);
     }

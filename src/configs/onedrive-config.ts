@@ -24,16 +24,16 @@ const client = Client.init({
 });
 
 async function getAccessToken(clientId: string, tenantId: string, clientSecret: string) {
-    const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
-  
-    const data = `client_id=${clientId}&scope=https://graph.microsoft.com/.default&client_secret=${encodeURIComponent(clientSecret)}&grant_type=client_credentials`;
-  
-    const response = await axios.post(url, data, {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    });
-    return response.data;
+  const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
+
+  const data = `client_id=${clientId}&scope=https://graph.microsoft.com/.default&client_secret=${encodeURIComponent(clientSecret)}&grant_type=client_credentials`;
+
+  const response = await axios.post(url, data, {
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  });
+  return response.data;
 }
 
 export default client;
