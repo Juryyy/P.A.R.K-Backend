@@ -34,6 +34,7 @@ export default {
                 invigilators: true,
                 examiners: true,
                 candidates: true,
+                files: true,
             },
         });
     },

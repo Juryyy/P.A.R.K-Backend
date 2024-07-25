@@ -11,6 +11,7 @@ import { createDayReportPdf } from '../middlewares/report-middleware';
 import path from 'path';
 import locationsService from '../services/locations-service';
 import { ExamWithVenueLink } from '../types/extraTypes';
+import { uploadExamScheduleToOnedrive } from '../middlewares/admin/upload-middleware';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
@@ -279,12 +280,36 @@ export default{
         const id = parseInt(req.params.id);
         try{
             const exam = await examService.getExamById(id);
+            console.log(exam);
             return res.status(200).json(exam);
         }catch(error){
             logger.error(error);
             return res.status(400).json({ error: 'Exam does not exists' });
         }
     },
+
+    uploadExamSchedule : async (req: URequest, res: Response) => {
+        console.log('uploadExamSchedule');
+        const files = req.files as Express.Multer.File[];
+        const examId = parseInt(req.body.examId);
+
+        const exam = await examService.getExamById(examId);
+
+        if (!exam) {
+            return res.status(400).json({ error: 'Exam not found' });
+        }
+
+        try {
+            for (const file of files) {
+                await uploadExamScheduleToOnedrive(file, exam, req.user as User);
+            }
+        } catch (error) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Error uploading file' });
+        }
+
+        return res.status(200).json({ message: 'File uploaded' });
+    }
 
 }
 

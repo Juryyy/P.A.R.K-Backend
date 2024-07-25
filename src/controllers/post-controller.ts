@@ -6,7 +6,7 @@ import { Post, RoleEnum } from "@prisma/client";
 import userService from "../services/user-service";
 import logger from "../configs/logger";
 import { User } from "@prisma/client";
-import { uploadPostToOnedrive } from "../middlewares/admin/upload-post-middleware";
+import { uploadPostToOnedrive } from "../middlewares/admin/upload-middleware";
 
 export default {
     createPost: async (req: URequest, res: Response) => {
@@ -84,7 +84,6 @@ export default {
             
             allPosts.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
     
-            console.log(allPosts);
             return res.status(200).json(allPosts);
         } catch (error) {
             logger.error(error);

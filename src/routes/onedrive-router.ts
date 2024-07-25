@@ -8,10 +8,9 @@ const router = express.Router();
 //This function is only for development purposes
 router.get('/onedrive/siteId', jwtAccessVerify, check.isOffice, onedriveController.getSiteId);
   
-router.post('/files/download', jwtAccessVerify, onedriveController.downloadFile);
+router.get('/files/post/download/:id', jwtAccessVerify, onedriveController.downloadPostFile);
+router.get('/files/exam/download/:id', jwtAccessVerify, onedriveController.downloadExamFile);
 //router.delete('/onedrive/files/delete', jwtAccessVerify, check.isOffice, onedriveController.deleteFile);
-router.get('/files', onedriveController.getAllFiles);
-router.get('/files/upload/test', onedriveController.uploadTest);
-router.get('/files/download/test', onedriveController.downloadTest);
+router.get('/files', onedriveController.printAllFolders);
   
 export default router;

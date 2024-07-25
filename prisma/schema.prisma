@@ -38,6 +38,7 @@ model User {
   responses        Response[]
   authorizations   Authorization[]
   files            File[]
+  dayReports       DayReport[] @relation("UserToDayReports")
 }
 
 model DayOfExams {
@@ -65,7 +66,7 @@ model Response {
 model Exam {
   id               Int             @id @default(autoincrement())
   location         String
-  venue            String      //@relation(fields: [examVenueId], references: [id])
+  venue            String
   type             TypeOfExamEnum
   levels           LevelEnum[]
   startTime        DateTime
@@ -82,7 +83,9 @@ model Exam {
   issues           String?
   ScheduleForDayId Int?
   ScheduleForDay   ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
-  //examVenueId      Int
+  dayReportId      Int?            @unique
+  dayReport        DayReport?      @relation(name: "DayReportToExam", fields: [dayReportId], references: [id])
+  files            File[]
 }
 
 model Candidate {
@@ -166,7 +169,6 @@ model ExamVenue {
   locationId Int
   location   ExamLocation @relation(fields: [locationId], references: [id])
   gLink      String       @default("https://www.google.com/maps")
-  //exams      Exam[]
 
   @@unique([name, locationId])
 }
@@ -191,7 +193,8 @@ model File {
   createdAt DateTime @default(now())
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id])
-  post      Post[]  
+  post      Post[]
+  exam      Exam[]
 }
 
 model Authorization {
@@ -200,6 +203,15 @@ model Authorization {
   user      User     @relation(fields: [userId], references: [id])
   expiresAt DateTime
   code      String
+}
+
+model DayReport {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  authorId  Int
+  author    User      @relation(fields: [authorId], references: [id], name: "UserToDayReports")
+  exam      Exam?     @relation(name: "DayReportToExam")
 }
 
 enum RoleEnum {

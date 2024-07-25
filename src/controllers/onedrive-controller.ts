@@ -10,6 +10,7 @@ import { file } from "mock-fs/lib/filesystem";
 import fileService from "../services/file-service";
 import { string } from "zod";
 import userService from "../services/user-service";
+import { formatDateToDMY } from "../helpers/format-date";
 
 
 interface FileInformation {
@@ -59,93 +60,21 @@ export default {
             return res.status(500).send({ message: 'Error getting site ID' });
         }
     },
-
-    deleteFile: async (req: Request, res: Response) => {
-    const siteId = envConfig.getEnv('SITE_ID'); 
-    const filePath = req.body.filePath; 
+  
+  downloadPostFile: async (req: Request, res : Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const id = req.params.id; 
+  
     try {
-      const file = await client
-        .api(`/sites/${siteId}/drive/root:/${filePath}`)
+      const file = await fileService.getFileById(parseInt(id));
+      if (!file) return res.status(404).send({ message: 'File not found' });
+  
+      const response = await client
+        .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}:/content`)
         .get();
   
-      await client
-        .api(`/sites/${siteId}/drive/items/${file.id}`)
-        .delete();
-
-      res.send({ message: 'File deleted successfully' });
-    } catch (err) {
-      logger.error(err);
-      return res.status(500).send({ message: 'Error deleting file' });
-    }
-  },
-  
-  getAllFiles: async (req: Request, res: Response) => {
-    const siteId = envConfig.getEnv('SITE_ID');
-
-    // Recursive function to fetch files from a folder and its subfolders
-    const fetchFiles = async (folderPath: string): Promise<FileInformation[]> => {
-      let files: FileInformation[] = [];
-      try {
-        const response = await client.api(folderPath).get();
-        for (const item of response.value) {
-          if (item.folder) {
-            // If the item is a folder, recursively fetch its files
-            const subfolderFiles: FileInformation[] = await fetchFiles(`${folderPath}/${item.name}:/children`);
-            files = files.concat(subfolderFiles);
-          } else {
-            // If the item is a file, add it to the files array
-            files.push({ name: item.name, route: item.webUrl });
-          }
-        }
-      } catch (err) {
-        logger.error(err);
-        throw new Error('Error fetching files');
-      }
-      return files;
-    };
-  
-    try {
-      // Correctly specify the root path to start fetching files
-      const rootFolderPath = `/sites/${siteId}/drive/root:/Import:/children`;
-      const filesInfo: FileInformation[] = await fetchFiles(rootFolderPath);
-      res.send(filesInfo);
-    } catch (err: any) {
-      logger.error(err);
-      res.status(500).send({ message: err.message });
-    }
-  },
-
-  uploadTest: async (req: Request, res: Response) => {
-    const siteId = envConfig.getEnv('SITE_ID');
-    // Define the content of the plain text file
-    const fileContent = "This is the content of Test.txt";
-    const fileName = "Test2.txt"; // Hardcoded file name
-  
-    try {
-      const response = await client
-        .api(`/sites/${siteId}/drive/root:/Import/${fileName}:/content`)
-        .put(Buffer.from(fileContent));
-  
-      return res.send(response);
-    } catch (err) {
-      logger.error(err);
-      return res.status(500).send({ message: 'Error uploading file' });
-    }
-  },
-
-  downloadTest: async (req: Request, res: Response) => {
-    const siteId = envConfig.getEnv('SITE_ID');
-    const fileName = "Test2.txt"; // Hardcoded file name
-  
-    try {
-      // Get the file content
-      const response = await client
-        .api(`/sites/${siteId}/drive/root:/Import/Posts/${fileName}:/content`)
-        .get();
-  
-      // Set the content type to 'text/plain' for the response
+      res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
       res.setHeader('Content-Type', 'application/octet-stream');
-      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
       return res.send(response);
     } catch (err) {
       logger.error(err);
@@ -153,7 +82,7 @@ export default {
     }
   },
 
-  downloadPostFile: async (req: URequest, res: Response) => {
+  deletePostFile: async (req: URequest, res: Response) => {
     const siteId = envConfig.getEnv('SITE_ID');
     const id = req.params.fileId;
 
@@ -161,17 +90,72 @@ export default {
       const file = await fileService.getFileById(parseInt(id));
       if(!file) return res.status(404).send({ message: 'File not found' });
 
+      await client
+        .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}`)
+        .delete();
+
+      await fileService.deleteFile(parseInt(id));
+      return res.send({ message: 'File deleted' });
+    }catch(err){
+      logger.error(err);
+      return res.status(500).send({ message: 'Error deleting file' });
+    }
+  },
+
+  printAllFolders: async (req: Request, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const folderPath = `/sites/${siteId}/drive/root:/Import:/children`;
+
+    const fetchFolders = async (folderPath: string): Promise<FileInformation[]> => {
+      let folders: FileInformation[] = [];
+      try {
+        const response = await client.api(folderPath).get();
+        for (const item of response.value) {
+          if (item.folder) {
+            folders.push({ name: item.name, route: item.webUrl });
+          }
+        }
+      } catch (err) {
+        logger.error(err);
+        throw new Error('Error fetching folders');
+      }
+      return folders;
+    };
+
+    try {
+      const foldersInfo: FileInformation[] = await fetchFolders(folderPath);
+      res.send(foldersInfo);
+    } catch (err: any) {
+      logger.error(err);
+      res.status(500).send({ message: err.message });
+    }
+  },
+
+  downloadExamFile: async (req: Request, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const id = req.params.id; 
+
+    try {
+      const file = await fileService.getFileByIdWithExam(parseInt(id));
+      if (!file) return res.status(404).send({ message: 'File not found' });
+
+      const dayOfExams = await dayOfExamsService.getDayOfExamsById(file.exam[0].dayOfExamsId);
+      if (!dayOfExams) return res.status(404).send({ message: 'Day of exams not found' });
+      
+      const formattedDate = formatDateToDMY(new Date(dayOfExams.date));
+
       const response = await client
-        .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}:/content`)
+        .api(`/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.name}:/content`)
         .get();
 
       res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
       res.setHeader('Content-Type', 'application/octet-stream');
       return res.send(response);
-    }catch(err){
+    } catch (err) {
       logger.error(err);
       return res.status(500).send({ message: 'Error downloading file' });
     }
-  },    
+  },
+
 
 }

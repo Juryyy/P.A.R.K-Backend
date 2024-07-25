@@ -91,4 +91,12 @@ export default {
       }
     });
   },
+
+  async getVenueById(id : number){
+    return await prisma.examVenue.findUnique({
+      where : {
+        id
+      }
+    });
+  },
 };

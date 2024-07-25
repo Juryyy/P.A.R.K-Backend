@@ -20,4 +20,23 @@ export default {
             }
         });
     },
+
+    async getFileByIdWithExam(id : number){
+        return await prisma.file.findUnique({
+            where : {
+                id
+            },
+            include : {
+                exam : true
+            }
+        });
+    },
+
+    async deleteFile(id : number){
+        return await prisma.file.delete({
+            where : {
+                id
+            }
+        });
+    }
 }
