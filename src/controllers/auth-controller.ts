@@ -7,8 +7,8 @@ import dayOfExamsService from '../services/dayOfExams-service';
 import responseService from '../services/response-service';
 import { URequest } from '../types/URequest';
 import envConfig from '../configs/env-config';
-import {sendCode, sendPassword} from '../middlewares/email-middleware';
-import crypto from 'crypto';
+import {sendCode, sendPassword} from '../middlewares/azure-email-middleware';
+import { generateSecurePassword } from '../helpers/password-generator';
 
 
 export default {
@@ -189,7 +189,7 @@ export default {
             return res.status(400).json({ error: 'Invalid email' });
         }
     
-        const password = crypto.randomBytes(8).toString('hex');
+        const password = generateSecurePassword(24);
     
         await userService.updatePassword(user.id, authService.hashPassword(password));
         await sendPassword(email, 'P.A.R.K Exams center password reset code', password, user.firstName, user.lastName);

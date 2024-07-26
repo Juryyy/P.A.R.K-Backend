@@ -4,6 +4,8 @@ import { styledHtml, authorizationCode, passwordReset } from "../helpers/mail-he
 import client from '../configs/onedrive-config'; // Import the client
 
 const emailSender = env.getEnv('EMAIL_SENDER_PARK') as string; // Get the sender email from environment variables
+const emailSenderName = env.getEnv('EMAIL_SENDER_NAME_PARK') as string; // Get the sender name from environment variables
+const emailSenderAvatar = env.getEnv('EMAIL_SENDER_AVATAR_PARK') as string; // Get the sender avatar URL from environment variables
 
 const sendMail = async (to: string, subject: string, html: string) => {
     const mail = {
@@ -22,7 +24,6 @@ const sendMail = async (to: string, subject: string, html: string) => {
             ],
             from: {
                 emailAddress: {
-                    address: emailSender,
                 },
             },
         },
@@ -31,7 +32,7 @@ const sendMail = async (to: string, subject: string, html: string) => {
 
     try {
         await client.api(`/users/${emailSender}/sendMail`).post(mail);
-        logger.log('Message sent to %s', to);
+        logger.info(`Message sent to ${to}`);
     } catch (error) {
         console.error(error);
         logger.error(`Error occurred while sending email to ${to}`);
@@ -41,6 +42,7 @@ const sendMail = async (to: string, subject: string, html: string) => {
 async function sendEmail(to: string, subject: string, password: string, firstName: string, lastName: string) {
     const user = `${firstName} ${lastName}`;
     const html = styledHtml(password, user, to);
+    console.log(password)
     await sendMail(to, subject, html);
 }
 

@@ -7,19 +7,21 @@ import dayOfExamsService from '../../services/dayOfExams-service';
 import logger from '../../configs/logger';
 import { URequest } from '../../types/URequest';
 import crypto from 'crypto';
-import {sendEmail} from '../../middlewares/email-middleware';
+import {sendEmail} from '../../middlewares/azure-email-middleware';
 import RegisterSchema from '../../helpers/Schemas/office-schemas';
 import locationsService from '../../services/locations-service';
 
 export default {
     adminRegister: async (req: URequest, res: Response) => {
-        const {firstName, lastName, email, role, isSenior} = req.body;
+        const {firstName, lastName, email, role} = req.body;
+
+        console.log(firstName, lastName, email, role);
 
         try {
             RegisterSchema.parse({ email, firstName, lastName, role});
-        } catch (error : unknown) {
+        } catch (error : any) {
             logger.error(error);
-            return res.status(400).json({ error: 'Invalid data' });
+            return res.status(400).json({ error });
         }
         
         const userExists = await userService.getUserByEmail(email);
@@ -31,35 +33,43 @@ export default {
 
         const hash = authService.hashPassword(password);
 
-        const newUser = await userService.createUser({
-            firstName,
-            lastName,
-            email,
-            phone: null,
-            dateOfBirth: new Date(),
-            password: hash,
-            role: role as RoleEnum[],
-            activatedAccount: false,
-            deactivated: false,
-            isSenior: isSenior
-        });
-
         const dayOfExams = await dayOfExamsService.getDayOfExams();
         const currentDate = new Date();
-        for (let dayOfExam of dayOfExams) {
-            if (dayOfExam.date > currentDate) {
-                try{
-                await responseService.createResponse(dayOfExam.id, newUser.id, ResponseEnum.No);
-            }catch(error){
-                logger.error(error);
-                return res.status(400).json({ error: 'Invalid data' });
+
+        try{
+            const newUser = await userService.createUser({
+                firstName,
+                lastName,
+                email,
+                phone: null,
+                dateOfBirth: new Date(),
+                password: hash,
+                role: role as RoleEnum[],
+                activatedAccount: false,
+                deactivated: false,
+                isSenior: false
+            });
+
+            for (let dayOfExam of dayOfExams) {
+                if (dayOfExam.date > currentDate) {
+                    try{
+                    await responseService.createResponse(dayOfExam.id, newUser.id, ResponseEnum.No);
+                }catch(error){
+                    logger.error(error);
+                    return res.status(400).json({ error: 'Invalid data' });
+                }
+                }
             }
-            }
+            
+            await sendEmail(email, 'P.A.R.K Exams center login details', password, newUser.firstName, newUser.lastName);
+            logger.info(`New user registered: ${newUser.email} by ${req.user?.firstName} ${req.user?.lastName}`);
+
+            return res.status(201).json({ success: 'New user registered' });
         }
-        await sendEmail(email, 'P.A.R.K Exams center login details', password, newUser.firstName, newUser.lastName);
-        
-        logger.info(`New user registered: ${newUser.email} by ${req.user?.firstName} ${req.user?.lastName}`);
-        return res.status(201).json({ success: 'New user registered' });
+        catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
     },
 
     updateUserRole: async (req: URequest, res: Response) => {
