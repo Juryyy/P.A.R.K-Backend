@@ -14,9 +14,6 @@ import locationsService from '../../services/locations-service';
 export default {
     adminRegister: async (req: URequest, res: Response) => {
         const {firstName, lastName, email, role} = req.body;
-
-        console.log(firstName, lastName, email, role);
-
         try {
             RegisterSchema.parse({ email, firstName, lastName, role});
         } catch (error : any) {

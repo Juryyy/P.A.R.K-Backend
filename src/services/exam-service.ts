@@ -24,6 +24,23 @@ export default {
         });
     },
 
+    async updateExam(id: number, venue : string, location : string, type : TypeOfExamEnum, levels: LevelEnum[] , startTime : Date, endTime : Date, note :string){
+        return await prisma.exam.update({
+            where: {
+                id,
+            },
+            data: {
+                venue,
+                location,
+                type,
+                levels,
+                startTime,
+                endTime,
+                note,
+            },
+        });
+    },
+
     async getExamById(id: number){
         return await prisma.exam.findUnique({
             where: {

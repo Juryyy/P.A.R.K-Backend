@@ -71,6 +71,8 @@ model Exam {
   levels           LevelEnum[]
   startTime        DateTime
   endTime          DateTime
+  isPrepared       Boolean        @default(false)
+  isCompleted      Boolean        @default(false)
   note             String?
   supervisors      User[]          @relation("ExamToSupervisor")
   invigilators     User[]          @relation("ExamToInvigilator")

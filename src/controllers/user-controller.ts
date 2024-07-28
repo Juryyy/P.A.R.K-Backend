@@ -105,8 +105,6 @@ export default {
       dateOfBirth,
     } = req.body;
 
-    console.log(id, email, phone, note, firstName, lastName, noteLonger, drivingLicense, dateOfBirth);
-
     if (!userId) {
       return res.status(401).json({ error: "Please login" });
     }
@@ -129,7 +127,7 @@ export default {
         return res.status(401).json({ error: "Unauthorized" });
       }
     } catch (error) {
-        console.log(error);
+        logger.error(error);
         return res.status(400).json({ error: "Invalid data" });
     }
 

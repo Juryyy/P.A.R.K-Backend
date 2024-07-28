@@ -280,7 +280,6 @@ export default{
         const id = parseInt(req.params.id);
         try{
             const exam = await examService.getExamById(id);
-            console.log(exam);
             return res.status(200).json(exam);
         }catch(error){
             logger.error(error);
@@ -289,7 +288,6 @@ export default{
     },
 
     uploadExamSchedule : async (req: URequest, res: Response) => {
-        console.log('uploadExamSchedule');
         const files = req.files as Express.Multer.File[];
         const examId = parseInt(req.body.examId);
 
@@ -309,6 +307,41 @@ export default{
         }
 
         return res.status(200).json({ message: 'File uploaded' });
+    },
+
+    updateExam : async (req: URequest, res: Response) => {
+        const {exam} = req.body;
+
+        try{
+            examSchema.examInfoSchema.parse(exam);
+        } catch (error : unknown) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+
+        const e = await examService.getExamById(exam.id);
+
+        if(!e) {
+            return res.status(400).json({ error: 'Exam does not exists' });
+        }
+
+        const dayOfExamsExists = await dayOfExamsService.getDayOfExamsById(e.dayOfExamsId);
+        if(!dayOfExamsExists) {
+            return res.status(400).json({ error: 'Day of exams does not exists' });
+        }
+
+        const examDate = new Date(dayOfExamsExists.date).toISOString().split('T')[0];
+
+        // Combine the exam date with the provided times, timezone in czechia is UTC+2
+
+        const start = new Date(examDate + 'T' + exam.startTime + ':00.000Z');
+
+        const finish = new Date(examDate + 'T' + exam.endTime + ':00.000Z');
+
+        await examService.updateExam(exam.id, exam.venue, exam.location, exam.type, exam.levels, start, finish, exam.note);
+
+        return res.status(200).json({ message: 'Exam updated' });
+
     }
 
 }

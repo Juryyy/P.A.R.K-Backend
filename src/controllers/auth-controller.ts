@@ -159,7 +159,7 @@ export default {
     },
 
     passwordUpdate: async (req: URequest, res: Response) => {
-        const {password} = req.body;
+        const {password, newPassword} = req.body;
         const userId = req.user?.id;
     
         if (!userId) {
@@ -169,10 +169,22 @@ export default {
         if(!password || password === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
-    
+        
         const hash = authService.hashPassword(password);
     
-        await userService.updatePassword(userId, hash);
+        const user = await userService.getUserById(userId);
+
+        if(!user) {
+            return res.status(400).json({ error: 'Invalid user' });
+        }
+
+        if(hash !== user.password) {
+            return res.status(400).json({ error: 'Invalid password' });
+        }
+
+        const newHash = authService.hashPassword(newPassword);
+
+        await userService.updatePassword(userId, newHash);
     
         return res.status(200).json({ message: 'Password updated' });
     },

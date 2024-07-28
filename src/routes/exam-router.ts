@@ -16,7 +16,9 @@ router.post('/removeWorker', jwtAccessVerify, examController.removeWorker);
 router.post('/createDayReport', jwtAccessVerify, examController.createDayReport);
 router.get('/dayReport/:id', jwtAccessVerify, examController.getDayReport);
 
-router.post('/uploadExamSchedule', jwtAccessVerify, upload.array('files', 1), examController.uploadExamSchedule);
+router.put('/updateExam', jwtAccessVerify, examController.updateExam);
+
+router.post('/uploadExamSchedule', jwtAccessVerify, upload.array('files', 10), examController.uploadExamSchedule);
 
 
 
