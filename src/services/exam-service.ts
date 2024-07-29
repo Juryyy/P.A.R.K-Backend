@@ -1,5 +1,6 @@
 import { PrismaClient, User, Exam, LevelEnum, TypeOfExamEnum } from "@prisma/client";
 import { remove } from "winston";
+import _ from 'lodash';
 
 const prisma = new PrismaClient();
 
@@ -41,20 +42,42 @@ export default {
         });
     },
 
-    async getExamById(id: number){
-        return await prisma.exam.findUnique({
-            where: {
-                id,
-            },
-            include: {
-                supervisors: true,
-                invigilators: true,
-                examiners: true,
-                candidates: true,
-                files: true,
-            },
+    async getExamById(id: number) {
+        const exam = await prisma.exam.findUnique({
+          where: { id },
+          include: {
+            supervisors: true,
+            invigilators: true,
+            examiners: true,
+            candidates: true,
+            files: true,
+          },
         });
-    },
+      
+        if (!exam) return null;
+      
+        // Exclude specific fields from related entities
+        const sanitizedExam = {
+          ...exam,
+          supervisors: exam.supervisors.map((supervisor) =>
+            _.omit(supervisor, ['password', 'noteLonger'])
+          ),
+          invigilators: exam.invigilators.map((invigilator) =>
+            _.omit(invigilator, ['password', 'noteLonger'])
+          ),
+          examiners: exam.examiners.map((examiner) =>
+            _.omit(examiner, ['password', 'noteLonger'])
+          ),
+          candidates: exam.candidates.map((candidate) =>
+            _.omit(candidate, ['someSensitiveField'])
+          ),
+          files: exam.files.map((file) =>
+            _.omit(file, ['someSensitiveField'])
+          ),
+        };
+      
+        return sanitizedExam;
+      },
 
     async addSupervisor(examId: number, userId: number) {
         return await prisma.exam.update({

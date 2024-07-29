@@ -8,7 +8,7 @@ import logger from '../configs/logger';
 const robotoMedium = fs.readFileSync(path.join(__dirname, '../../fonts/Roboto-Medium.ttf')).toString('base64');
 
 // Define the structure of your PDF document
-export function createDayReportPdf(date: string, venue: string, type : string, examlevels: string[], supervisors: string[], invigilators: string[], examiners: string[], comment: string, issues: string) {
+export function createDayReportPdf(date: string, venue: string, type : string, examlevels: string[], candidates: number,  supervisors: string[], invigilators: string[], examiners: string[], comment: string, issues: string) {
     let docDefinition = {
         content: [
             { text: 'Exam day report', style: 'header' },
@@ -20,6 +20,7 @@ export function createDayReportPdf(date: string, venue: string, type : string, e
                     [{ text: 'Venue:', bold: true }, venue],
                     [{ text: 'Type:', bold: true }, type],
                     [{ text: 'Levels:', bold: true }, examlevels.join(', ')],
+                    [{ text: 'Candidates:', bold: true }, candidates],
                     [{ text: 'Supervisors:', bold: true }, supervisors.join(', ')],
                     [{ text: 'Invigilators:', bold: true }, invigilators.join(', ')],
                     [{ text: 'Examiners:', bold: true }, examiners.join(', ')],

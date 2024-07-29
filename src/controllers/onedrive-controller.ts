@@ -104,7 +104,7 @@ export default {
 
   printAllFolders: async (req: Request, res: Response) => {
     const siteId = envConfig.getEnv('SITE_ID');
-    const folderPath = `/sites/${siteId}/drive/root:/Import:/children`;
+    const folderPath = `/sites/${siteId}/drive/root:/Import/Exams:/children`;
 
     const fetchFolders = async (folderPath: string): Promise<FileInformation[]> => {
       let folders: FileInformation[] = [];
@@ -156,6 +156,35 @@ export default {
       return res.status(500).send({ message: 'Error downloading file' });
     }
   },
+
+  printFilesInGivenFolder: async (req: Request, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const folderPath = `/sites/${siteId}/drive/root:/Import/Exams/31-07-2024:/children`;
+
+    const fetchFiles = async (folderPath: string): Promise<FileInformation[]> => {
+      let files: FileInformation[] = [];
+      try {
+        const response = await client.api(folderPath).get();
+        for (const item of response.value) {
+          if (item.file) {
+            files.push({ name: item.name, route: item.webUrl });
+          }
+        }
+      } catch (err) {
+        logger.error(err);
+        throw new Error('Error fetching files');
+      }
+      return files;
+    };
+
+    try {
+      const filesInfo: FileInformation[] = await fetchFiles(folderPath);
+      res.send(filesInfo);
+    } catch (err: any) {
+      logger.error(err);
+      res.status(500).send({ message: err.message });
+    }
+  }
 
 
 }

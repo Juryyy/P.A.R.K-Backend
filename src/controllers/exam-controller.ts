@@ -7,7 +7,7 @@ import { URequest } from '../types/URequest';
 import examService from '../services/exam-service';
 import examSchema from '../helpers/Schemas/exam-schemas';
 import logger from '../configs/logger';
-import { createDayReportPdf } from '../middlewares/report-middleware';
+import { createDayReportPdf } from '../middlewares/pdf-middleware';
 import path from 'path';
 import locationsService from '../services/locations-service';
 import { ExamWithVenueLink } from '../types/extraTypes';
@@ -213,7 +213,7 @@ export default{
 
 
         try {
-            createDayReportPdf(date, e.venue, e.type, e.levels, supervisorNames, invigilatorNames, examinerNames, comment, issues);
+            createDayReportPdf(date, e.venue, e.type, e.levels, 0, supervisorNames, invigilatorNames, examinerNames, comment, issues);
         } catch (error) {
             logger.error(error);
             return res.status(400).json({ error: 'Error creating PDF' });
