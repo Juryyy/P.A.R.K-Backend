@@ -11,14 +11,18 @@ router.post('/createExam', jwtAccessVerify, examController.createExam);
 router.get('/allExams', jwtAccessVerify, examController.getAllExams);
 router.get('/upcomingExams', jwtAccessVerify, examController.getUpcomingExamsWithAllData);
 router.get('/:id', jwtAccessVerify, examController.getExam);
+router.delete('/:id', jwtAccessVerify, examController.deleteExam);
+
 router.post('/addWorker', jwtAccessVerify, examController.addWorker);
 router.post('/removeWorker', jwtAccessVerify, examController.removeWorker);
+
 router.post('/createDayReport', jwtAccessVerify, examController.createDayReport);
 router.get('/dayReport/:id', jwtAccessVerify, examController.getDayReport);
 
 router.put('/updateExam', jwtAccessVerify, examController.updateExam);
-
 router.post('/uploadExamSchedule', jwtAccessVerify, upload.array('files', 10), examController.uploadExamSchedule);
+router.put('/updateCompleted', jwtAccessVerify, examController.updateCompleted);
+router.put('/updatePrepared', jwtAccessVerify, examController.updatePrepared);
 
 
 

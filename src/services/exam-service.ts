@@ -179,17 +179,6 @@ export default {
         });
     },
 
-    async addPdfUrl(examId: number, pdfUrl: string) {
-        return await prisma.exam.update({
-            where: {
-                id: examId,
-            },
-            data: {
-                pdfUrl,
-            },
-        });
-    },
-
     async getUpcomingExams() {
         return await prisma.exam.findMany({
             where: {
@@ -244,6 +233,36 @@ export default {
                 ],
             },
         });
-    }
+    },
+
+    async deleteExam(id: number) {
+        return await prisma.exam.delete({
+            where: {
+                id,
+            },
+        });
+    },
+
+    async updateCompleted(id: number, completed: boolean) {
+        return await prisma.exam.update({
+            where: {
+                id,
+            },
+            data: {
+                isCompleted: completed,
+            },
+        });
+    },
+
+    async updatePrepared(id: number, prepared: boolean) {
+        return await prisma.exam.update({
+            where: {
+                id,
+            },
+            data: {
+                isPrepared: prepared,
+            },
+        });
+    },
 
 }

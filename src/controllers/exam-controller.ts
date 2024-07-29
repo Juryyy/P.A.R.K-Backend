@@ -219,8 +219,6 @@ export default{
             return res.status(400).json({ error: 'Error creating PDF' });
         }
 
-        await examService.addPdfUrl(examId, `${date} - ${e.venue} - ${e.type}.pdf`);
-
         return res.status(200).json({ message: 'Report created' });
     },
 
@@ -342,7 +340,66 @@ export default{
 
         return res.status(200).json({ message: 'Exam updated' });
 
-    }
+    },
+
+    deleteExam : async (req: URequest, res: Response) => {
+        const id = parseInt(req.params.id);
+
+        const exam = await examService.getExamById(id);
+
+        if(!exam) {
+            return res.status(400).json({ error: 'Exam does not exists' });
+        }
+
+        //Remove workers, remove files, remove exam
+        try{
+            for (const supervisor of exam.supervisors) {
+                await examService.removeSupervisor(exam.id, supervisor.id);
+            }
+            for (const invigilator of exam.invigilators) {
+                await examService.removeInvigilator(exam.id, invigilator.id);
+            }
+            for (const examiner of exam.examiners) {
+                await examService.removeExaminer(exam.id, examiner.id);
+            }
+
+            await examService.deleteExam(id);
+
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid id' });
+        }
+
+        return res.status(200).json({ message: 'Exam deleted' });
+    },
+
+    updateCompleted : async (req: URequest, res: Response) => {
+        const {examId, completed} = req.body;
+
+        const exam = await examService.getExamById(examId);
+
+        if(!exam) {
+            return res.status(400).json({ error: 'Exam does not exists' });
+        }
+
+        await examService.updateCompleted(examId, completed);
+
+        return res.status(200).json({ message: 'Exam completed updated' });
+    },
+
+    updatePrepared : async (req: URequest, res: Response) => {
+        const {examId, prepared} = req.body;
+
+        const exam = await examService.getExamById(examId);
+
+        if(!exam) {
+            return res.status(400).json({ error: 'Exam does not exists' });
+        }
+
+        await examService.updatePrepared(examId, prepared);
+
+        return res.status(200).json({ message: 'Exam prepared updated' });
+    },
 
 }
 
