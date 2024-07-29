@@ -5,7 +5,6 @@ import client from '../configs/onedrive-config'; // Import the client
 
 const emailSender = env.getEnv('EMAIL_SENDER_PARK') as string; // Get the sender email from environment variables
 const emailSenderName = env.getEnv('EMAIL_SENDER_NAME_PARK') as string; // Get the sender name from environment variables
-const emailSenderAvatar = env.getEnv('EMAIL_SENDER_AVATAR_PARK') as string; // Get the sender avatar URL from environment variables
 
 const sendMail = async (to: string, subject: string, html: string) => {
     const mail = {

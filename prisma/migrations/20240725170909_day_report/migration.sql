@@ -8,8 +8,7 @@
 */
 -- AlterTable
 ALTER TABLE "Exam" DROP COLUMN "venue",
-ADD COLUMN     "dayReportId" INTEGER,
-ADD COLUMN     "venueid" INTEGER NOT NULL;
+ADD COLUMN     "dayReportId" INTEGER;
 
 -- CreateTable
 CREATE TABLE "DayReport" (
@@ -23,9 +22,6 @@ CREATE TABLE "DayReport" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Exam_dayReportId_key" ON "Exam"("dayReportId");
-
--- AddForeignKey
-ALTER TABLE "Exam" ADD CONSTRAINT "Exam_venueid_fkey" FOREIGN KEY ("venueid") REFERENCES "ExamVenue"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Exam" ADD CONSTRAINT "Exam_dayReportId_fkey" FOREIGN KEY ("dayReportId") REFERENCES "DayReport"("id") ON DELETE SET NULL ON UPDATE CASCADE;
