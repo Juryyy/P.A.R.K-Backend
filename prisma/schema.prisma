@@ -85,8 +85,7 @@ model Exam {
   issues           String?
   ScheduleForDayId Int?
   ScheduleForDay   ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
-  dayReportId      Int?            @unique
-  dayReport        DayReport?      @relation(name: "DayReportToExam", fields: [dayReportId], references: [id])
+  dayReport        DayReport?      @relation("DayReportToExam")
   files            File[]
 }
 
@@ -212,8 +211,9 @@ model DayReport {
   name      String
   createdAt DateTime @default(now())
   authorId  Int
-  author    User      @relation(fields: [authorId], references: [id], name: "UserToDayReports")
-  exam      Exam?     @relation(name: "DayReportToExam")
+  author    User     @relation(fields: [authorId], references: [id], name: "UserToDayReports")
+  examId    Int      @unique
+  exam      Exam     @relation("DayReportToExam", fields: [examId], references: [id])
 }
 
 enum RoleEnum {
