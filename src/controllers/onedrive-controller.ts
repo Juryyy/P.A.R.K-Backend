@@ -1,17 +1,16 @@
-import { DayOfExams} from "@prisma/client";
 import {Request, Response} from 'express';
 import dayOfExamsService from '../services/dayOfExams-service';
-import responseService from "../services/response-service";
 import logger from "../configs/logger";
 import { URequest } from "../types/URequest";
 import envConfig from "../configs/env-config";
 import client from "../configs/onedrive-config";
-import { file } from "mock-fs/lib/filesystem";
 import fileService from "../services/file-service";
-import { string } from "zod";
-import userService from "../services/user-service";
 import { formatDateToDMY } from "../helpers/format-date";
-
+import dayReportService from '../services/dayReport-service';
+import examService from '../services/exam-service';
+import { ResponseType } from '@microsoft/microsoft-graph-client';
+import mime from 'mime-types';
+import path from 'path';
 
 interface FileInformation {
   name: string;
@@ -19,31 +18,6 @@ interface FileInformation {
 }
 
 export default {
-    downloadFile: async (req: URequest, res: Response) => {
-        const siteId = envConfig.getEnv('SITE_ID');;
-        const filePath = req.body.filePath; 
-
-        if(!filePath) return res.status(400).send({ message: 'File path is required' });
-
-        try {
-          const file = await client
-            .api(`/sites/${siteId}/drive/root:/Import/${filePath}`)
-            .get();
-      
-          const fileContent = await client
-            .api(`/sites/${siteId}/drive/items/${file.id}/content`)
-            .get();
-      
-          res.setHeader('Content-Disposition', 'attachment; filename=' + file.name);
-          res.setHeader('Content-Type', file.file.mimeType);
-          res.send(fileContent);
-          
-        } catch (err) {
-          logger.error(err);
-          return res.status(500).send({ message: 'Error downloading file' });
-        }
-      },
-
     getSiteId: async (req: Request, res: Response) => {
         const isDev = envConfig.getEnv('NODE_ENV');
         if (isDev !== 'development') {
@@ -63,22 +37,38 @@ export default {
   
   downloadPostFile: async (req: Request, res : Response) => {
     const siteId = envConfig.getEnv('SITE_ID');
-    const id = req.params.id; 
-  
+    const id = req.params.id;
+
     try {
-      const file = await fileService.getFileById(parseInt(id));
-      if (!file) return res.status(404).send({ message: 'File not found' });
-  
-      const response = await client
-        .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}:/content`)
-        .get();
-  
-      res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
-      res.setHeader('Content-Type', 'application/octet-stream');
-      return res.send(response);
+        const file = await fileService.getFileById(parseInt(id));
+        if (!file) return res.status(404).send({ message: 'File not found' });
+
+        const fileExtension = path.extname(file.name);
+        const mimeType = mime.lookup(fileExtension);
+
+        let response;
+        if (mimeType && mimeType.startsWith('application/')) {
+            response = await client
+                .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}:/content`)
+                .responseType(ResponseType.ARRAYBUFFER)
+                .get();
+        } else {
+            response = await client
+                .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}:/content`)
+                .get();
+        }
+
+        res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
+        res.setHeader('Content-Type', mimeType || 'application/octet-stream');
+
+        if (mimeType && mimeType.startsWith('application/')) {
+            return res.send(Buffer.from(response));
+        } else {
+            return res.send(response);
+        }
     } catch (err) {
-      logger.error(err);
-      return res.status(500).send({ message: 'Error downloading file' });
+        logger.error(err);
+        return res.status(500).send({ message: 'Error downloading file' });
     }
   },
 
@@ -133,33 +123,49 @@ export default {
 
   downloadExamFile: async (req: Request, res: Response) => {
     const siteId = envConfig.getEnv('SITE_ID');
-    const id = req.params.id; 
+    const id = req.params.id;
 
     try {
-      const file = await fileService.getFileByIdWithExam(parseInt(id));
-      if (!file) return res.status(404).send({ message: 'File not found' });
+        const file = await fileService.getFileByIdWithExam(parseInt(id));
+        if (!file) return res.status(404).send({ message: 'File not found' });
 
-      const dayOfExams = await dayOfExamsService.getDayOfExamsById(file.exam[0].dayOfExamsId);
-      if (!dayOfExams) return res.status(404).send({ message: 'Day of exams not found' });
-      
-      const formattedDate = formatDateToDMY(new Date(dayOfExams.date));
+        const dayOfExams = await dayOfExamsService.getDayOfExamsById(file.exam[0].dayOfExamsId);
+        if (!dayOfExams) return res.status(404).send({ message: 'Day of exams not found' });
 
-      const response = await client
-        .api(`/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.name}:/content`)
-        .get();
+        const formattedDate = formatDateToDMY(new Date(dayOfExams.date));
 
-      res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
-      res.setHeader('Content-Type', 'application/octet-stream');
-      return res.send(response);
+        const fileExtension = path.extname(file.name);
+        const mimeType = mime.lookup(fileExtension);
+
+        let response;
+        if (mimeType && mimeType.startsWith('application/')) {
+            response = await client
+                .api(`/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.name}:/content`)
+                .responseType(ResponseType.ARRAYBUFFER)
+                .get();
+        } else {
+            response = await client
+                .api(`/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.name}:/content`)
+                .get();
+        }
+
+        res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
+        res.setHeader('Content-Type', mimeType || 'application/octet-stream');
+
+        if (mimeType && mimeType.startsWith('application/')) {
+            return res.send(Buffer.from(response));
+        } else {
+            return res.send(response);
+        }
     } catch (err) {
-      logger.error(err);
-      return res.status(500).send({ message: 'Error downloading file' });
+        logger.error(err);
+        return res.status(500).send({ message: 'Error downloading file' });
     }
   },
 
   printFilesInGivenFolder: async (req: Request, res: Response) => {
     const siteId = envConfig.getEnv('SITE_ID');
-    const folderPath = `/sites/${siteId}/drive/root:/Import/Exams/31-07-2024:/children`;
+    const folderPath = `/sites/${siteId}/drive/root:/Import/Exams/Reports/15-08-2024:/children`;
 
     const fetchFiles = async (folderPath: string): Promise<FileInformation[]> => {
       let files: FileInformation[] = [];
@@ -184,7 +190,38 @@ export default {
       logger.error(err);
       res.status(500).send({ message: err.message });
     }
-  }
+  },
+
+  downloadReportFile: async (req: Request, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const id = req.params.id;
+
+    try {
+        const file = await dayReportService.getDayReportById(parseInt(id));
+        if (!file) return res.status(404).send({ message: 'File not found' });
+
+        const exam = await examService.getExamById(file.examId);
+        if (!exam) return res.status(404).send({ message: 'Exam not found' });
+
+        const dayOfExams = await dayOfExamsService.getDayOfExamsById(exam.dayOfExamsId);
+        if (!dayOfExams) return res.status(404).send({ message: 'Day of exams not found' });
+
+        const formattedDate = formatDateToDMY(new Date(dayOfExams.date));
+
+        const response = await client
+            .api(`/sites/${siteId}/drive/root:/Import/Exams/Reports/${formattedDate}/${file.name}:/content`)
+            .responseType(ResponseType.ARRAYBUFFER)
+            .get();
+
+        res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
+        res.setHeader('Content-Type', 'application/pdf');
+        return res.send(Buffer.from(response));
+    } catch (err) {
+        logger.error(err);
+        return res.status(500).send({ message: 'Error downloading file' });
+    }
+  },
+
 
 
 }

@@ -16,7 +16,9 @@ const examInfoSchema = z.object({
     });
 
 const examDayReportSchema = z.object({
-    examId: z.number(),
+    examIdN: z.number(),
+    candidatesN: z.number(),
+    absentN: z.number(),
     comment: z.string(),
     issues: z.string(),
 });

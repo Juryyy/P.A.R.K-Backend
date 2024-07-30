@@ -19,6 +19,14 @@ export default {
                 id
             }
         });
+    },
+
+    async getDayReportByExamId(examId : number){
+        return await prisma.dayReport.findFirst({
+            where : {
+                examId
+            }
+        });
     }
     
 }

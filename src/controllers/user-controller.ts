@@ -1,5 +1,4 @@
-import { ResponseEnum, User } from "@prisma/client";
-import { Request, Response } from "express";
+import { Response } from "express";
 import userService from "../services/user-service";
 import { MURequest, URequest } from "../types/URequest";
 import sharp from "sharp";

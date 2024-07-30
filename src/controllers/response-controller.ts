@@ -1,5 +1,5 @@
 import { LevelEnum, ResponseEnum, User } from '@prisma/client';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import responseService from '../services/response-service';
 import dayOfExamsService from '../services/dayOfExams-service';
 import userService from '../services/user-service';

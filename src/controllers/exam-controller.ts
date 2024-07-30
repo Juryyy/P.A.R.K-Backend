@@ -1,5 +1,5 @@
-import {User, RoleEnum, Prisma, PrismaClient, ResponseEnum, DayOfExams, Exam, TypeOfExamEnum} from '@prisma/client';
-import {Request, Response} from 'express';
+import {User, RoleEnum, ResponseEnum } from '@prisma/client';
+import { Response} from 'express';
 import userService from '../services/user-service';
 import dayOfExamsService from '../services/dayOfExams-service';
 import responseService from '../services/response-service';
@@ -11,7 +11,7 @@ import { createDayReportPdf } from '../middlewares/pdf-middleware';
 import path from 'path';
 import locationsService from '../services/locations-service';
 import { ExamWithVenueLink } from '../types/extraTypes';
-import { uploadExamScheduleToOnedrive } from '../middlewares/admin/upload-middleware';
+import { uploadExamScheduleToOnedrive, uploadDayReportToOnedrive } from '../middlewares/admin/upload-middleware';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
@@ -178,48 +178,53 @@ export default{
     },
 
     createDayReport: async(req: URequest, res: Response) => {
-        const {examId, comment, issues} = req.body;
+        const { examId, candidates, absent, comment, issues } = req.body;
 
-        try{
-            examSchema.examDayReportSchema.parse({examId, comment, issues});
-       } catch (error : unknown) {
-              logger.error(error);
-           return res.status(400).json({ error: 'Invalid data' });
-       }
-
-        const e = await examService.getExamById(examId);
-
-        if(!e) {
-            return res.status(400).json({ error: 'Exam does not exists' });
+        const examIdN = parseInt(examId);
+        const candidatesN = parseInt(candidates);
+        const absentN = parseInt(absent);
+    
+        try {
+            examSchema.examDayReportSchema.parse({ examIdN, candidatesN, absentN, comment, issues });
+        } catch (error: unknown) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
         }
-
-        const dateObj = new Date(e?.startTime);
-        const day = String(dateObj.getDate()).padStart(2, '0');
-        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const year = String(dateObj.getFullYear()).substr(-2); 
-        const date = `${day}.${month}.${year}`
-
-        const supervisors = await examService.getSupervisorsByExamId(examId);
-        const invigilators = await examService.getInvigilatorsByExamId(examId);
-        const examiners = await examService.getExaminersByExamId(examId);
-
-        if(!supervisors || !invigilators || !examiners) {
+    
+        const exam = await examService.getExamById(examIdN);
+    
+        if (!exam) {
+            return res.status(400).json({ error: 'Exam does not exist' });
+        }
+    
+        const dateObj = new Date(exam.startTime);
+        const date = dateObj.toISOString().split('T')[0].split('-').reverse().join('-');
+    
+        const supervisors = await examService.getSupervisorsByExamId(examIdN);
+        const invigilators = await examService.getInvigilatorsByExamId(examIdN);
+        const examiners = await examService.getExaminersByExamId(examIdN);
+    
+        if (!supervisors || !invigilators || !examiners) {
             return res.status(400).json({ error: 'Exam has no workers' });
         }
-
+    
         const supervisorNames = supervisors.supervisors.map(supervisor => supervisor.firstName + ' ' + supervisor.lastName);
         const invigilatorNames = invigilators.invigilators.map(invigilator => invigilator.firstName + ' ' + invigilator.lastName);
         const examinerNames = examiners.examiners.map(examiner => examiner.firstName + ' ' + examiner.lastName);
-
-
+        
+        const address = exam.venue+'-'+exam.location
+        const filename = `${address}.pdf`;
+        
         try {
-            createDayReportPdf(date, e.venue, e.type, e.levels, 0, supervisorNames, invigilatorNames, examinerNames, comment, issues);
+            const filePath = await createDayReportPdf(date, address, exam.type, exam.levels, candidatesN, absentN, supervisorNames, invigilatorNames, examinerNames, comment, issues, filename);
+    
+            await uploadDayReportToOnedrive(filePath, exam, req.user as User, filename);
+    
+            return res.status(200).json({ message: 'Report created' });
         } catch (error) {
             logger.error(error);
-            return res.status(400).json({ error: 'Error creating PDF' });
+            return res.status(500).json({ error: 'Error creating PDF' });
         }
-
-        return res.status(200).json({ message: 'Report created' });
     },
 
     getDayReport : async (req: URequest, res: Response) => {

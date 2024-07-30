@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ImportedCandidate, Candidate, LevelEnum } from '@prisma/client';
+import { LevelEnum } from '@prisma/client';
 
 const levels = z.enum(Object.values(LevelEnum) as [string, ...string[]]);
 

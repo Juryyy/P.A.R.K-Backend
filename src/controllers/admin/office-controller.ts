@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import userService from '../../services/user-service';
 import authService from '../../services/auth-service';
 import responseService from '../../services/response-service';
-import { RoleEnum, User, ResponseEnum, LevelEnum } from '@prisma/client';
+import { RoleEnum, ResponseEnum, LevelEnum } from '@prisma/client';
 import dayOfExamsService from '../../services/dayOfExams-service';
 import logger from '../../configs/logger';
 import { URequest } from '../../types/URequest';

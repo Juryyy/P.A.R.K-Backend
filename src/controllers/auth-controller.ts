@@ -1,15 +1,11 @@
-import {User, RoleEnum, Prisma, PrismaClient, ResponseEnum} from '@prisma/client';
 import authService from '../services/auth-service';
 import {Request, Response} from 'express';
 import userService from '../services/user-service';
 import { Tokens } from '../types/auth-types';
-import dayOfExamsService from '../services/dayOfExams-service';
-import responseService from '../services/response-service';
 import { URequest } from '../types/URequest';
 import envConfig from '../configs/env-config';
 import {sendCode, sendPassword} from '../middlewares/azure-email-middleware';
 import { generateSecurePassword } from '../helpers/password-generator';
-
 
 export default {
     //register: async (req: Request, res: Response) => {

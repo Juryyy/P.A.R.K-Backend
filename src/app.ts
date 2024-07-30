@@ -1,13 +1,8 @@
 import cors from 'cors';
 import express, { Express } from 'express';
 import router from './router';
-import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc from 'swagger-jsdoc';
-import logger from './configs/logger';
 import cookieParser from 'cookie-parser';
 import envConfig from './configs/env-config';
-import swaggerDocs from './docs/swaggerConfig';
-import upload from '../src/configs/upload-config';
 
 const app: Express = express();
 

@@ -2,7 +2,7 @@ import candidateService from "../../services/candidate-service";
 import { URequest } from "../../types/URequest";
 import { importedCandidateSchema } from "../../helpers/Schemas/candidate-schemas"
 import logger from "../../configs/logger";
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { parseLevelEnum, parseTypeOfExamEnum} from "../../middlewares/admin/candidate-middleware";
 
 export default{

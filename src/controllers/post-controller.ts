@@ -1,8 +1,8 @@
-import { Response, Request } from "express";
+import { Response } from "express";
 import { URequest } from "../types/URequest";
 import postService from "../services/post-service";
 import PostSchema from "../helpers/Schemas/post-schemas";
-import { Post, RoleEnum } from "@prisma/client";
+import { RoleEnum } from "@prisma/client";
 import userService from "../services/user-service";
 import logger from "../configs/logger";
 import { User } from "@prisma/client";

@@ -51,6 +51,7 @@ export default {
             examiners: true,
             candidates: true,
             files: true,
+            dayReport: true,
           },
         });
       
@@ -67,12 +68,6 @@ export default {
           ),
           examiners: exam.examiners.map((examiner) =>
             _.omit(examiner, ['password', 'noteLonger'])
-          ),
-          candidates: exam.candidates.map((candidate) =>
-            _.omit(candidate, ['someSensitiveField'])
-          ),
-          files: exam.files.map((file) =>
-            _.omit(file, ['someSensitiveField'])
           ),
         };
       

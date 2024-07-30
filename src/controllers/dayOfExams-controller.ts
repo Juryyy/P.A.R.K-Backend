@@ -1,4 +1,3 @@
-import { DayOfExams} from "@prisma/client";
 import {Request, Response} from 'express';
 import dayOfExamsService from '../services/dayOfExams-service';
 import responseService from "../services/response-service";
