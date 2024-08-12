@@ -266,7 +266,7 @@ export function passwordReset(password: string, user: string, email: string) {
     `;
 }
 
-export function newAvailabilityDates(user: string, email: string, startDate: string, endDate: string, dateOfSubmits: string) {
+export function newAvailabilityDates(user: string, startDate: string, endDate: string, dateOfSubmits: string) {
     return `
     <html>
 <head>
@@ -339,11 +339,10 @@ export function newAvailabilityDates(user: string, email: string, startDate: str
         <div class="content">
             <h1>Hi ${user}!</h1>
             <h2>New Availability Dates</h2>
-            <p>We have created new availability dates and need you to review them and mark your availability. The details are as follows:</p>
+            <p>We have created new availability dates and need you to review them and mark your availability. Please have them completed by ${dateOfSubmits}:</p>
             <div class="credentials">
-                Start Date: ${startDate}<br/>
-                End Date: ${endDate}<br/>
-                Date of Submission: ${dateOfSubmits}
+                Availability starts: ${startDate}<br/>
+                Availability ends: ${endDate}
             </div>
             <p>Please log in to your account and update your availability accordingly.</p>
             <p>If you have any questions or need assistance, feel free to reach out to us.</p>
@@ -358,7 +357,7 @@ export function newAvailabilityDates(user: string, email: string, startDate: str
     `;
 }
 
-export function examAssignment(user: string, email: string, exam: string, role: string) {
+export function examAssignment(user: string, exam: string, role: string, date : string, time: string) {
     return `
     <html>
 <head>
@@ -433,10 +432,12 @@ export function examAssignment(user: string, email: string, exam: string, role: 
             <h2>New Exam Assignment</h2>
             <p>We are pleased to inform you that you have been assigned to the following exam:</p>
             <div class="credentials">
-                Exam: ${exam}<br/>
-                Role: ${role}
+                Date: ${date} - ${time}<br/>
+                Location: ${exam}<br/>
+                Role: ${role}<br/>
             </div>
-            <p>The exam might not complete yet. If so, you will be informed about completion in the near future.</p>
+            <p>Visit the application for more details.</p>
+            <p>The exam might not be complete yet. If so, you will be informed about completion in the near future.</p>
             <p>Please make sure to prepare accordingly and reach out to us if you have any questions or concerns.</p>
             <p>Thank you for your dedication and hard work.</p>
             <p>Best regards,<br/>P.A.R.K. Team</p>

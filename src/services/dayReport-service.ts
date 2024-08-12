@@ -27,6 +27,14 @@ export default {
                 examId
             }
         });
+    },
+
+    async deleteDayReport(id : number){
+        return await prisma.dayReport.delete({
+            where : {
+                id
+            }
+        });
     }
     
 }

@@ -80,9 +80,10 @@ export default {
       const file = await fileService.getFileById(parseInt(id));
       if(!file) return res.status(404).send({ message: 'File not found' });
 
-      await client
-        .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}`)
-        .delete();
+      //! Do we need to delete the file from OneDrive?
+      //await client
+      //  .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}`)
+      //  .delete();
 
       await fileService.deleteFile(parseInt(id));
       return res.send({ message: 'File deleted' });
@@ -133,33 +134,44 @@ export default {
         if (!dayOfExams) return res.status(404).send({ message: 'Day of exams not found' });
 
         const formattedDate = formatDateToDMY(new Date(dayOfExams.date));
-
+        const filePath = `/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.name}:/content`;
+        
         const fileExtension = path.extname(file.name);
-        const mimeType = mime.lookup(fileExtension);
+        const mimeType = mime.lookup(fileExtension) || 'application/octet-stream';
 
-        let response;
-        if (mimeType && mimeType.startsWith('application/')) {
-            response = await client
-                .api(`/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.name}:/content`)
-                .responseType(ResponseType.ARRAYBUFFER)
-                .get();
-        } else {
-            response = await client
-                .api(`/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.name}:/content`)
-                .get();
-        }
+        const response = await client
+            .api(filePath)
+            .responseType(ResponseType.ARRAYBUFFER)
+            .get();
 
         res.setHeader('Content-Disposition', `attachment; filename=${file.name}`);
-        res.setHeader('Content-Type', mimeType || 'application/octet-stream');
+        res.setHeader('Content-Type', mimeType);
 
-        if (mimeType && mimeType.startsWith('application/')) {
-            return res.send(Buffer.from(response));
-        } else {
-            return res.send(response);
-        }
+        return res.send(Buffer.from(response));
     } catch (err) {
         logger.error(err);
         return res.status(500).send({ message: 'Error downloading file' });
+    }
+  },
+
+
+  deleteExamFile: async (req: URequest, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const id = req.params.fileId;
+
+    try{
+      const file = await fileService.getFileById(parseInt(id));
+      if(!file) return res.status(404).send({ message: 'File not found' });
+
+      await client
+        .api(`/sites/${siteId}/drive/root:/Import/Exams/${file.name}`)
+        .delete();
+
+      await fileService.deleteFile(parseInt(id));
+      return res.send({ message: 'File deleted' });
+    }catch(err){
+      logger.error(err);
+      return res.status(500).send({ message: 'Error deleting file' });
     }
   },
 
@@ -222,6 +234,23 @@ export default {
     }
   },
 
+  deleteReportFile: async (req: URequest, res: Response) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+    const id = req.params.fileId;
 
+    try{
+      const file = await dayReportService.getDayReportById(parseInt(id));
+      if(!file) return res.status(404).send({ message: 'File not found' });
 
+      await client
+        .api(`/sites/${siteId}/drive/root:/Import/Exams/Reports/${file.name}`)
+        .delete();
+
+      await dayReportService.deleteDayReport(parseInt(id));
+      return res.send({ message: 'File deleted' });
+    }catch(err){
+      logger.error(err);
+      return res.status(500).send({ message: 'Error deleting file' });
+    }
+  },
 }

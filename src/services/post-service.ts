@@ -61,5 +61,17 @@ export default {
         });
     },
 
+    async getPostById(id: number){
+        return await prisma.post.findUnique({
+            where : {
+                id
+            },
+            include : {
+                files : true,
+                author : true
+            }
+        });
+    },
+
 
 }

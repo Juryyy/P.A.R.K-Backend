@@ -3,11 +3,10 @@ import officeMiddleware from '../../middlewares/admin/office-middleware';
 import { jwtAccessVerify } from '../../middlewares/tokenVerify-middleware';
 import officeController from '../../controllers/admin/office-controller';
 
-
 const router = express.Router();
 
-router.put('/update', jwtAccessVerify, officeMiddleware.isOffice);
-router.post('/registerUser', /*jwtAccessVerify,*/officeController.adminRegister);
+//router.put('/update', jwtAccessVerify, officeMiddleware.isOffice);
+router.post('/registerUser', jwtAccessVerify, officeMiddleware.isOffice, officeController.adminRegister);
 router.post('/updateUserRole', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserRole)
 router.post('/updateUserLevel', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserLevel)
 router.post('/updateUserSenior', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserSenior)

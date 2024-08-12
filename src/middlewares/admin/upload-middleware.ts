@@ -41,11 +41,10 @@ export const uploadPostToOnedrive = async (file : Express.Multer.File, postId: n
     }
 }
 
-export const uploadExamScheduleToOnedrive = async (file: Express.Multer.File, exam: Exam, user: User) => {
+export const uploadExamFileToOD = async (file: Express.Multer.File, exam: Exam, user: User) => {
     const siteId = envConfig.getEnv('SITE_ID');
 
     const dayOfExams = await dayOfExamsService.getDayOfExamsById(exam.dayOfExamsId);
-
     if (!dayOfExams) {
         throw new Error('Day of exams not found');
     }
@@ -53,33 +52,26 @@ export const uploadExamScheduleToOnedrive = async (file: Express.Multer.File, ex
     try {
         await fileService.createFile({
             name: file.originalname,
-            author: {
-                connect: {
-                    id: user.id
-                }
-            },
-            exam: {
-                connect: {
-                    id: exam.id
-                }
-            }
+            author: { connect: { id: user.id } },
+            exam: { connect: { id: exam.id } }
         });
 
         const formattedDate = formatDateToDMY(new Date(dayOfExams.date));
+        const filePath = `/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.originalname}:/content`;
 
         const response = await client
-            .api(`/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.originalname}:/content`)
+            .api(filePath)
             .put(file.buffer);
 
-        logger.info(`File ${file.originalname} uploaded to OneDrive by ${user.firstName + ' ' + user.lastName}`);
+        logger.info(`File ${file.originalname} uploaded to OneDrive by ${user.firstName} ${user.lastName}`);
         return response;
-        
     } catch (err) {
         console.error(err);
         logger.error(err);
         throw new Error('Error uploading file');
     }
-}
+};
+
 
 export const uploadDayReportToOnedrive = async (filePath: string, exam: Exam, user: User, fileName: string) => {
     const siteId = envConfig.getEnv('SITE_ID');
@@ -132,3 +124,23 @@ export const uploadDayReportToOnedrive = async (filePath: string, exam: Exam, us
         throw new Error('Error uploading file');
     }
 };
+
+export const deletePostFile = async (fileId : number) => {
+    const siteId = envConfig.getEnv('SITE_ID');
+
+    try {
+        const file = await fileService.getFileById(fileId);
+        if (!file) {
+            throw new Error('File not found');
+        }
+
+        await client
+            .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}`)
+            .delete();
+
+        return await fileService.deleteFile(fileId);
+    } catch (err) {
+        logger.error(err);
+        throw new Error('Error deleting file');
+    }
+}

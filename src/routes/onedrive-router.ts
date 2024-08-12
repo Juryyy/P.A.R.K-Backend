@@ -13,6 +13,9 @@ router.get('/files/exam/download/:id', jwtAccessVerify, onedriveController.downl
 
 router.get('/files/exam/downloadReport/:id', jwtAccessVerify, onedriveController.downloadReportFile);
 //router.delete('/onedrive/files/delete', jwtAccessVerify, check.isOffice, onedriveController.deleteFile);
-router.get('/files', onedriveController.printFilesInGivenFolder);
+//router.get('/files', onedriveController.printFilesInGivenFolder);
+
+router.delete('/files/exam/delete/:fileId', jwtAccessVerify, check.isOffice, onedriveController.deleteExamFile);
+router.delete('/files/post/delete/:fileId', jwtAccessVerify, check.isOffice, onedriveController.deletePostFile);
   
 export default router;

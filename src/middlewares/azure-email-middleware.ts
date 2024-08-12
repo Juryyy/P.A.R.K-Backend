@@ -1,6 +1,6 @@
 import env from "../configs/env-config";
 import logger from "../configs/logger";
-import { styledHtml, authorizationCode, passwordReset } from "../helpers/mail-helper";
+import { styledHtml, authorizationCode, passwordReset, examAssignment, newAvailabilityDates } from "../helpers/mail-helper";
 import client from '../configs/onedrive-config'; // Import the client
 
 const emailSender = env.getEnv('EMAIL_SENDER_PARK') as string; // Get the sender email from environment variables
@@ -57,4 +57,18 @@ async function sendPassword(to: string, subject: string, password: string, first
     await sendMail(to, subject, html);
 }
 
-export { sendEmail, sendCode, sendPassword };
+async function informExam(to: string, subject: string, location : string, date: string, time: string, firstName: string, lastName: string, role : string) {
+    const user = `${firstName} ${lastName}`;
+    const html = examAssignment(user, location, role, date, time);
+    await sendMail(to, subject, html);
+}
+
+//user: string, startDate: string, endDate: string, dateOfSubmits: string
+
+async function informAvailability(to: string, subject: string, startDate: string, endDate: string, dateOfSubmits : string, firstName: string, lastName: string) {
+    const user = `${firstName} ${lastName}`;
+    const html = newAvailabilityDates(user, startDate, endDate, dateOfSubmits);
+    await sendMail(to, subject, html);
+}
+
+export { sendEmail, sendCode, sendPassword, informExam, informAvailability };

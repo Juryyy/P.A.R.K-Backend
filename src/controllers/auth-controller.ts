@@ -198,6 +198,10 @@ export default {
         }
     
         const password = generateSecurePassword(24);
+
+        if (!password) {
+            return res.status(500).json({ error: 'Error generating password' });
+        }
     
         await userService.updatePassword(user.id, authService.hashPassword(password));
         await sendPassword(email, 'P.A.R.K Exams center password reset code', password, user.firstName, user.lastName);

@@ -162,7 +162,16 @@ export default {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
         try {
-            const location = await locationsService.deleteLocation(parseInt(id));
+            //const location = await locationsService.deleteLocation(parseInt(id));
+            const location = await locationsService.getLocationById(parseInt(id));
+            if (!location) {
+                return res.status(400).json({ error: 'Location not found' });
+            }
+            
+            if(location.venues.length > 0){
+                return res.status(400).json({ error: 'Location has venues' });
+            }
+            await locationsService.deleteLocation(parseInt(id));
             logger.info(`Location ${location.name} deleted by ${req.user?.firstName} ${req.user?.lastName}`);
             return res.status(200).json({ success: `Location ${location.name} deleted` });
         } catch (error) {

@@ -6,7 +6,7 @@ import { RoleEnum } from "@prisma/client";
 import userService from "../services/user-service";
 import logger from "../configs/logger";
 import { User } from "@prisma/client";
-import { uploadPostToOnedrive } from "../middlewares/admin/upload-middleware";
+import { uploadPostToOnedrive, deletePostFile } from "../middlewares/admin/upload-middleware";
 
 export default {
     createPost: async (req: URequest, res: Response) => {
@@ -83,12 +83,43 @@ export default {
             const allPosts = userPosts.concat(rolePosts.filter((rolePost) => !userPosts.some((userPost) => userPost.id === rolePost.id)));
             
             allPosts.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-    
+            
+            console.log(allPosts);
             return res.status(200).json(allPosts);
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Internal server error' });
         }
-    }
+    },
+
+    deletePost: async (req: URequest, res: Response) => {
+        console.log('Delete post');
+        const postId = parseInt(req.params.id);
+    
+        try {
+            const post = await postService.getPostById(postId);
+            if (!post) {
+                console.log('Post not found');
+                return res.status(404).json({ error: 'Post not found' });
+            }
+
+            if (post.files.length > 0) {
+                for (const file of post.files) {
+                    try{
+                        await deletePostFile(file.id);
+                    }catch(err){
+                        logger.error(err);
+                        return res.status(500).json({ error: 'Error deleting file' });
+                    }
+                }
+            }
+
+            await postService.deletePost(postId);
+            return res.status(200).json({ message: 'Post deleted' });
+        } catch (error) {
+            logger.error(error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    },
     
 }

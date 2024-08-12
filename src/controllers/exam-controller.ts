@@ -11,7 +11,8 @@ import { createDayReportPdf } from '../middlewares/pdf-middleware';
 import path from 'path';
 import locationsService from '../services/locations-service';
 import { ExamWithVenueLink } from '../types/extraTypes';
-import { uploadExamScheduleToOnedrive, uploadDayReportToOnedrive } from '../middlewares/admin/upload-middleware';
+import { uploadDayReportToOnedrive, uploadExamFileToOD } from '../middlewares/admin/upload-middleware';
+import { informExam } from '../middlewares/azure-email-middleware';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
@@ -290,7 +291,7 @@ export default{
         }
     },
 
-    uploadExamSchedule : async (req: URequest, res: Response) => {
+    uploadExamFile : async (req: URequest, res: Response) => {
         const files = req.files as Express.Multer.File[];
         const examId = parseInt(req.body.examId);
 
@@ -302,7 +303,7 @@ export default{
 
         try {
             for (const file of files) {
-                await uploadExamScheduleToOnedrive(file, exam, req.user as User);
+                await uploadExamFileToOD(file, exam, req.user as User);
             }
         } catch (error) {
             logger.error(error);
@@ -400,8 +401,37 @@ export default{
         if(!exam) {
             return res.status(400).json({ error: 'Exam does not exists' });
         }
-
+    
         await examService.updatePrepared(examId, prepared);
+
+        if(prepared === true) {
+
+            const time = new Date(exam.startTime).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            const date = new Date(exam.startTime).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            const loc = await locationsService.getLocation({name: exam.location});
+            const venue = await locationsService.getVenue(exam.venue, loc!.id);
+            const location = loc!.name + ' - ' + venue!.name;
+
+            const supervisors = await examService.getSupervisorsByExamId(examId);
+            const invigilators = await examService.getInvigilatorsByExamId(examId);
+            const examiners = await examService.getExaminersByExamId(examId);
+
+            if (!supervisors || !invigilators || !examiners) {
+                return res.status(400).json({ error: 'Exam has no workers' });
+            }
+
+            for (const supervisor of supervisors.supervisors) {
+                informExam(supervisor.email, `Exam - ${location} - ${date}`, location, date, time, supervisor.firstName, supervisor.lastName, RoleEnum.Supervisor.toString());
+            }
+
+            for (const invigilator of invigilators.invigilators) {
+                informExam(invigilator.email, `Exam - ${location} - ${date}`, location, date, time, invigilator.firstName, invigilator.lastName, RoleEnum.Invigilator.toString());
+            }
+
+            for (const examiner of examiners.examiners) {
+                informExam(examiner.email, `Exam - ${location} - ${date}`, location, date, time, examiner.firstName, examiner.lastName, RoleEnum.Examiner.toString());
+            }
+        }
 
         return res.status(200).json({ message: 'Exam prepared updated' });
     },

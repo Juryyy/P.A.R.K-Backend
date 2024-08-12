@@ -77,6 +77,9 @@ export default {
     return await prisma.examLocation.findUnique({
       where: {
         id
+      },
+      include: {
+        venues: true
       }
     });
   },
