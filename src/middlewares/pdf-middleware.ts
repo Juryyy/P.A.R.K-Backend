@@ -28,6 +28,8 @@ export function createDayReportPdf(date: string, venue: string, type: string, ex
                         [{ text: 'Levels:', style: 'tableHeader' }, { text: examlevels.join(', '), style: 'tableCell' }],
                         [{ text: 'Candidates:', style: 'tableHeader' }, { text: candidates.toString(), style: 'tableCell' }],
                         [{ text: 'Absent:', style: 'tableHeader' }, { text: absent.toString(), style: 'tableCell' }],
+                        //absent id, name, level
+                        //ticks for special considerations
                         [{ text: 'Supervisors:', style: 'tableHeader' }, { text: supervisors.join(', '), style: 'tableCell' }],
                         [{ text: 'Invigilators:', style: 'tableHeader' }, { text: invigilators.join(', '), style: 'tableCell' }],
                         [{ text: 'Examiners:', style: 'tableHeader' }, { text: examiners.join(', '), style: 'tableCell' }],

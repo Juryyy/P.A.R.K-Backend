@@ -81,6 +81,7 @@ export function styledHtml(password: string, user: string, email: string) {
         </div>
         <div class="footer">
             © 2024 P.A.R.K. Exams Center. All rights reserved.
+            This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
         </div>
     </div>
 </body>
@@ -170,6 +171,7 @@ export function authorizationCode(code: string, user: string, email: string) {
         </div>
         <div class="footer">
             © 2024 P.A.R.K. Exams Center. All rights reserved.
+            This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
         </div>
     </div>
 </body>
@@ -259,6 +261,7 @@ export function passwordReset(password: string, user: string, email: string) {
         </div>
         <div class="footer">
             © 2024 P.A.R.K. Exams Center. All rights reserved.
+            This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
         </div>
     </div>
 </body>
@@ -339,8 +342,9 @@ export function newAvailabilityDates(user: string, startDate: string, endDate: s
         <div class="content">
             <h1>Hi ${user}!</h1>
             <h2>New Availability Dates</h2>
-            <p>We have created new availability dates and need you to review them and mark your availability. Please have them completed by ${dateOfSubmits}:</p>
+            <p>We have created new availability dates and need you to review them and mark your availability.</p>
             <div class="credentials">
+            <h2> Please have them completed by ${dateOfSubmits}:</h2><br/>
                 Availability starts: ${startDate}<br/>
                 Availability ends: ${endDate}
             </div>
@@ -350,6 +354,7 @@ export function newAvailabilityDates(user: string, startDate: string, endDate: s
         </div>
         <div class="footer">
             © 2024 P.A.R.K. Exams Center. All rights reserved.
+            This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
         </div>
     </div>
 </body>
@@ -444,6 +449,7 @@ export function examAssignment(user: string, exam: string, role: string, date : 
         </div>
         <div class="footer">
             © 2024 P.A.R.K. Exams Center. All rights reserved.
+            This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
         </div>
     </div>
 </body>
