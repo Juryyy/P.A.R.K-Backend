@@ -10,5 +10,5 @@ router.get('/examDays', jwtAccessVerify, check.isOffice, dayOfExamsController.ge
 router.delete('/delete/:id', jwtAccessVerify, check.isOffice, dayOfExamsController.deleteDayOfExams);
 router.put('/changeLock/:id', jwtAccessVerify, check.isOffice, dayOfExamsController.changeLock);
 router.post('/informUsers', jwtAccessVerify, check.isOffice, dayOfExamsController.informUsers);
-
+router.get('/all', jwtAccessVerify, check.isOffice, dayOfExamsController.getAllDayOfExams);
 export default router;

@@ -1,6 +1,6 @@
 import { PrismaClient, User, Exam, LevelEnum, TypeOfExamEnum } from "@prisma/client";
 import { remove } from "winston";
-import _ from 'lodash';
+import _, { get } from 'lodash';
 
 const prisma = new PrismaClient();
 
@@ -282,5 +282,13 @@ export default {
             },
         });
     },
+
+    async getExamsByDay(dayOfExamsId: number) {
+        return await prisma.exam.findMany({
+            where: {
+                dayOfExamsId,
+            },
+        });
+    }
 
 }
