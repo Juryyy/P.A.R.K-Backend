@@ -5,6 +5,7 @@ import logger from "../configs/logger";
 import { URequest } from "../types/URequest";
 import { informAvailability } from "../middlewares/azure-email-middleware";
 import userService from '../services/user-service';
+import examService from '../services/exam-service';
 
 export default {
     createDayOfExams: async (req: URequest, res: Response) => {
@@ -118,4 +119,29 @@ export default {
         return res.status(200).json({ success: 'Users informed' });
         }
     },
+
+    getAllDayOfExams: async (req: Request, res: Response) => {
+        try {
+            const dayOfExams = await dayOfExamsService.getDayOfExams();
+    
+            dayOfExams.sort((b, a) => {
+                return new Date(a.date).getTime() - new Date(b.date).getTime();
+            });
+
+            const exams = await examService.getAllExams();
+    
+            const dayOfExamsC = await Promise.all(dayOfExams.map(async (day) => {
+                const counter = exams.filter((exam) => exam.dayOfExamsId === day.id);
+                return {
+                    ...day,
+                    examsCount: counter.length
+                };
+            }));
+    
+            return res.status(200).json(dayOfExamsC);
+        } catch (error) {
+            logger.error(error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 }

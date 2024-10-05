@@ -436,5 +436,13 @@ export default{
         return res.status(200).json({ message: 'Exam prepared updated' });
     },
 
+    getExamsByDay : async (req: URequest, res: Response) => {
+        const dayId = parseInt(req.params.id);
+
+        const exams = await examService.getExamsByDay(dayId);
+
+        return res.status(200).json(exams);
+    },
+
 }
 

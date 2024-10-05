@@ -11,7 +11,6 @@ import { uploadPostToOnedrive, deletePostFile } from "../middlewares/admin/uploa
 export default {
     createPost: async (req: URequest, res: Response) => {
         let { title, content, roles, users } = req.body;
-        console.log(title, content, roles, users);
 
         try {
             roles = JSON.parse(roles);
@@ -84,7 +83,6 @@ export default {
             
             allPosts.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
             
-            console.log(allPosts);
             return res.status(200).json(allPosts);
         } catch (error) {
             logger.error(error);
@@ -93,13 +91,11 @@ export default {
     },
 
     deletePost: async (req: URequest, res: Response) => {
-        console.log('Delete post');
         const postId = parseInt(req.params.id);
     
         try {
             const post = await postService.getPostById(postId);
             if (!post) {
-                console.log('Post not found');
                 return res.status(404).json({ error: 'Post not found' });
             }
 
