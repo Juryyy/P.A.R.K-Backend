@@ -9,7 +9,8 @@
     "test:reset": "ts-node prisma/resetDb.ts",
     "test": "npm run test:db && npm run test:reset && npx prisma migrate dev && npm run test:seed && jest",
     "dev": "nodemon src/app.ts",
-    "docker": "docker-compose down && docker-compose build && docker-compose up -d"
+    "docker": "docker-compose down && docker-compose build && docker-compose up -d",
+    "start": "ts-node src/app.ts"
   },
   "repository": {
     "type": "git",

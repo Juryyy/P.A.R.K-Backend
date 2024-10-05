@@ -17,7 +17,7 @@ async function main() {
                 lastName: 'Šulc',
                 email: 'martin.sulc2551@gmail.com',
                 password: authService.hashPassword('test'),
-                role: 'Office',
+                role: ['Office'],
                 activatedAccount: true,
                 deactivated: false,
                 phone: '123456789',

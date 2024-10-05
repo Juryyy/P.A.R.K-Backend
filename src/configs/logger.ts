@@ -1,6 +1,14 @@
 import winston from 'winston';
 import envConfig from './env-config';
 
+const colors = {
+    error: 'red',
+    warn: 'yellow',
+    info: 'green',
+    http: 'magenta',
+    debug: 'white',
+}
+
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.combine(
@@ -9,7 +17,7 @@ const logger = winston.createLogger({
         }),
         winston.format.json()
     ),
-    defaultMeta: { service: 'P.A.R.K Back-end' },
+    defaultMeta: { service: 'P.A.R.K. Back-end' },
     transports: [
         new winston.transports.File({ filename: 'combined.log' }),
         new winston.transports.File({ filename: 'error.log', level: 'error' }),
