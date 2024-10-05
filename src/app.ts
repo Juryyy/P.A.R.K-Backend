@@ -16,14 +16,17 @@ const app: Express = express();
 const cookieSecret = envConfig.getEnv('COOKIE_SECRET') as string;
 app.use(cookieParser(cookieSecret));
 
-app.use(fileUpload())
-app.use(cors({origin: envConfig.getEnv('FRONTEND_URL'), credentials: true}))
+const frontendUrl = envConfig.getEnv('FRONTEND_URL') as string;
+app.use(fileUpload());
+app.use(cors({origin: frontendUrl, credentials: true}));
 app.use(express.json());
 app.use(router);
 
 
-const server = app.listen(4000, '0.0.0.0', () => {
-  console.log('Server is running on port 4000');
+const port = Number(envConfig.getEnv('PORT')) || 4000;
+const server = app.listen(port, 'localhost', () => {
+    console.log(`Server is running on http://localhost:${port}`);
 });
+
 
 export {app, server};
