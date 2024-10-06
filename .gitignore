@@ -132,4 +132,5 @@ dist
 
 # Static
 /static/*
-!/static/testMan
+/static/image/*
+!/static/images/testMan.jpg
