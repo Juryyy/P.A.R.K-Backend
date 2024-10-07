@@ -39,6 +39,8 @@ model User {
   authorizations   Authorization[]
   files            File[]
   dayReports       DayReport[] @relation("UserToDayReports")
+  examConfirmations  ExamUserConfirmation[]
+
 }
 
 model DayOfExams {
@@ -87,6 +89,20 @@ model Exam {
   ScheduleForDay   ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
   dayReport        DayReport?      @relation("DayReportToExam")
   files            File[]
+  userConfirmations ExamUserConfirmation[]
+}
+
+model ExamUserConfirmation {
+  id           Int       @id @default(autoincrement())
+  examId       Int
+  userId       Int
+  role         RoleEnum
+  isConfirmed  Boolean   @default(false)
+  confirmedAt  DateTime?
+  exam         Exam      @relation(fields: [examId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
+
+  @@unique([examId, userId, role])
 }
 
 model Candidate {

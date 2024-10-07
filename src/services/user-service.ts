@@ -217,6 +217,17 @@ export default {
                 level: levels
             }
         });
+    },
+
+    async updateAdminNoteById (id : number, adminNote : string){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                adminNote: adminNote
+            }
+        });
     }
 
 }
