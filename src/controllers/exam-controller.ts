@@ -179,14 +179,14 @@ export default{
     },
 
     createDayReport: async(req: URequest, res: Response) => {
-        const { examId, candidates, absent, comment, issues } = req.body;
+        const { examId, candidates, absent, comment, issues, absentCandidates } = req.body;
 
         const examIdN = parseInt(examId);
         const candidatesN = parseInt(candidates);
         const absentN = parseInt(absent);
     
         try {
-            examSchema.examDayReportSchema.parse({ examIdN, candidatesN, absentN, comment, issues });
+            examSchema.examDayReportSchema.parse({ examIdN, candidatesN, absentN, comment, issues, absentCandidates });
         } catch (error: unknown) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
@@ -217,7 +217,7 @@ export default{
         const filename = `${address}.pdf`;
         
         try {
-            const filePath = await createDayReportPdf(date, address, exam.type, exam.levels, candidatesN, absentN, supervisorNames, invigilatorNames, examinerNames, comment, issues, filename);
+            const filePath = await createDayReportPdf(date, address, exam.type, exam.levels, candidatesN, absentN, supervisorNames, invigilatorNames, examinerNames, comment, issues, filename, absentCandidates);
     
             await uploadDayReportToOnedrive(filePath, exam, req.user as User, filename);
     

@@ -15,14 +15,21 @@ const examInfoSchema = z.object({
     dayOfExamsId: z.number(),
     });
 
-const examDayReportSchema = z.object({
+const absentCandidateSchema = z.object({
+    id: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    level: z.string(),
+});
+  
+  const examDayReportSchema = z.object({
     examIdN: z.number(),
     candidatesN: z.number(),
     absentN: z.number(),
     comment: z.string(),
     issues: z.string(),
+    absentCandidates: z.array(absentCandidateSchema),
 });
-
 
 export default {examInfoSchema, examDayReportSchema};
 

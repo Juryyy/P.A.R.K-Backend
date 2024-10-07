@@ -11,7 +11,6 @@ import { uploadPostToOnedrive, deletePostFile } from "../middlewares/admin/uploa
 export default {
     createPost: async (req: URequest, res: Response) => {
         let { title, content, roles, users } = req.body;
-        console.log(title, content, roles, users);
 
         try {
             roles = JSON.parse(roles);
