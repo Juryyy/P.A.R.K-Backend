@@ -69,14 +69,14 @@ export function styledHtml(password: string, user: string, email: string) {
                 <img src="https://www.zkouskypark.cz/www/upload/logo/20210118070023666.png" alt="P.A.R.K. Logo">
             </div>
             <div class="content">
-                <h1>Hi!</h1>
-                <h2>${user}</h2>
+                <h1>Hello${user}!</h1>
                 <p>We would love to welcome you to P.A.R.K. Exams center. Part of the work is done through our application. Your login details:</p>
                 <div class="credentials">
                     Login: ${email}<br/>
                     Password: ${password}
                 </div>
                 <p>Please visit <a href="https://parkappka.cz">https://parkappka.cz</a> to log in and get started.</p>
+                <p>In your profile section, you should update your personal information and change your password to something more secure.</p>
                 <p>Thank you for your time and we look forward to working with you.</p>
                 <p>Best regards,<br/>P.A.R.K. Team</p>
             </div>
@@ -161,8 +161,7 @@ export function authorizationCode(code: string, user: string, email: string) {
                 <img src="https://www.zkouskypark.cz/www/upload/logo/20210118070023666.png" alt="P.A.R.K. Logo">
             </div>
             <div class="content">
-                <h1>Hi!</h1>
-                <h2>${user}</h2>
+                <h1>Hello ${user}!</h1>
                 <p>Your authorization code is:</p>
                 <div class="credentials">
                     ${code}
@@ -252,14 +251,13 @@ export function passwordReset(password: string, user: string, email: string) {
                 <img src="https://www.zkouskypark.cz/www/upload/logo/20210118070023666.png" alt="P.A.R.K. Logo">
             </div>
             <div class="content">
-                <h1>Hi!</h1>
-                <h2>${user}</h2>
+                <h1>Hello ${user}!</h1>
                 <p>Your password has been reset. Your new password is:</p>
                 <div class="credentials">
                     ${password}
                 </div>
                 <p>Please visit <a href="https://parkappka.cz">https://parkappka.cz</a> to log in with your new password.</p>
-                <p>It is recommended to change it to something different once you log in.</p>
+                <p>In your profile section, you should update your password to something more secure.</p>
                 <p>If you did not request this change, please contact us immediately.</p>
             </div>
             <div class="footer">
@@ -436,7 +434,7 @@ export function examAssignment(user: string, exam: string, role: string, date : 
                 <img src="https://www.zkouskypark.cz/www/upload/logo/20210118070023666.png" alt="P.A.R.K. Logo">
             </div>
             <div class="content">
-                <h1>Hi ${user}!</h1>
+                <h1>Hello ${user}!</h1>
                 <h2>New Exam Assignment</h2>
                 <p>We are pleased to inform you that you have been assigned to the following exam:</p>
                 <div class="credentials">
