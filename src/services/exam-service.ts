@@ -52,6 +52,7 @@ export default {
             candidates: true,
             files: true,
             dayReport: true,
+            userConfirmations: true,
           },
         });
       

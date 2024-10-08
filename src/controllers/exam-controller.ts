@@ -13,6 +13,7 @@ import locationsService from '../services/locations-service';
 import { ExamWithVenueLink } from '../types/extraTypes';
 import { uploadDayReportToOnedrive, uploadExamFileToOD } from '../middlewares/admin/upload-middleware';
 import { informExam } from '../middlewares/azure-email-middleware';
+import confirmationService from '../services/confirmation-service';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
@@ -421,14 +422,17 @@ export default{
             }
 
             for (const supervisor of supervisors.supervisors) {
-                informExam(supervisor.email, `Exam - ${location} - ${date}`, location, date, time, supervisor.firstName, supervisor.lastName, RoleEnum.Supervisor.toString());
+                await confirmationService.createConfirmation(examId, supervisor.id, RoleEnum.Supervisor, false);
+                await informExam(supervisor.email, `Exam - ${location} - ${date}`, location, date, time, supervisor.firstName, supervisor.lastName, RoleEnum.Supervisor.toString());
             }
 
             for (const invigilator of invigilators.invigilators) {
+                await confirmationService.createConfirmation(examId, invigilator.id, RoleEnum.Invigilator, false);
                 informExam(invigilator.email, `Exam - ${location} - ${date}`, location, date, time, invigilator.firstName, invigilator.lastName, RoleEnum.Invigilator.toString());
             }
 
             for (const examiner of examiners.examiners) {
+                await confirmationService.createConfirmation(examId, examiner.id, RoleEnum.Examiner, false);
                 informExam(examiner.email, `Exam - ${location} - ${date}`, location, date, time, examiner.firstName, examiner.lastName, RoleEnum.Examiner.toString());
             }
         }
