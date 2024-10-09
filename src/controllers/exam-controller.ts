@@ -448,5 +448,31 @@ export default{
         return res.status(200).json(exams);
     },
 
+    confirmation: async (req: URequest, res: Response) => {
+        const { examId, role, isConfirmed } = req.body;
+        console.log('Received request body:', req.body);
+        const userId = req.user?.id;
+    
+        if (!userId) {
+          return res.status(401).json({ error: 'Please login' });
+        }
+    
+        if (![RoleEnum.Supervisor, RoleEnum.Invigilator, RoleEnum.Examiner].includes(role)) {
+          return res.status(400).json({ error: 'Invalid role' });
+        }
+    
+        try {
+          console.log('Calling updateConfirmation with:', { examId, userId, role, isConfirmed });
+          const updatedConfirmation = await confirmationService.updateConfirmation(examId, userId, role, isConfirmed);
+          console.log('Updated confirmation:', updatedConfirmation);
+          return res.status(200).json({ message: 'Confirmation updated', confirmation: updatedConfirmation });
+        } catch (error) {
+          console.error('Failed to update confirmation:', error);
+          return res.status(500).json({ error: 'Failed to update confirmation' });
+        }
+      }
+    
+
+
 }
 

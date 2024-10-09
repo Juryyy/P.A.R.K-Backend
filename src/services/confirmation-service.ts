@@ -25,26 +25,61 @@ export default {
         }
     },
 
-    async getConfirmation(data: Prisma.ExamUserConfirmationWhereUniqueInput) {
+    async getOrCreateConfirmation(examId: number, userId: number, role: RoleEnum) {
         try {
-            return await prisma.examUserConfirmation.findUnique({
-                where: data
+          let confirmation = await prisma.examUserConfirmation.findFirst({
+            where: {
+              examId,
+              userId,
+              role
+            }
+          });
+    
+          if (!confirmation) {
+            confirmation = await prisma.examUserConfirmation.create({
+              data: {
+                examId,
+                userId,
+                role,
+                isConfirmed: false
+              }
             });
+          }
+    
+          return confirmation;
         } catch (e) {
-            console.error(e);
+          logger.error(e);
+          throw e;
         }
-    },
-
-    async updateConfirmation(data: Prisma.ExamUserConfirmationUncheckedUpdateInput) {
+      },
+    
+      async updateConfirmation(examId: number, userId: number, role: RoleEnum, isConfirmed: boolean) {
         try {
-            return await prisma.examUserConfirmation.update({
-                where: { id: data.id as number },
-                data
-            });
+          return await prisma.examUserConfirmation.upsert({
+            where: {
+              examId_userId_role: {
+                examId,
+                userId,
+                role
+              }
+            },
+            update: {
+              isConfirmed: isConfirmed,
+              confirmedAt: isConfirmed ? new Date() : null
+            },
+            create: {
+              examId,
+              userId,
+              role,
+              isConfirmed: isConfirmed,
+              confirmedAt: isConfirmed ? new Date() : null
+            }
+          });
         } catch (e) {
-            console.error(e);
+          logger.error('Failed to update confirmation:', e);
+          throw e;
         }
-    },
+      },
 
     async deleteConfirmation(data: Prisma.ExamUserConfirmationWhereUniqueInput) {
         try {

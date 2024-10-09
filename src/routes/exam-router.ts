@@ -18,6 +18,7 @@ router.get('/day/:id', jwtAccessVerify, examController.getExamsByDay);
 
 router.post('/addWorker', jwtAccessVerify, check.isOffice, examController.addWorker);
 router.post('/removeWorker', jwtAccessVerify, check.isOffice, examController.removeWorker);
+router.put('/confirmation', jwtAccessVerify, examController.confirmation);
 
 router.post('/createDayReport', jwtAccessVerify, examController.createDayReport);
 router.get('/dayReport/:id', jwtAccessVerify, examController.getDayReport);
