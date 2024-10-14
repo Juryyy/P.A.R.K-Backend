@@ -137,7 +137,7 @@ export const deletePostFile = async (fileId : number) => {
         await client
             .api(`/sites/${siteId}/drive/root:/Import/Posts/${file.name}`)
             .delete();
-
+        logger.info(`File ${file.name} deleted from OneDrive`);
         return await fileService.deleteFile(fileId);
     } catch (err) {
         logger.error(err);

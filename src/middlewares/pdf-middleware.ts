@@ -3,6 +3,7 @@ import * as vfsFonts from 'pdfmake/build/vfs_fonts';
 import * as fs from 'fs';
 import * as path from 'path';
 import logger from '../configs/logger';
+import { AbsentCandidate } from '../types/extraTypes';
 
 (pdfmake as any).vfs = vfsFonts.pdfMake.vfs;
 
@@ -12,8 +13,29 @@ const robotoRegular = fs.readFileSync(path.join(__dirname, '../../fonts/Roboto-R
 const robotoItalic = fs.readFileSync(path.join(__dirname, '../../fonts/Roboto-Italic.ttf')).toString('base64');
 const robotoMediumItalic = fs.readFileSync(path.join(__dirname, '../../fonts/Roboto-MediumItalic.ttf')).toString('base64');
 
+
 // Define the structure of your PDF document
-export function createDayReportPdf(date: string, venue: string, type: string, examlevels: string[], candidates: number, absent: number, supervisors: string[], invigilators: string[], examiners: string[], comment: string, issues: string, filename: string): Promise<string> {
+export function createDayReportPdf(date: string, venue: string, type: string, examlevels: string[], candidates: number, absent: number, supervisors: string[], invigilators: string[], examiners: string[], comment: string, issues: string, filename: string, absentCandidates: AbsentCandidate[]): Promise<string> {
+    const absentCandidatesTable = {
+        table: {
+          headerRows: 1,
+          widths: ['auto', '*', 'auto'],
+          body: [
+            [
+              { text: 'ID', style: 'tableHeader' },
+              { text: 'Name', style: 'tableHeader' },
+              { text: 'Level', style: 'tableHeader' }
+            ],
+            ...absentCandidates.map(candidate => [
+              { text: candidate.id, style: 'tableCell' },
+              { text: `${candidate.firstName} ${candidate.lastName}`, style: 'tableCell' },
+              { text: candidate.level, style: 'tableCell' }
+            ])
+          ]
+        },
+        layout: 'lightHorizontalLines'
+      };
+    
     const docDefinition = {
         content: [
             { text: 'Exam day report', style: 'header' },
@@ -28,7 +50,7 @@ export function createDayReportPdf(date: string, venue: string, type: string, ex
                         [{ text: 'Levels:', style: 'tableHeader' }, { text: examlevels.join(', '), style: 'tableCell' }],
                         [{ text: 'Candidates:', style: 'tableHeader' }, { text: candidates.toString(), style: 'tableCell' }],
                         [{ text: 'Absent:', style: 'tableHeader' }, { text: absent.toString(), style: 'tableCell' }],
-                        //absent id, name, level
+                        [{ text: 'Absent Candidates:', style: 'tableHeader' }, absentCandidatesTable],
                         //ticks for special considerations
                         [{ text: 'Supervisors:', style: 'tableHeader' }, { text: supervisors.join(', '), style: 'tableCell' }],
                         [{ text: 'Invigilators:', style: 'tableHeader' }, { text: invigilators.join(', '), style: 'tableCell' }],
@@ -38,12 +60,15 @@ export function createDayReportPdf(date: string, venue: string, type: string, ex
                     ]
                 },
                 layout: {
-                    fillColor: function (rowIndex: number) {
+                    fillColor: function (rowIndex: number, node: any, columnIndex: number) {
+                      if (node.table.body[rowIndex][columnIndex].style === 'tableSubHeader') {
+                        return '#e6e6e6';
+                    }
                         return (rowIndex % 2 === 0) ? '#f2f2f2' : null;
+                        }
                     }
                 }
-            }
-        ],
+            ],
         styles: {
             header: {
                 fontSize: 22,

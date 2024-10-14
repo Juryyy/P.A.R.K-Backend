@@ -13,6 +13,7 @@ import locationsService from '../services/locations-service';
 import { ExamWithVenueLink } from '../types/extraTypes';
 import { uploadDayReportToOnedrive, uploadExamFileToOD } from '../middlewares/admin/upload-middleware';
 import { informExam } from '../middlewares/azure-email-middleware';
+import confirmationService from '../services/confirmation-service';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
@@ -179,14 +180,14 @@ export default{
     },
 
     createDayReport: async(req: URequest, res: Response) => {
-        const { examId, candidates, absent, comment, issues } = req.body;
+        const { examId, candidates, absent, comment, issues, absentCandidates } = req.body;
 
         const examIdN = parseInt(examId);
         const candidatesN = parseInt(candidates);
         const absentN = parseInt(absent);
     
         try {
-            examSchema.examDayReportSchema.parse({ examIdN, candidatesN, absentN, comment, issues });
+            examSchema.examDayReportSchema.parse({ examIdN, candidatesN, absentN, comment, issues, absentCandidates });
         } catch (error: unknown) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
@@ -217,7 +218,7 @@ export default{
         const filename = `${address}.pdf`;
         
         try {
-            const filePath = await createDayReportPdf(date, address, exam.type, exam.levels, candidatesN, absentN, supervisorNames, invigilatorNames, examinerNames, comment, issues, filename);
+            const filePath = await createDayReportPdf(date, address, exam.type, exam.levels, candidatesN, absentN, supervisorNames, invigilatorNames, examinerNames, comment, issues, filename, absentCandidates);
     
             await uploadDayReportToOnedrive(filePath, exam, req.user as User, filename);
     
@@ -421,14 +422,17 @@ export default{
             }
 
             for (const supervisor of supervisors.supervisors) {
-                informExam(supervisor.email, `Exam - ${location} - ${date}`, location, date, time, supervisor.firstName, supervisor.lastName, RoleEnum.Supervisor.toString());
+                await confirmationService.createConfirmation(examId, supervisor.id, RoleEnum.Supervisor, false);
+                await informExam(supervisor.email, `Exam - ${location} - ${date}`, location, date, time, supervisor.firstName, supervisor.lastName, RoleEnum.Supervisor.toString());
             }
 
             for (const invigilator of invigilators.invigilators) {
+                await confirmationService.createConfirmation(examId, invigilator.id, RoleEnum.Invigilator, false);
                 informExam(invigilator.email, `Exam - ${location} - ${date}`, location, date, time, invigilator.firstName, invigilator.lastName, RoleEnum.Invigilator.toString());
             }
 
             for (const examiner of examiners.examiners) {
+                await confirmationService.createConfirmation(examId, examiner.id, RoleEnum.Examiner, false);
                 informExam(examiner.email, `Exam - ${location} - ${date}`, location, date, time, examiner.firstName, examiner.lastName, RoleEnum.Examiner.toString());
             }
         }
@@ -443,6 +447,32 @@ export default{
 
         return res.status(200).json(exams);
     },
+
+    confirmation: async (req: URequest, res: Response) => {
+        const { examId, role, isConfirmed } = req.body;
+        console.log('Received request body:', req.body);
+        const userId = req.user?.id;
+    
+        if (!userId) {
+          return res.status(401).json({ error: 'Please login' });
+        }
+    
+        if (![RoleEnum.Supervisor, RoleEnum.Invigilator, RoleEnum.Examiner].includes(role)) {
+          return res.status(400).json({ error: 'Invalid role' });
+        }
+    
+        try {
+          console.log('Calling updateConfirmation with:', { examId, userId, role, isConfirmed });
+          const updatedConfirmation = await confirmationService.updateConfirmation(examId, userId, role, isConfirmed);
+          console.log('Updated confirmation:', updatedConfirmation);
+          return res.status(200).json({ message: 'Confirmation updated', confirmation: updatedConfirmation });
+        } catch (error) {
+          console.error('Failed to update confirmation:', error);
+          return res.status(500).json({ error: 'Failed to update confirmation' });
+        }
+      }
+    
+
 
 }
 

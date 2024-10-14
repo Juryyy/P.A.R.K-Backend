@@ -154,4 +154,27 @@ export default {
       return res.status(400).json({ error: "Invalid data" });
     }
   },
+
+  updateAdminNote: async (req: URequest, res: Response) => {
+    const userId = req.user?.id;
+    const { id, adminNote } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Please login" });
+    }
+
+    const userExists = await userService.getUserById(userId);
+
+    if (!userExists) {
+      return res.status(400).json({ error: "User does not exists" });
+    }
+
+    try {
+      await userService.updateAdminNoteById(id, adminNote);
+      return res.status(200).json({ success: "Admin note updated" });
+    } catch (error) {
+      logger.error(error);
+      return res.status(400).json({ error: "Invalid data" });
+    }
+  }
 };

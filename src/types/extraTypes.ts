@@ -8,3 +8,10 @@ export interface ExamWithVenueLink extends Exam {
 export interface FileArray {
     [fieldname: string]: UploadedFile | UploadedFile[];
 }
+
+export interface AbsentCandidate {
+  id?: number;
+  firstName: string;
+  lastName: string;
+  level: string;
+}

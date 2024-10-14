@@ -39,7 +39,7 @@ export default {
                 lastName,
                 email,
                 phone: null,
-                dateOfBirth: new Date(),
+                dateOfBirth: null,
                 password: hash,
                 role: role as RoleEnum[],
                 activatedAccount: false,
