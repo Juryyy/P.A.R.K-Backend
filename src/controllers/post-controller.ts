@@ -7,6 +7,9 @@ import userService from "../services/user-service";
 import logger from "../configs/logger";
 import { User } from "@prisma/client";
 import { uploadPostToOnedrive, deletePostFile } from "../middlewares/admin/upload-middleware";
+import fs from "fs";
+import path from "path";
+import mime from "mime-types";
 
 export default {
     createPost: async (req: URequest, res: Response) => {
@@ -81,9 +84,39 @@ export default {
     
             const allPosts = userPosts.concat(rolePosts.filter((rolePost) => !userPosts.some((userPost) => userPost.id === rolePost.id)));
             
-            allPosts.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
-            
-            return res.status(200).json(allPosts);
+            allPosts.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    
+            // Read and include avatar data
+            const postsWithAvatars = await Promise.all(allPosts.map(async (post) => {
+                let avatarData = null;
+                if (post.author.avatarUrl) {
+                    const imagePath = path.join(__dirname, `../../static/images/${post.author.avatarUrl}`);
+                    try {
+                        const fileData = await new Promise<Buffer>((resolve, reject) => {
+                            fs.readFile(imagePath, (err, data) => {
+                                if (err) reject(err);
+                                else resolve(data);
+                            });
+                        });
+                        const base64Data = fileData.toString('base64');
+                        const mimeType = mime.lookup(post.author.avatarUrl) || 'application/octet-stream';
+                        avatarData = `data:${mimeType};base64,${base64Data}`;
+                    } catch (error) {
+                        console.error(`Error reading avatar for user ${post.author.id}:`, error);
+                    }
+                }
+    
+                return {
+                    ...post,
+                    author: {
+                        ...post.author,
+                        avatarData
+                    }
+                };
+            }));
+    
+                        
+            return res.status(200).json(postsWithAvatars);
         } catch (error) {
             logger.error(error);
             return res.status(500).json({ error: 'Internal server error' });
@@ -118,4 +151,13 @@ export default {
         }
     },
     
+}
+
+
+async function getUserAvatarById(userId: number): Promise<string | null> {
+    const user = await userService.getUserById(userId);
+    if (!user || !user.avatarUrl) return null;
+
+    const imagePath = path.join(__dirname, `../../static/images/${user.avatarUrl}`);
+    return fs.existsSync(imagePath) ? `/api/users/${userId}/avatar` : null;
 }
