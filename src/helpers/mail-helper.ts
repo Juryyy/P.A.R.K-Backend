@@ -69,8 +69,8 @@ export function styledHtml(password: string, user: string, email: string) {
                 <img src="https://www.zkouskypark.cz/www/upload/logo/20210118070023666.png" alt="P.A.R.K. Logo">
             </div>
             <div class="content">
-                <h1>Hello${user}!</h1>
-                <p>We would love to welcome you to P.A.R.K. Exams center. Part of the work is done through our application. Your login details:</p>
+                <h1>Hello ${user}!</h1>
+                <p>Welcome at the P.A.R.K. Exam Centre App. Here are your login details:</p>
                 <div class="credentials">
                     Login: ${email}<br/>
                     Password: ${password}
@@ -82,7 +82,7 @@ export function styledHtml(password: string, user: string, email: string) {
             </div>
             <div class="footer">
                 © 2024 P.A.R.K. Exams Center. All rights reserved.
-                This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
+                This is an automated message. Please do not reply. If you have any questions, please contact Head of Exams or at info@zkouskypark.cz
             </div>
         </div>
     </body>
@@ -172,7 +172,7 @@ export function authorizationCode(code: string, user: string, email: string) {
             </div>
             <div class="footer">
                 © 2024 P.A.R.K. Exams Center. All rights reserved.
-                This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
+                This is an automated message. Please do not reply. If you have any questions, please contact Head of Exams or at info@zkouskypark.cz
             </div>
         </div>
     </body>
@@ -262,7 +262,7 @@ export function passwordReset(password: string, user: string, email: string) {
             </div>
             <div class="footer">
                 © 2024 P.A.R.K. Exams Center. All rights reserved.
-                This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
+                This is an automated message. Please do not reply. If you have any questions, please contact Head of Exams or at info@zkouskypark.cz
             </div>
         </div>
     </body>
@@ -341,7 +341,7 @@ export function newAvailabilityDates(user: string, startDate: string, endDate: s
                 <img src="https://www.zkouskypark.cz/www/upload/logo/20210118070023666.png" alt="P.A.R.K. Logo">
             </div>
             <div class="content">
-                <h1>Hi ${user}!</h1>
+                <h1>Hello ${user}!</h1>
                 <h2>New Availability Dates</h2>
                 <p>We have created new availability dates in our system and need you to review them and mark your availability.</p>
                 <div class="credentials">
@@ -355,7 +355,7 @@ export function newAvailabilityDates(user: string, startDate: string, endDate: s
             </div>
             <div class="footer">
                 © 2024 P.A.R.K. Exams Center. All rights reserved.
-                This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
+                This is an automated message. Please do not reply. If you have any questions, please contact Head of Exams or at info@zkouskypark.cz
             </div>
         </div>
     </body>
@@ -450,7 +450,7 @@ export function examAssignment(user: string, exam: string, role: string, date : 
             </div>
             <div class="footer">
                 © 2024 P.A.R.K. Exams Center. All rights reserved.
-                This is an automated message. Please do not reply. If you have any questions, please contact Exam Day Manager or at info@zkouskypark.cz
+                This is an automated message. Please do not reply. If you have any questions, please contact Head of Exams or at info@zkouskypark.cz
             </div>
         </div>
     </body>
