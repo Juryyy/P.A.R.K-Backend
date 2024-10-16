@@ -30,7 +30,7 @@ export default {
         }
 
         // Delete old avatar if it exists
-        if (user.avatarUrl) {
+        if (user.avatarUrl !== "testMan.jpg" && user.avatarUrl) {
             const oldAvatarPath = path.join('static/images', user.avatarUrl);
             await fs.unlink(oldAvatarPath).catch(err => logger.warn(`Failed to delete old avatar: ${err.message}`));
         }
