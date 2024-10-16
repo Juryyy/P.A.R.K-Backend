@@ -89,5 +89,17 @@ export default {
         } catch (e) {
             console.error(e);
         }
-    }
+    },
+
+    async deleteConfirmationsByExamId(examId: number) {
+        try {
+            return await prisma.examUserConfirmation.deleteMany({
+                where: {
+                    examId
+                }
+            });
+        } catch (e) {
+            console.error(e);
+        }
+    },
 }

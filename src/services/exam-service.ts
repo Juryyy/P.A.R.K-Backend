@@ -251,6 +251,9 @@ export default {
                     },
                 ],
             },
+            include: {
+                userConfirmations: true,
+            },
         });
     },
 

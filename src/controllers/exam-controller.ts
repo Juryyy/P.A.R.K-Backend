@@ -370,6 +370,8 @@ export default{
                 await examService.removeExaminer(exam.id, examiner.id);
             }
 
+            await confirmationService.deleteConfirmationsByExamId(id);
+
             await examService.deleteExam(id);
 
         }catch(error){
