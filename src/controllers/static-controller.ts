@@ -6,7 +6,15 @@ import userService from '../services/user-service';
 
 export default {
     getUsersAvatar: async (req: URequest, res: Response) => {
-        const image = req.user?.avatarUrl
+        const id = req.user?.id;
+        if(!id) {
+            return res.status(401).send('Unauthorized: Please login');
+        }
+        const user = await userService.getUserById(id);
+        if(!user) {
+            return res.status(404).send('User not found');
+        }
+        const image = user.avatarUrl;
         const imagePath = path.join(__dirname, `../../static/images/${image}`);
         if(fs.existsSync(imagePath)) {
             return res.sendFile(imagePath);

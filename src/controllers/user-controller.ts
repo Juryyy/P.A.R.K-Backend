@@ -4,8 +4,9 @@ import { MURequest, URequest } from "../types/URequest";
 import sharp from "sharp";
 import logger from "../configs/logger";
 import util from "util";
-import fs from "fs";
 import { userInfoSchema } from "../helpers/Schemas/user-schema";
+import path from "path";
+import fs from "fs/promises";
 
 const unlink = util.promisify(fs.unlink); // Promisify the unlink function
 
@@ -15,42 +16,32 @@ export default {
     const avatar = req.file;
 
     if (!userId) {
-      return res.status(401).json({ error: "Please login" });
+        return res.status(401).json({ error: "Unauthorized: Please login" });
     }
 
     if (!avatar) {
-      return res.status(400).json({ error: "Please upload a file" });
-    }
-
-    const userExists = await userService.getUserById(userId);
-    if (!userExists) {
-      return res.status(402).json({ error: "User does not exists" });
+        return res.status(400).json({ error: "Bad Request: No file uploaded" });
     }
 
     try {
-      await sharp(req.file?.path)
-        .resize(300, 300)
-        .jpeg({ quality: 100 })
-        .toFile(`static/images/resized_${req.file?.filename}`);
-    } catch (err: any) {
-      logger.error(err?.message);
-      return res.status(500).send(err?.message);
-    }
+        const user = await userService.getUserById(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
-    if (userExists.avatarUrl) {
-      try {
-        await unlink(`static/images/${userExists.avatarUrl}`);
-      } catch (err) {
-        logger.error(err);
-      }
-    }
+        // Delete old avatar if it exists
+        if (user.avatarUrl) {
+            const oldAvatarPath = path.join('static/images', user.avatarUrl);
+            await fs.unlink(oldAvatarPath).catch(err => logger.warn(`Failed to delete old avatar: ${err.message}`));
+        }
 
-    try {
-      await userService.updateAvatarUrl(userId, avatar.filename);
-      return res.status(200).json({ message: "Avatar updated" });
+        // Update user's avatar URL in the database
+        await userService.updateAvatarUrl(userId, avatar.filename);
+
+        res.status(200).json({ message: "Avatar updated successfully", avatarUrl: avatar.filename });
     } catch (error) {
-      logger.error(error);
-      return res.status(400).json({ error: "Invalid data" });
+        logger.error('Error in updateAvatar:', error);
+        res.status(500).json({ error: "Internal server error: Failed to update avatar" });
     }
   },
 
@@ -110,6 +101,8 @@ export default {
 
     const parsedDateOfBirth = new Date(dateOfBirth);
 
+    if (!parsedDateOfBirth) return res.status(400).json({ error: "Invalid date of birth" });   
+
     try {
       userInfoSchema.parse({
         id,
@@ -134,6 +127,18 @@ export default {
 
     if (!userExists) {
       return res.status(400).json({ error: "User does not exists" });
+    }
+
+    if (userExists.email !== email) {
+      if (!email || !email.includes("@") || !email.includes(".")) {
+        return res.status(400).json({ error: "Invalid email" });
+      }
+
+      const emailExists = await userService.getUserByEmail(email);
+      if (emailExists) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
     }
 
     try {

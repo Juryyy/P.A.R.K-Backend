@@ -26,8 +26,10 @@ export default {
                 files: true,
                 author: {
                     select: {
+                        id: true,
                         firstName: true,
                         lastName: true,
+                        avatarUrl: true,
                     },
                 },
             },
@@ -45,8 +47,10 @@ export default {
                 files : true,
                 author: {
                     select: {
+                        id: true,
                         firstName: true,
                         lastName: true,
+                        avatarUrl: true,
                     },
                 },
             }
