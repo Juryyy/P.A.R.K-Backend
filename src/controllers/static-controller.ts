@@ -20,7 +20,13 @@ export default {
             return res.sendFile(imagePath);
         }
         else {
+          const defaultImagePath = path.join(__dirname, '../../static/images/testMan.jpg');
+          if (fs.existsSync(defaultImagePath)) {
+            return res.sendFile(defaultImagePath);
+          }
+          else {
             return res.status(404).send('Image not found');
+          }
         }
     },
 
