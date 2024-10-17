@@ -6,6 +6,7 @@ import { URequest } from "../types/URequest";
 import { informAvailability } from "../middlewares/azure-email-middleware";
 import userService from '../services/user-service';
 import examService from '../services/exam-service';
+import dateLockService from '../services/dateLock-service';
 
 export default {
     createDayOfExams: async (req: URequest, res: Response) => {
@@ -95,6 +96,12 @@ export default {
         if (!startDate || startDate === '' || !endDate || endDate === '' || !dateOfSubmits || dateOfSubmits === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
+        try{    
+            await dateLockService.createDateLock(new Date(dateOfSubmits), new Date(startDate), new Date(endDate));
+        }catch(error){
+            logger.error(`Date lock already exists: ${dateOfSubmits}`);
+            return res.status(400).json({ error: 'Date lock already exists' });
+        }
 
         const users = await userService.getAllUsers();
 
@@ -115,9 +122,10 @@ export default {
         for (const user of users) {
             const {email, firstName, lastName} = user;
             await informAvailability(email, availability, startDateFormatted, endDateFormatted, dateOfSubmitsFormatted, firstName, lastName);
-        
-        return res.status(200).json({ success: 'Users informed' });
         }
+
+        return res.status(200).json({ success: 'Users informed' });
+
     },
 
     getAllDayOfExams: async (req: Request, res: Response) => {

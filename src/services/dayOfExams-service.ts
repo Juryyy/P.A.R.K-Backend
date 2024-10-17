@@ -25,6 +25,17 @@ export default {
         return await prisma.dayOfExams.findMany();
     },
 
+    async getDayOfExamsInRange(startDate: Date, endDate: Date) {
+        return await prisma.dayOfExams.findMany({
+            where: {
+                date: {
+                    gte: startDate,
+                    lte: endDate
+                }
+            }
+        });
+    },
+
     async getDayOfExamsByDate(date: Date) {
         return await prisma.dayOfExams.findFirst({
             where: {
@@ -86,5 +97,16 @@ export default {
                 isLocked: !dayOfExams?.isLocked
             }
         });
-    }
+    },
+
+    async lockDayOfExams(id: number) {
+        return await prisma.dayOfExams.update({
+            where: {
+                id: id
+            },
+            data: {
+                isLocked: true
+            }
+        });
+    },
 }
