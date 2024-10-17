@@ -3,6 +3,7 @@ import express, { Express } from 'express';
 import router from './router';
 import cookieParser from 'cookie-parser';
 import envConfig from './configs/env-config';
+import { scheduleAllTasks } from './scheduler/scheduler';
 
 const app: Express = express();
 
@@ -15,6 +16,7 @@ app.use(cors({
   credentials: true 
 }));
 app.use(express.json());
+scheduleAllTasks();
 
 app.use('/api', router);
 

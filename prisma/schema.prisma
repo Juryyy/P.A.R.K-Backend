@@ -232,6 +232,13 @@ model DayReport {
   exam      Exam     @relation("DayReportToExam", fields: [examId], references: [id])
 }
 
+model DateLock {
+  id          Int      @id @default(autoincrement())
+  when        DateTime @unique
+  first       DateTime
+  last        DateTime
+}
+
 enum RoleEnum {
   Office
   Supervisor
