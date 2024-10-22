@@ -11,7 +11,7 @@ export default {
             }
         });
     },
-    async updateUserProfile(id: number, email: string, firstName: string, lastName: string, dateOfBirth : Date,  note : string, noteLonger : string, drivingLicense : boolean, phone : string){
+    async updateUserProfile(id: number, email: string, firstName: string, lastName: string,  note : string, noteLonger : string, drivingLicense : boolean, phone : string, dateOfBirth? : Date){
         return await prisma.user.update({
             where: {
                 id: id
