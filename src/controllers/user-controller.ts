@@ -99,10 +99,13 @@ export default {
       return res.status(401).json({ error: "Please login" });
     }
 
-    const parsedDateOfBirth = new Date(dateOfBirth);
+    let parsedDateOfBirth = undefined;
 
-    if (!parsedDateOfBirth) return res.status(400).json({ error: "Invalid date of birth" });   
+    if(dateOfBirth){
+      parsedDateOfBirth = new Date(dateOfBirth);
+    }
 
+    if (!parsedDateOfBirth && dateOfBirth) return res.status(400).json({ error: "Invalid date of birth" });   
     try {
       userInfoSchema.parse({
         id,
@@ -147,11 +150,11 @@ export default {
         email,
         firstName,
         lastName,
-        parsedDateOfBirth,
         note,
         noteLonger,
         drivingLicense,
-        phone
+        phone,
+        parsedDateOfBirth
       );
       return res.status(200).json({ success: "User updated" });
     } catch (error) {
