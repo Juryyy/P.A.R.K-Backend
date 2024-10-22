@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { TypeOfExamEnum, LevelEnum } from '@prisma/client';
+import { schedule } from 'node-cron';
 
 const levels = z.enum(Object.values(LevelEnum) as [string, ...string[]]);
 const types = z.enum(Object.values(TypeOfExamEnum) as [string, ...string[]]);
@@ -13,6 +14,7 @@ const examInfoSchema = z.object({
     endTime: z.string(),
     note: z.string().optional(),
     dayOfExamsId: z.number(),
+    schedule: z.string().optional(),
     });
 
 const absentCandidateSchema = z.object({
