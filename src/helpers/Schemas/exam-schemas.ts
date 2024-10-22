@@ -14,7 +14,7 @@ const examInfoSchema = z.object({
     endTime: z.string(),
     note: z.string().optional(),
     dayOfExamsId: z.number(),
-    schedule: z.string().optional(),
+    schedule: z.string().optional().nullable(),
     });
 
 const absentCandidateSchema = z.object({
