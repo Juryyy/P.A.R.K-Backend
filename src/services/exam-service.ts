@@ -25,7 +25,7 @@ export default {
         });
     },
 
-    async updateExam(id: number, venue : string, location : string, type : TypeOfExamEnum, levels: LevelEnum[] , startTime : Date, endTime : Date, note :string){
+    async updateExam(id: number, venue : string, location : string, type : TypeOfExamEnum, levels: LevelEnum[] , startTime : Date, endTime : Date, note :string, schedule?: string){
         return await prisma.exam.update({
             where: {
                 id,
@@ -38,6 +38,7 @@ export default {
                 startTime,
                 endTime,
                 note,
+                schedule,
             },
         });
     },

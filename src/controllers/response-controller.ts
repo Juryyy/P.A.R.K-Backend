@@ -51,6 +51,7 @@ export default {
                 return res.status(400).json({ error: 'Invalid response option' });
             }
             try {
+                if (!dayOfExamsExists.isLocked)
                 await responseService.updateResponse(dayofExamsId, userId, response);
             } catch (error) {
                 logger.error(error);

@@ -343,7 +343,7 @@ export default{
 
         const finish = new Date(examDate + 'T' + exam.endTime + ':00.000Z');
 
-        await examService.updateExam(exam.id, exam.venue, exam.location, exam.type, exam.levels, start, finish, exam.note);
+        await examService.updateExam(exam.id, exam.venue, exam.location, exam.type, exam.levels, start, finish, exam.note, exam.schedule);
 
         return res.status(200).json({ message: 'Exam updated' });
 

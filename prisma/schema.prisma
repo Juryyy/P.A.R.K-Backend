@@ -87,6 +87,7 @@ model Exam {
   issues           String?
   ScheduleForDayId Int?
   ScheduleForDay   ScheduleForDay? @relation(fields: [ScheduleForDayId], references: [id])
+  schedule         String?
   dayReport        DayReport?      @relation("DayReportToExam")
   files            File[]
   userConfirmations ExamUserConfirmation[]
