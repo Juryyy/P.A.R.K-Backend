@@ -43,6 +43,17 @@ export default {
         });
     },
 
+    async removeSchedule(id: number){
+        return await prisma.exam.update({
+            where: {
+                id,
+            },
+            data: {
+                schedule: null,
+            },
+        });
+    },
+
     async getExamById(id: number) {
         const exam = await prisma.exam.findUnique({
           where: { id },

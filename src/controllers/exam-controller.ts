@@ -342,11 +342,15 @@ export default{
         const start = new Date(examDate + 'T' + exam.startTime + ':00.000Z');
 
         const finish = new Date(examDate + 'T' + exam.endTime + ':00.000Z');
-
-        await examService.updateExam(exam.id, exam.venue, exam.location, exam.type, exam.levels, start, finish, exam.note, exam.schedule);
+        
+        if (exam.schedule) {
+            await examService.updateExam(exam.id, exam.venue, exam.location, exam.type, exam.levels, start, finish, exam.note, exam.schedule);
+        } else {
+            await examService.removeSchedule(exam.id);
+            await examService.updateExam(exam.id, exam.venue, exam.location, exam.type, exam.levels, start, finish, exam.note);
+        }
 
         return res.status(200).json({ message: 'Exam updated' });
-
     },
 
     deleteExam : async (req: URequest, res: Response) => {
