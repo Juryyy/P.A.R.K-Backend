@@ -16,11 +16,10 @@ export default {
     async getPostsForUser(userId: number) {
         return await prisma.post.findMany({
             where: {
-                taggedUsers: {
-                    some: {
-                        id: userId,
-                    },
-                },
+                OR: [
+                    { taggedUsers: { some: { id: userId } } },
+                    { authorId: userId }
+                ]
             },
             include: {
                 files: true,
