@@ -160,11 +160,17 @@ export default {
     const id = req.params.fileId;
 
     try{
-      const file = await fileService.getFileById(parseInt(id));
+      const file = await fileService.getFileByIdWithExam(parseInt(id));
       if(!file) return res.status(404).send({ error: 'File not found' });
 
+      const dayOfExams = await dayOfExamsService.getDayOfExamsById(file.exam[0].dayOfExamsId);
+      if (!dayOfExams) return res.status(404).send({ error: 'Day of exams not found' });
+
+      const formattedDate = formatDateToDMY(new Date(dayOfExams.date));
+      
+
       await client
-        .api(`/sites/${siteId}/drive/root:/Import/Exams/${file.name}`)
+        .api(`/sites/${siteId}/drive/root:/Import/Exams/${formattedDate}/${file.name}`)
         .delete();
 
       await fileService.deleteFile(parseInt(id));
