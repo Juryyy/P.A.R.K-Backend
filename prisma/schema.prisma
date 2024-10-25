@@ -25,6 +25,8 @@ model User {
   noteLonger       String?
   adminNote        String?
   isSenior         Boolean    @default(false)
+  totaraDate       DateTime?
+  totaraDone       Boolean    @default(false)
   role             RoleEnum[]
   level            LevelEnum[]
   avatarUrl        String?    @default("testMan.jpg")

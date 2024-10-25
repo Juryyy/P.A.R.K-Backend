@@ -228,6 +228,18 @@ export default {
                 adminNote: adminNote
             }
         });
-    }
+    },
+
+    async updateTotara(totaraDate : Date, totaraDone : boolean, userId : number){
+        return await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                totaraDate: totaraDate,
+                totaraDone: totaraDone
+            }
+        });
+    },
 
 }

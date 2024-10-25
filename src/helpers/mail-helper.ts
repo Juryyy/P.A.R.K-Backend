@@ -76,7 +76,9 @@ export function styledHtml(password: string, user: string, email: string) {
                     Password: ${password}
                 </div>
                 <p>Please visit <a href="https://parkappka.cz">https://parkappka.cz</a> to log in and get started.</p>
-                <p>In your profile section, you should update your personal information and change your password to something more secure.</p>
+                <p>In your profile section, you have to update your personal information and change your password to something more secure.</p>
+                <p>Only after updating your profile, you will be able to see the exams available for you.</p>
+                <p>Once you setup your profile, please upload your photo.</p>
                 <p>Thank you for your time and we look forward to working with you.</p>
                 <p>Best regards,<br/>P.A.R.K. Team</p>
             </div>
