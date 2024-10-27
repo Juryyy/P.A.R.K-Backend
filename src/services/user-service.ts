@@ -11,7 +11,7 @@ export default {
             }
         });
     },
-    async updateUserProfile(id: number, email: string, firstName: string, lastName: string,  note : string, noteLonger : string, drivingLicense : boolean, phone : string, dateOfBirth? : Date){
+    async updateUserProfile(id: number, email: string, firstName: string, lastName: string,  note : string, noteLonger : string, drivingLicense : boolean, phone : string, totaraDone: boolean, insperaAccount: boolean, dateOfBirth? : Date, totaraDate? : Date){
         return await prisma.user.update({
             where: {
                 id: id
@@ -24,12 +24,15 @@ export default {
                 lastName: lastName,
                 noteLonger: noteLonger,
                 drivingLicense: drivingLicense,
-                dateOfBirth: dateOfBirth
+                dateOfBirth: dateOfBirth,
+                totaraDone: totaraDone,
+                totaraDate: totaraDate,
+                insperaAccount: insperaAccount
             }
         });
     },
 
-    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" >){
+    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" | "totaraDate" | "totaraDone" | "insperaAccount" >){
         return await prisma.user.create({
             data: user
         });
@@ -145,6 +148,9 @@ export default {
                 noteLonger: true,
                 level: true,
                 isSenior: true,
+                totaraDate: true,
+                totaraDone: true,
+                insperaAccount: true,
                 _count: {
                     select: {
                         supervisedExams: true,
@@ -228,6 +234,17 @@ export default {
                 adminNote: adminNote
             }
         });
-    }
+    },
+
+    async updateInsperaAccountById (id : number, insperaAccount : boolean){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                insperaAccount: insperaAccount
+            }
+        });
+    },
 
 }

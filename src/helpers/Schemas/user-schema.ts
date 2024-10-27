@@ -15,6 +15,9 @@ const userInfoSchema = z.object({
     noteLonger: z.string().or(z.null()),
     drivingLicense: z.boolean(),
     parsedDateOfBirth: z.date().optional(),
+    totaraDate: z.string().or(z.undefined()),
+    totaraDone: z.boolean(),
+    insperaAccount: z.boolean(),
 });
 
 export { userInfoSchema };

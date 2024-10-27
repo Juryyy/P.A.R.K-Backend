@@ -93,6 +93,9 @@ export default {
       noteLonger,
       drivingLicense,
       dateOfBirth,
+      totaraDate,
+      totaraDone,
+      insperaAccount
     } = req.body;
 
     if (!userId) {
@@ -100,12 +103,17 @@ export default {
     }
 
     let parsedDateOfBirth = undefined;
+    let parsedTotaraDate = undefined
 
     if(dateOfBirth){
       parsedDateOfBirth = new Date(dateOfBirth);
     }
 
-    if (!parsedDateOfBirth && dateOfBirth) return res.status(400).json({ error: "Invalid date of birth" });   
+    if(totaraDate){
+      parsedTotaraDate = new Date(totaraDate);
+    }
+
+    if (!parsedDateOfBirth && dateOfBirth || !parsedTotaraDate && totaraDate) return res.status(400).json({ error: "Invalid date of birth" });   
     try {
       userInfoSchema.parse({
         id,
@@ -117,6 +125,9 @@ export default {
         noteLonger,
         drivingLicense,
         parsedDateOfBirth,
+        parsedTotaraDate,
+        totaraDone,
+        insperaAccount
       });
       if (id !== userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -154,11 +165,15 @@ export default {
         noteLonger,
         drivingLicense,
         phone,
-        parsedDateOfBirth
+        totaraDone,
+        insperaAccount,
+        parsedDateOfBirth,
+        parsedTotaraDate
       );
       return res.status(200).json({ success: "User updated" });
     } catch (error) {
       logger.error(error);
+      console.log(error);
       return res.status(400).json({ error: "Invalid data" });
     }
   },
@@ -184,5 +199,29 @@ export default {
       logger.error(error);
       return res.status(400).json({ error: "Invalid data" });
     }
+  },
+
+  updateInsperaAccount: async (req: URequest, res: Response) => {
+    const userId = req.user?.id;
+    const { id, insperaAccount } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ error: "Please login" });
+    }
+
+    const userExists = await userService.getUserById(userId);
+
+    if (!userExists) {
+      return res.status(400).json({ error: "User does not exists" });
+    }
+
+    try {
+      await userService.updateInsperaAccountById(id, insperaAccount);
+      return res.status(200).json({ success: "Inspera account updated" });
+    } catch (error) {
+      logger.error(error);
+      return res.status(400).json({ error: "Invalid data" });
+    }
   }
+
 };

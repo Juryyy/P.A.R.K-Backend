@@ -41,7 +41,6 @@ const sendMail = async (to: string, subject: string, html: string) => {
 async function sendEmail(to: string, subject: string, password: string, firstName: string, lastName: string) {
     const user = `${firstName} ${lastName}`;
     const html = styledHtml(password, user, to);
-    console.log(password)
     await sendMail(to, subject, html);
 }
 

@@ -14,6 +14,7 @@ router.get('/profile/:id', jwtAccessVerify, userController.getProfile);
 router.get('/userInfo', jwtAccessVerify, userController.getUserInfo);
 router.put('/updateAdminNote', jwtAccessVerify, check.isOffice, userController.updateAdminNote);
 router.post('/upload', jwtAccessVerify, processAndSaveAvatar, userController.updateAvatar);
+router.put('/updateInspera', jwtAccessVerify, check.isOffice, userController.updateInsperaAccount);
 
 router.put('/update', jwtAccessVerify, userController.updateUser);
 
