@@ -11,7 +11,7 @@ export default {
             }
         });
     },
-    async updateUserProfile(id: number, email: string, firstName: string, lastName: string,  note : string, noteLonger : string, drivingLicense : boolean, phone : string, totaraDone: boolean, dateOfBirth? : Date, totaraDate? : Date){
+    async updateUserProfile(id: number, email: string, firstName: string, lastName: string,  note : string, noteLonger : string, drivingLicense : boolean, phone : string, totaraDone: boolean, insperaAccount: boolean, dateOfBirth? : Date, totaraDate? : Date){
         return await prisma.user.update({
             where: {
                 id: id
@@ -26,12 +26,13 @@ export default {
                 drivingLicense: drivingLicense,
                 dateOfBirth: dateOfBirth,
                 totaraDone: totaraDone,
-                totaraDate: totaraDate
+                totaraDate: totaraDate,
+                insperaAccount: insperaAccount
             }
         });
     },
 
-    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" | "totaraDate" | "totaraDone" >){
+    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" | "totaraDate" | "totaraDone" | "insperaAccount" >){
         return await prisma.user.create({
             data: user
         });
@@ -149,6 +150,7 @@ export default {
                 isSenior: true,
                 totaraDate: true,
                 totaraDone: true,
+                insperaAccount: true,
                 _count: {
                     select: {
                         supervisedExams: true,
@@ -234,14 +236,13 @@ export default {
         });
     },
 
-    async updateTotara(totaraDate : Date, totaraDone : boolean, userId : number){
+    async updateInsperaAccountById (id : number, insperaAccount : boolean){
         return await prisma.user.update({
             where: {
-                id: userId
+                id: id
             },
             data: {
-                totaraDate: totaraDate,
-                totaraDone: totaraDone
+                insperaAccount: insperaAccount
             }
         });
     },

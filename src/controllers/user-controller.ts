@@ -95,6 +95,7 @@ export default {
       dateOfBirth,
       totaraDate,
       totaraDone,
+      insperaAccount
     } = req.body;
 
     if (!userId) {
@@ -125,7 +126,8 @@ export default {
         drivingLicense,
         parsedDateOfBirth,
         parsedTotaraDate,
-        totaraDone
+        totaraDone,
+        insperaAccount
       });
       if (id !== userId) {
         return res.status(401).json({ error: "Unauthorized" });
@@ -164,6 +166,7 @@ export default {
         drivingLicense,
         phone,
         totaraDone,
+        insperaAccount,
         parsedDateOfBirth,
         parsedTotaraDate
       );
@@ -198,9 +201,9 @@ export default {
     }
   },
 
-  updateTotara: async (req: URequest, res: Response) => {
+  updateInsperaAccount: async (req: URequest, res: Response) => {
     const userId = req.user?.id;
-    const { totaraDate, totaraDone } = req.body;
+    const { id, insperaAccount } = req.body;
 
     if (!userId) {
       return res.status(401).json({ error: "Please login" });
@@ -213,11 +216,12 @@ export default {
     }
 
     try {
-      await userService.updateTotara(totaraDate, totaraDone, userId);
-      return res.status(200).json({ success: "Totara updated" });
+      await userService.updateInsperaAccountById(id, insperaAccount);
+      return res.status(200).json({ success: "Inspera account updated" });
     } catch (error) {
       logger.error(error);
       return res.status(400).json({ error: "Invalid data" });
     }
   }
+
 };

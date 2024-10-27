@@ -17,6 +17,7 @@ const userInfoSchema = z.object({
     parsedDateOfBirth: z.date().optional(),
     totaraDate: z.string().or(z.undefined()),
     totaraDone: z.boolean(),
+    insperaAccount: z.boolean(),
 });
 
 export { userInfoSchema };
