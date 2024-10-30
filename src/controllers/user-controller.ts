@@ -4,7 +4,7 @@ import { MURequest, URequest } from "../types/URequest";
 import sharp from "sharp";
 import logger from "../configs/logger";
 import util from "util";
-import { userInfoSchema } from "../helpers/Schemas/user-schema";
+import { userActivationSchema, userInfoSchema } from "../helpers/Schemas/user-schema";
 import path from "path";
 import fs from "fs/promises";
 
@@ -161,7 +161,7 @@ export default {
     }
 
     try {
-      await userService.updateUserProfile(
+      const user = await userService.updateUserProfile(
         id,
         email,
         firstName,
@@ -175,6 +175,18 @@ export default {
         parsedDateOfBirth,
         parsedTotaraDate
       );
+
+      try{
+        userActivationSchema.parse({
+          user
+        });
+        
+        await userService.activateAccount(id);
+
+      }catch(error){
+        logger.error(error);
+      }
+
       return res.status(200).json({ success: "User updated" });
     } catch (error) {
       logger.error(error);

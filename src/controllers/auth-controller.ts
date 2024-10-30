@@ -181,7 +181,7 @@ export default {
         const newHash = authService.hashPassword(newPassword);
 
         await userService.updatePassword(userId, newHash);
-    
+
         return res.status(200).json({ message: 'Password updated' });
     },
 

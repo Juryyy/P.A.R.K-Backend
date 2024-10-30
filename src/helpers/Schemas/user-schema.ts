@@ -20,4 +20,13 @@ const userInfoSchema = z.object({
     insperaAccount: z.boolean(),
 });
 
-export { userInfoSchema };
+const userActivationSchema = z.object({
+    phone : z.string(),
+    email: z.string().email(),
+    dateOfBirth: z.date(),
+    totaraDate: z.date(),
+    totaraDone: z.boolean(),
+    passwordUpdated: z.boolean(),
+});
+
+export { userInfoSchema, userActivationSchema};

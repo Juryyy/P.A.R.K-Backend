@@ -43,7 +43,7 @@ model User {
   files            File[]
   dayReports       DayReport[] @relation("UserToDayReports")
   examConfirmations  ExamUserConfirmation[]
-
+  passwordUpdated   Boolean    @default(false)
 }
 
 model DayOfExams {

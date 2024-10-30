@@ -32,7 +32,7 @@ export default {
         });
     },
 
-    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" | "totaraDate" | "totaraDone" | "insperaAccount" >){
+    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" | "totaraDate" | "totaraDone" | "insperaAccount" | "passwordUpdated" >){
         return await prisma.user.create({
             data: user
         });
@@ -201,7 +201,8 @@ export default {
                 id: id
             },
             data: {
-                password: password
+                password: password,
+                passwordUpdated: true
             }
         });
     },
