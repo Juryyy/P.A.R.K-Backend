@@ -155,6 +155,11 @@ export default {
 
     }
 
+    const currentYear = new Date().getFullYear();
+    if (totaraDone && (!totaraDate || !parsedTotaraDate || parsedTotaraDate.getFullYear() !== currentYear)) {
+      return res.status(400).json({ error: "Invalid totara date" });
+    }
+
     try {
       await userService.updateUserProfile(
         id,

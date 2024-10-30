@@ -104,6 +104,9 @@ export default {
                 noteLonger: true,
                 level: true,
                 isSenior: true,
+                totaraDate: true,
+                totaraDone: true,
+                insperaAccount: true,
                 _count: {
                     select: {
                         supervisedExams: true,
@@ -246,5 +249,22 @@ export default {
             }
         });
     },
+
+    async resetUserTotara(user : any){
+        if(user.totaraDate){
+            const today = new Date();
+            if(today.getFullYear() - user.totaraDate.getFullYear() !== 0){
+                return await prisma.user.update({
+                    where: {
+                        id: user.id
+                    },
+                    data: {
+                        totaraDone: false,
+                        totaraDate: null
+                    }
+                });
+            }
+        }
+    }
 
 }
