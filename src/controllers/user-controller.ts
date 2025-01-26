@@ -177,17 +177,30 @@ export default {
       );
 
       try{
-        userActivationSchema.parse({
-          user
-        });
-        
-        await userService.activateAccount(id);
+      const activationData = {
+          phone: user.phone,
+          email: user.email,
+          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : null,
+          totaraDate: user.totaraDate ? new Date(user.totaraDate) : null,
+          totaraDone: Boolean(user.totaraDone),
+          passwordUpdated: Boolean(user.passwordUpdated)
+      };
+
+
+      const result = userActivationSchema.safeParse(activationData);
+
+      if(result.success){
+          await userService.activateAccount(user.id);
+          user.activatedAccount = true;
+      }
 
       }catch(error){
         logger.error(error);
       }
 
-      return res.status(200).json({ success: "User updated" });
+      const { password: pass, ...userWithoutPassword } = user;
+
+      return res.status(200).json(userWithoutPassword);
     } catch (error) {
       logger.error(error);
       console.log(error);

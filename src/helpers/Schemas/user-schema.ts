@@ -21,12 +21,20 @@ const userInfoSchema = z.object({
 });
 
 const userActivationSchema = z.object({
-    phone : z.string(),
-    email: z.string().email(),
-    dateOfBirth: z.date(),
-    totaraDate: z.date(),
-    totaraDone: z.boolean(),
-    passwordUpdated: z.boolean(),
+    phone: z.string()
+        .min(1, "Phone number is required")
+        .regex(/\d+/, "Phone must contain only numbers"),
+    email: z.string()
+        .email("Invalid email format")
+        .min(1, "Email is required"),
+    dateOfBirth: z.date()
+        .refine(date => date instanceof Date && !isNaN(date.getTime()), 
+            "Valid date of birth is required"),
+    totaraDate: z.date()
+        .refine(date => date instanceof Date && !isNaN(date.getTime()), 
+            "Valid totara date is required"),
+    totaraDone: z.boolean()
+        .refine(val => val === true, "Totara must be completed"),
 });
 
 export { userInfoSchema, userActivationSchema};
