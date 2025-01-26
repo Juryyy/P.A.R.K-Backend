@@ -154,6 +154,7 @@ export default {
                 totaraDate: true,
                 totaraDone: true,
                 insperaAccount: true,
+                passwordUpdated: true,
                 _count: {
                     select: {
                         supervisedExams: true,

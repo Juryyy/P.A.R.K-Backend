@@ -11,5 +11,6 @@ router.post('/refresh-token', jwtRefreshVerify, authController.refreshTokens);
 router.delete('/logout', authController.logout)
 router.post('/password-update', jwtAccessVerify, authController.passwordUpdate)
 router.post('/password-reset', authController.passwordReset)
+router.get('/token', jwtAccessVerify, authController.token)
 
 export default router;

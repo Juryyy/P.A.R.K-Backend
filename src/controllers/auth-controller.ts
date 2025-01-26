@@ -6,6 +6,9 @@ import { URequest } from '../types/URequest';
 import envConfig from '../configs/env-config';
 import {sendCode, sendPassword} from '../middlewares/azure-email-middleware';
 import { generateSecurePassword } from '../helpers/password-generator';
+import { createToken } from '../configs/token-config';
+import { userActivationSchema } from '../helpers/Schemas/user-schema';
+import logger from '../configs/logger';
 
 export default {
     //register: async (req: Request, res: Response) => {
@@ -207,5 +210,43 @@ export default {
         await sendPassword(email, 'P.A.R.K Exams center password reset code', password, user.firstName, user.lastName);
     
         return res.status(200).json({ message: 'A verification code has been sent to your email.' });
-    }
+    },
+
+    token: async (req: URequest, res: Response) => {
+        if (!req.user || !req.user.email) {
+            return res.status(400).json({ error: 'Invalid access token' });
+        }   
+
+        let user = await userService.getUserByEmail(req.user.email);
+        if(!user) {
+            return res.status(400).json({ error: 'Invalid access token' });
+        }  
+
+        try{
+            const activationData = {
+                phone: user.phone,
+                email: user.email,
+                dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : null,
+                totaraDate: user.totaraDate ? new Date(user.totaraDate) : null,
+                totaraDone: Boolean(user.totaraDone),
+                passwordUpdated: Boolean(user.passwordUpdated)
+            };
+
+      
+            const result =userActivationSchema.safeParse(activationData);
+
+            if(result.success){
+                await userService.activateAccount(user.id);
+                user.activatedAccount = true;
+            }
+
+        }catch(error){
+            logger.error(error);
+        }
+        
+        const { password, ...userWithoutPassword } = user;    
+        
+        const token = createToken(userWithoutPassword, 'asdasdasdasd', '1h');
+        return res.status(200).json(token);
+    },
 } 
