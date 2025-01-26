@@ -233,7 +233,7 @@ export default {
             };
 
       
-            const result =userActivationSchema.safeParse(activationData);
+            const result = userActivationSchema.safeParse(activationData);
 
             if(result.success){
                 await userService.activateAccount(user.id);
@@ -246,7 +246,7 @@ export default {
         
         const { password, ...userWithoutPassword } = user;    
         
-        const token = createToken(userWithoutPassword, 'asdasdasdasd', '1h');
+        const token = createToken(userWithoutPassword, 'asdasdasdasd', '24h');
         return res.status(200).json(token);
     },
 } 

@@ -35,8 +35,6 @@ const userActivationSchema = z.object({
             "Valid totara date is required"),
     totaraDone: z.boolean()
         .refine(val => val === true, "Totara must be completed"),
-    passwordUpdated: z.boolean()
-        .refine(val => val === true, "Password must be updated")
 });
 
 export { userInfoSchema, userActivationSchema};
