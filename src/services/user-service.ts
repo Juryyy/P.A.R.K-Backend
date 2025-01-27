@@ -1,4 +1,4 @@
-import {User, RoleEnum, PrismaClient, LevelEnum} from '@prisma/client';
+import {User, RoleEnum, PrismaClient, LevelEnum, AdminCentreEnum} from '@prisma/client';
 import logger from '../configs/logger';
 
 const prisma = new PrismaClient();
@@ -267,6 +267,19 @@ export default {
                 });
             }
         }
-    }
+    },
+
+    async updateUserAdminCentre(id : number, adminCentre : AdminCentreEnum[]){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                adminCentre: {
+                    set: adminCentre
+                }
+            }
+        });
+    },
 
 }

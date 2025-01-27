@@ -41,6 +41,7 @@ model User {
   responses        Response[]
   authorizations   Authorization[]
   files            File[]
+  adminCentre      AdminCentreEnum[] @default([Brno])
   dayReports       DayReport[] @relation("UserToDayReports")
   examConfirmations  ExamUserConfirmation[]
   passwordUpdated   Boolean    @default(false)
@@ -52,6 +53,7 @@ model DayOfExams {
   isForInvigilators Boolean
   isForExaminers    Boolean
   responses         Response[]
+  adminCentre       AdminCentreEnum @default(Brno)
   exams             Exam[]
   isLocked          Boolean    @default(false)
 }
@@ -83,6 +85,7 @@ model Exam {
   invigilators     User[]          @relation("ExamToInvigilator")
   examiners        User[]          @relation("ExamToExaminer")
   candidates       Candidate[]
+  adminCentre      AdminCentreEnum @default(Brno)
   dayOfExamsId     Int
   dayOfExams       DayOfExams      @relation(fields: [dayOfExamsId], references: [id])
   pdfUrl           String?
@@ -179,9 +182,10 @@ model Break {
 }
 
 model ExamLocation {
-  id     Int         @id @default(autoincrement())
-  name   String      @unique
-  venues ExamVenue[]
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  venues      ExamVenue[]
+  adminCentre AdminCentreEnum[] @default([Brno])
 }
 
 model ExamVenue {
@@ -195,17 +199,18 @@ model ExamVenue {
 }
 
 model Post {
-  id          Int         @id @default(autoincrement())
-  title       String
-  content     String
-  authorId    Int
-  author      User        @relation(name: "PostAuthor", fields: [authorId], references: [id])
-  published   Boolean     @default(false)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  taggedUsers User[]      @relation("TaggedUsers")
-  taggedRoles RoleEnum[]
-  files       File[]
+  id            Int         @id @default(autoincrement())
+  title         String
+  content       String
+  authorId      Int
+  author        User        @relation(name: "PostAuthor", fields: [authorId], references: [id])
+  published     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  taggedUsers   User[]      @relation("TaggedUsers")
+  taggedRoles   RoleEnum[]
+  files         File[]
+  adminCentre   AdminCentreEnum[] @default([Brno])
 }
 
 model File {
@@ -241,6 +246,7 @@ model DateLock {
   when        DateTime @unique
   first       DateTime
   last        DateTime
+  adminCentre AdminCentreEnum @default(Brno)
 }
 
 enum RoleEnum {
@@ -274,4 +280,9 @@ enum LevelEnum {
   B2
   C1
   C2
+}
+
+enum AdminCentreEnum {
+  Brno
+  Prague
 }

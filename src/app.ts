@@ -18,7 +18,9 @@ app.use(cors({
 app.use(express.json());
 scheduleAllTasks();
 
-app.use('/api', router);
+//app.use('/api', router);
+
+app.use(router);
 
 const port = Number(envConfig.getEnv('PORT')) || 4000;
 const server = app.listen(port, '0.0.0.0', () => {

@@ -2,7 +2,7 @@ import { Response } from 'express';
 import userService from '../../services/user-service';
 import authService from '../../services/auth-service';
 import responseService from '../../services/response-service';
-import { RoleEnum, ResponseEnum, LevelEnum } from '@prisma/client';
+import { RoleEnum, ResponseEnum, LevelEnum, AdminCentreEnum } from '@prisma/client';
 import dayOfExamsService from '../../services/dayOfExams-service';
 import logger from '../../configs/logger';
 import { URequest } from '../../types/URequest';
@@ -10,10 +10,11 @@ import crypto from 'crypto';
 import {sendEmail} from '../../middlewares/azure-email-middleware';
 import RegisterSchema from '../../helpers/Schemas/office-schemas';
 import locationsService from '../../services/locations-service';
+import { update } from 'lodash';
 
 export default {
     adminRegister: async (req: URequest, res: Response) => {
-        const {firstName, lastName, email, role} = req.body;
+        const {firstName, lastName, email, role, centre} = req.body;
         try {
             RegisterSchema.parse({ email, firstName, lastName, role});
         } catch (error : any) {
@@ -44,7 +45,8 @@ export default {
                 role: role as RoleEnum[],
                 activatedAccount: false,
                 deactivated: false,
-                isSenior: false
+                isSenior: false,
+                adminCentre: centre as AdminCentreEnum[]
             });
 
             for (let dayOfExam of dayOfExams) {
@@ -110,12 +112,13 @@ export default {
     },
 
     addLocation: async (req: URequest, res: Response) => {
-        const { location } = req.body;
+        const { location, adminCentre} = req.body;
         if (!location || location === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
         try {
-            const newLocation = await locationsService.addLocation(location);
+            const center = adminCentre as AdminCentreEnum[];
+            const newLocation = await locationsService.addLocation(location, center);
             logger.info(`New location created: ${newLocation.name} by ${req.user?.firstName} ${req.user?.lastName}`);
             return res.status(201).json({ success: `Location ${newLocation.name} created` });
         } catch (error) {
@@ -236,4 +239,30 @@ export default {
             return res.status(400).json({ error: 'Invalid data' });
         }
     },
+
+    updateUseradminCentre: async (req: URequest, res: Response) => {
+        const { id, adminCentre } = req.body;
+
+        if (!Array.isArray(adminCentre) || adminCentre.length === 0) {
+            return res.status(400).json({ error: 'Admin center should be a non-empty array' });
+        }
+    
+        const invalidCenters = adminCentre.filter(r => !(r in AdminCentreEnum));
+        if (invalidCenters.length > 0) {
+            return res.status(400).json({ error: `Invalid centers: ${invalidCenters.join(', ')}` });
+        }
+
+        if (!id || id === '') {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+
+        try {
+            const user = await userService.updateUserAdminCentre(id, adminCentre as AdminCentreEnum[]);
+            logger.info(`User ${user.email} admin center updated by ${req.user?.firstName} ${req.user?.lastName}`);
+            return res.status(200).json({ success: 'User admin center updated' });
+        } catch (error) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+    }
 }
