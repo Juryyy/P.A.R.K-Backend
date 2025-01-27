@@ -6,14 +6,14 @@
 ### Profil:
 
 - [x] vytvoření profilu 
-- [ ] úprava profilu (adminem)
+- [x] úprava profilu (adminem)
 
 ### Availability:
 
 - [ ] vytváření availability 
 - [ ] response byly nastaveny ku jednotlivým lidem, kontrola zda Praha nezadává availability pro Brno. 
 - [ ] v případě že uživatel má vícero center, ukázat jaká availability je pro jaké centrum. 
-- [ ] Date lock fix 
+- [x] Date lock fix 
 
 ### Location:
 - [ ] atribut při vytváření, rozdělení na ty podsekce, filtry? 

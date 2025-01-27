@@ -7,10 +7,11 @@ import { informAvailability } from "../middlewares/azure-email-middleware";
 import userService from '../services/user-service';
 import examService from '../services/exam-service';
 import dateLockService from '../services/dateLock-service';
+import { AdminCentreEnum } from '@prisma/client';
 
 export default {
     createDayOfExams: async (req: URequest, res: Response) => {
-        const { date, isForInvigilators, isForExaminers } = req.body;
+        const { date, isForInvigilators, isForExaminers, centre } = req.body;
         if (!date || date === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
@@ -18,10 +19,14 @@ export default {
         if (!isForInvigilators && !isForExaminers) {
             return res.status(400).json({ error: 'Please select at least one option' });
         }
+
+        if (!centre || centre === '' || !Object.values(AdminCentreEnum).includes(centre)) {
+            return res.status(400).json({ error: 'Please select a centre' });
+        }
     
         const dateObj = new Date(date);
         try {
-            const x = await dayOfExamsService.createDayOfExams(dateObj, isForInvigilators, isForExaminers);
+            const x = await dayOfExamsService.createDayOfExams(dateObj, isForInvigilators, isForExaminers, centre);
             await responseService.createResponsesForDay(x.id, isForInvigilators, isForExaminers);
         } catch (error) {
             logger.error(`Day of exams already exists: ${dateObj}`);

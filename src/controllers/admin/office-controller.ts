@@ -240,7 +240,7 @@ export default {
         }
     },
 
-    updateUseradminCentre: async (req: URequest, res: Response) => {
+    updateUserCentre: async (req: URequest, res: Response) => {
         const { id, adminCentre } = req.body;
 
         if (!Array.isArray(adminCentre) || adminCentre.length === 0) {

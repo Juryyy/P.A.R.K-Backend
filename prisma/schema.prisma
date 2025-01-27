@@ -49,13 +49,15 @@ model User {
 
 model DayOfExams {
   id                Int        @id @default(autoincrement())
-  date              DateTime   @unique
+  date              DateTime   
   isForInvigilators Boolean
   isForExaminers    Boolean
   responses         Response[]
   adminCentre       AdminCentreEnum @default(Brno)
   exams             Exam[]
   isLocked          Boolean    @default(false)
+
+  @@unique([date, adminCentre])
 }
 
 model Response {

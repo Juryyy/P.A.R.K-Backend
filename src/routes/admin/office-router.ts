@@ -10,6 +10,7 @@ router.post('/registerUser', jwtAccessVerify, officeMiddleware.isOffice, officeC
 router.post('/updateUserRole', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserRole)
 router.post('/updateUserLevel', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserLevel)
 router.post('/updateUserSenior', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserSenior)
+router.put('/updateUserCentre', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserCentre)
 router.get('/locationsWithVenues', jwtAccessVerify, officeMiddleware.isOffice, officeController.getLocationsWithVenues)
 
 router.post('/addLocation', jwtAccessVerify, officeMiddleware.isOffice, officeController.addLocation)
