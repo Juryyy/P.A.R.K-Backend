@@ -53,8 +53,15 @@ export default {
                 return users.find(u => u.id === id)
             });
 
+        const dayOfExams = await prisma.dayOfExams.findUnique({
+            where: {
+                id: dayOfExamsId
+            }
+        });
+
         for (let user of uniqueUsers) {
-            await createResponses(dayOfExamsId, user.id, ResponseEnum.No);
+            if(user.adminCentre.includes(dayOfExams?.adminCentre)) 
+                await createResponses(dayOfExamsId, user.id, ResponseEnum.No);
         }
     },
 

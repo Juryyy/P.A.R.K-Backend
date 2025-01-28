@@ -4,12 +4,13 @@ import logger from "../configs/logger";
 const prisma = new PrismaClient();
 
 export default {
-    async createDateLock(when : Date, first: Date, last : Date){
+    async createDateLock(when : Date, first: Date, last : Date, centre : AdminCentreEnum){
         return await prisma.dateLock.create({
             data : {
                 when,
                 first,
-                last
+                last,
+                adminCentre : centre
             }
         });
     },

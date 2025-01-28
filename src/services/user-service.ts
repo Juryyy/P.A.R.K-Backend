@@ -107,6 +107,7 @@ export default {
                 totaraDate: true,
                 totaraDone: true,
                 insperaAccount: true,
+                adminCentre: true,
                 _count: {
                     select: {
                         supervisedExams: true,

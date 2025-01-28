@@ -10,8 +10,8 @@
 
 ### Availability:
 
-- [ ] vytváření availability 
-- [ ] response byly nastaveny ku jednotlivým lidem, kontrola zda Praha nezadává availability pro Brno. 
+- [x] vytváření availability 
+- [x] response byly nastaveny ku jednotlivým lidem, kontrola zda Praha nezadává availability pro Brno. 
 - [ ] v případě že uživatel má vícero center, ukázat jaká availability je pro jaké centrum. 
 - [x] Date lock fix 
 
