@@ -1,4 +1,4 @@
-import { LevelEnum, ResponseEnum, User } from '@prisma/client';
+import { AdminCentreEnum, LevelEnum, ResponseEnum, User } from '@prisma/client';
 import { Response } from 'express';
 import responseService from '../services/response-service';
 import dayOfExamsService from '../services/dayOfExams-service';
@@ -78,14 +78,14 @@ export default {
         const currentDate = new Date();
         currentDate.setHours(0, 0, 0, 0);
 
-        let responsesForUser: { id: number, response: ResponseEnum, date: Date, isLocked: boolean }[] = [];
+        let responsesForUser: { id: number, response: ResponseEnum, date: Date, isLocked: boolean, centre: AdminCentreEnum }[] = [];
         for (let response of responses) {
             const dayOfExams = await dayOfExamsService.getDayOfExamsById(response.dayOfExamsId);
             if (!dayOfExams) {
                 return res.status(404).json({ error: 'Day of exams does not exists' });
             }
             if (dayOfExams.date >= currentDate) {
-                responsesForUser.push({ id: response.id, response: response.response, date: dayOfExams.date, isLocked: dayOfExams.isLocked });
+                responsesForUser.push({ id: response.id, response: response.response, date: dayOfExams.date, isLocked: dayOfExams.isLocked, centre: dayOfExams.adminCentre });
             }
         }
 
