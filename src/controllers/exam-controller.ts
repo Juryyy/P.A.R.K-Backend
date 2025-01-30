@@ -1,4 +1,4 @@
-import {User, RoleEnum, ResponseEnum } from '@prisma/client';
+import {User, RoleEnum, ResponseEnum, AdminCentreEnum } from '@prisma/client';
 import { Response} from 'express';
 import userService from '../services/user-service';
 import dayOfExamsService from '../services/dayOfExams-service';
@@ -17,10 +17,10 @@ import confirmationService from '../services/confirmation-service';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
-        const {venue, location, type, levels, startTime, endTime, note, dayOfExamsId} = req.body;
+        const {venue, location, type, levels, startTime, endTime, note, dayOfExamsId, adminCentre} = req.body;
 
         try{
-            examSchema.examInfoSchema.parse({venue, location, type, levels, startTime, endTime, note, dayOfExamsId});
+            examSchema.examInfoSchema.parse({venue, location, type, levels, startTime, endTime, note, dayOfExamsId, adminCentre});
 
        } catch (error : unknown) {
               logger.error(error);
@@ -48,6 +48,7 @@ export default{
             finish,
             note,
             dayOfExamsId,
+            adminCentre as AdminCentreEnum
         );
 
         logger.info(`New exam created: ${newExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);

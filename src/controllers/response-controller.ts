@@ -116,7 +116,7 @@ export default {
             if (!responses) {
                 return res.status(400).json({ error: 'Responses do not exists' });
             }
-            const responsesWithUser: { dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string[], assigned: boolean, userId: number, userNote?: string | null, userLevel: LevelEnum[] }[] = [];
+            const responsesWithUser: { dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string[], assigned: boolean, userId: number, userNote?: string | null, userLevel: LevelEnum[], adminCentre: AdminCentreEnum[]}[] = [];
             for (let response of responses) {
                 const user = await userService.getUserById(response.userId);
                 if (!user) {
@@ -131,7 +131,8 @@ export default {
                     assigned: response.assigned,
                     userId: user.id,
                     userNote: user.note ?? undefined,
-                    userLevel: user.level
+                    userLevel: user.level,
+                    adminCentre: user.adminCentre
                 });
             }
             return res.status(200).json(responsesWithUser);

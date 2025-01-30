@@ -286,5 +286,5 @@ enum LevelEnum {
 
 enum AdminCentreEnum {
   Brno
-  Prague
+  Praha
 }

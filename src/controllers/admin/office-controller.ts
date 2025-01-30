@@ -113,12 +113,13 @@ export default {
 
     addLocation: async (req: URequest, res: Response) => {
         const { location, adminCentre} = req.body;
+        console.log(req.body);
         if (!location || location === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
         try {
-            const center = adminCentre as AdminCentreEnum[];
-            const newLocation = await locationsService.addLocation(location, center);
+            const centre = adminCentre as AdminCentreEnum[];
+            const newLocation = await locationsService.addLocation(location, centre);
             logger.info(`New location created: ${newLocation.name} by ${req.user?.firstName} ${req.user?.lastName}`);
             return res.status(201).json({ success: `Location ${newLocation.name} created` });
         } catch (error) {
