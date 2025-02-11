@@ -27,9 +27,9 @@ const userActivationSchema = z.object({
     email: z.string()
         .email("Invalid email format")
         .min(1, "Email is required"),
-    dateOfBirth: z.date()
-        .refine(date => date instanceof Date && !isNaN(date.getTime()), 
-            "Valid date of birth is required"),
+    //dateOfBirth: z.date()
+    //    .refine(date => date instanceof Date && !isNaN(date.getTime()), 
+    //        "Valid date of birth is required"),
     totaraDate: z.date()
         .refine(date => date instanceof Date && !isNaN(date.getTime()), 
             "Valid totara date is required"),
