@@ -61,7 +61,7 @@ export default {
 
         for (let user of uniqueUsers) {
             if(user.adminCentre.includes(dayOfExams?.adminCentre)) 
-                await createResponses(dayOfExamsId, user.id, ResponseEnum.No);
+                await createResponses(dayOfExamsId, user.id, ResponseEnum.Unanswered);
         }
     },
 
