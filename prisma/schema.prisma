@@ -47,7 +47,7 @@ model User {
   passwordUpdated   Boolean    @default(false)
   requestedSubstitutions SubstitutionRequest[] @relation("SubstitutionRequestor")
   substituteFor         SubstitutionRequest[] @relation("Substitutor")
-  appliedSubstitutions  SubstitutionRequest[] @relation("SubstitutionApplicants")
+  substitutionApplications SubstitutionApplication[]
 }
 
 model DayOfExams {
@@ -263,21 +263,42 @@ model SubstitutionRequest {
   requestedById     Int
   requestedBy       User      @relation("SubstitutionRequestor", fields: [requestedById], references: [id])
   requestedAt       DateTime  @default(now())
-  reason            String?
+  reason            String
   status            SubstitutionStatusEnum @default(Open)
   substitutorId     Int?
   substitutor       User?     @relation("Substitutor", fields: [substitutorId], references: [id])
-  appliedUsers      User[]    @relation("SubstitutionApplicants")
   originalRole      RoleEnum
   adminCentre       AdminCentreEnum @default(Brno)
+  applications      SubstitutionApplication[]
+  acceptedApplication SubstitutionApplication? @relation("AcceptedApplication", fields: [acceptedApplicationId], references: [id])
+  acceptedApplicationId Int? @unique
 
   @@unique([examId, requestedById, originalRole])
 }
 
-enum SubstitutionStatusEnum {
-  Open
+model SubstitutionApplication {
+  id                  Int       @id @default(autoincrement())
+  substitutionId      Int
+  substitutionRequest SubstitutionRequest @relation(fields: [substitutionId], references: [id])
+  applicantId         Int
+  applicant           User      @relation(fields: [applicantId], references: [id])
+  appliedAt           DateTime  @default(now())
+  status             ApplicationStatusEnum @default(Pending)
+  acceptedFor        SubstitutionRequest? @relation("AcceptedApplication")
+
+  @@unique([substitutionId, applicantId])
+}
+
+enum ApplicationStatusEnum {
+  Pending
   Accepted
   Rejected
+}
+
+enum SubstitutionStatusEnum {
+  Open    
+  Assigned 
+  Closed
 }
 
 enum RoleEnum {
