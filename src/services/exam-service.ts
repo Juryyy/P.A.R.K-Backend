@@ -306,6 +306,6 @@ export default {
                 dayOfExamsId,
             },
         });
-    }
+    },
 
 }

@@ -11,8 +11,8 @@ router.post('/updateUserRole', jwtAccessVerify, officeMiddleware.isOffice, offic
 router.post('/updateUserLevel', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserLevel)
 router.post('/updateUserSenior', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserSenior)
 router.put('/updateUserCentre', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateUserCentre)
-router.get('/locationsWithVenues', jwtAccessVerify, officeMiddleware.isOffice, officeController.getLocationsWithVenues)
 
+router.get('/locationsWithVenues', jwtAccessVerify, officeMiddleware.isOffice, officeController.getLocationsWithVenues)
 router.post('/addLocation', jwtAccessVerify, officeMiddleware.isOffice, officeController.addLocation)
 router.post('/addVenue', jwtAccessVerify, officeMiddleware.isOffice, officeController.addVenue)
 router.delete('/deleteLocation/:id', jwtAccessVerify, officeMiddleware.isOffice, officeController.deleteLocation)
