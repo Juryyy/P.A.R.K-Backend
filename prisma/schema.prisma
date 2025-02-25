@@ -48,6 +48,7 @@ model User {
   requestedSubstitutions SubstitutionRequest[] @relation("SubstitutionRequestor")
   substituteFor         SubstitutionRequest[] @relation("Substitutor")
   substitutionApplications SubstitutionApplication[]
+  loginAttempt          LoginAttempt?
 }
 
 model DayOfExams {
@@ -233,9 +234,17 @@ model File {
 model Authorization {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  expiresAt DateTime
   code      String
+  expiresAt DateTime
+  metadata  String?  
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model LoginAttempt {
+  userId      Int      @id
+  attempts    Int      @default(0)
+  lastAttempt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model DayReport {

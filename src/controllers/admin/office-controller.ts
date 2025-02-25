@@ -10,7 +10,6 @@ import crypto from 'crypto';
 import {sendEmail} from '../../middlewares/azure-email-middleware';
 import RegisterSchema from '../../helpers/Schemas/office-schemas';
 import locationsService from '../../services/locations-service';
-import { update } from 'lodash';
 
 export default {
     adminRegister: async (req: URequest, res: Response) => {
