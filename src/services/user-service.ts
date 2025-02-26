@@ -284,4 +284,21 @@ export default {
         });
     },
 
+    async deactivateUser(id : number){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                deactivated: true,
+                activatedAccount: false,
+                email: undefined,
+                phone: undefined,
+                note: undefined,
+                lastName: undefined,
+                dateOfBirth: undefined,
+            }
+        });
+    }
+
 }
