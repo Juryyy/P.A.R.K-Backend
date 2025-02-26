@@ -10,7 +10,6 @@ import crypto from 'crypto';
 import {sendEmail} from '../../middlewares/azure-email-middleware';
 import RegisterSchema from '../../helpers/Schemas/office-schemas';
 import locationsService from '../../services/locations-service';
-import { update } from 'lodash';
 import path from "path";
 import fs from "fs/promises";
 

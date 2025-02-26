@@ -14,6 +14,8 @@ import { ExamWithVenueLink } from '../types/extraTypes';
 import { uploadDayReportToOnedrive, uploadExamFileToOD } from '../middlewares/admin/upload-middleware';
 import { informExam } from '../middlewares/azure-email-middleware';
 import confirmationService from '../services/confirmation-service';
+import { addWorker, removeWorker } from '../helpers/exam-workers';
+import { error } from 'console';
 
 export default{
     createExam: async (req: URequest, res: Response) => {
@@ -61,70 +63,82 @@ export default{
         return res.status(200).json(exams);
     },
 
+    //addWorker: async(req: URequest, res: Response) => {
+    //    const {examId, userId, override, position} = req.body;
+//
+    //    if (position !== RoleEnum.Supervisor && position !== RoleEnum.Invigilator && position !== RoleEnum.Examiner) {
+    //        return res.status(400).json({ error: 'Invalid position' });
+    //    }
+//
+    //    const examExists = await examService.getExamById(examId);
+    //    if(!examExists) {
+    //        return res.status(400).json({ error: 'Exam does not exists' });
+    //    }
+//
+    //    const userExists = await userService.getUserById(userId);
+    //    if(!userExists) {
+    //        return res.status(400).json({ error: 'User does not exists' });
+    //    }
+//
+    //    const examdayId = examExists.dayOfExamsId;
+//
+    //    const responseExists = await responseService.getResponseByExamIDAndUserId(examdayId, userId);
+    //    if(!responseExists) {
+    //        return res.status(400).json({ error: 'Response does not exists' });
+    //    }
+//
+    //    if (responseExists.response === ResponseEnum.No && override === false) {
+    //        return res.status(400).json({ error: 'User is not available' });
+    //    }
+//
+    //    switch (position) {
+    //        case RoleEnum.Supervisor:
+    //            try{
+    //                const supExam = await examService.addSupervisor(examId, userId);
+    //                await responseService.assign(examdayId, userId);
+    //                logger.info(`Supervisor added to exam: ${supExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+    //            }catch(error){
+    //                logger.error(error);
+    //                return res.status(400).json({ error: 'Invalid data' });
+    //            }
+//
+    //            break;
+    //        case RoleEnum.Invigilator:
+    //            try{
+    //            const invigExam = await examService.addInvigilator(examId, userId);
+    //            await responseService.assign(examdayId, userId);
+    //            logger.info(`Invigilator added to exam: ${invigExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+    //            }catch(error){
+    //                logger.error(error);
+    //                return res.status(400).json({ error: 'Invalid data' });
+    //            }
+    //            break;
+    //        case RoleEnum.Examiner:
+    //            try{
+    //                const examinerExam = await examService.addExaminer(examId, userId);
+    //                await responseService.assign(examdayId, userId);
+    //                logger.info(`Examiner added to exam: ${examinerExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
+    //            }catch(error){
+    //                logger.error(error);
+    //                return res.status(400).json({ error: 'Invalid data' });
+    //            }
+    //            break;
+    //    }
+//
+    //    return res.status(200).json({ message: 'Worker added' });
+//
+    //},
+
     addWorker: async(req: URequest, res: Response) => {
         const {examId, userId, override, position} = req.body;
-
-        if (position !== RoleEnum.Supervisor && position !== RoleEnum.Invigilator && position !== RoleEnum.Examiner) {
-            return res.status(400).json({ error: 'Invalid position' });
+        try {
+            const response = await addWorker(examId, userId, position, override, req);
+            return res.status(200).json({ message: response.message });
+        } catch(error) {
+            logger.error(error);
+            const errorMessage = error instanceof Error ? error.message : 'Invalid data';
+            return res.status(400).json({ error: errorMessage });
         }
-
-        const examExists = await examService.getExamById(examId);
-        if(!examExists) {
-            return res.status(400).json({ error: 'Exam does not exists' });
-        }
-
-        const userExists = await userService.getUserById(userId);
-        if(!userExists) {
-            return res.status(400).json({ error: 'User does not exists' });
-        }
-
-        const examdayId = examExists.dayOfExamsId;
-
-        const responseExists = await responseService.getResponseByExamIDAndUserId(examdayId, userId);
-        if(!responseExists) {
-            return res.status(400).json({ error: 'Response does not exists' });
-        }
-
-        if (responseExists.response === ResponseEnum.No && override === false) {
-            return res.status(400).json({ error: 'User is not available' });
-        }
-
-        switch (position) {
-            case RoleEnum.Supervisor:
-                try{
-                    const supExam = await examService.addSupervisor(examId, userId);
-                    await responseService.assign(examdayId, userId);
-                    logger.info(`Supervisor added to exam: ${supExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
-                }catch(error){
-                    logger.error(error);
-                    return res.status(400).json({ error: 'Invalid data' });
-                }
-
-                break;
-            case RoleEnum.Invigilator:
-                try{
-                const invigExam = await examService.addInvigilator(examId, userId);
-                await responseService.assign(examdayId, userId);
-                logger.info(`Invigilator added to exam: ${invigExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
-                }catch(error){
-                    logger.error(error);
-                    return res.status(400).json({ error: 'Invalid data' });
-                }
-                break;
-            case RoleEnum.Examiner:
-                try{
-                    const examinerExam = await examService.addExaminer(examId, userId);
-                    await responseService.assign(examdayId, userId);
-                    logger.info(`Examiner added to exam: ${examinerExam.venue} by ${req.user?.firstName} ${req.user?.lastName}`);
-                }catch(error){
-                    logger.error(error);
-                    return res.status(400).json({ error: 'Invalid data' });
-                }
-                break;
-        }
-
-        return res.status(200).json({ message: 'Worker added' });
-
     },
 
     removeWorker: async(req: URequest, res: Response) => {

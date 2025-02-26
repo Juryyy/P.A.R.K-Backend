@@ -2,7 +2,11 @@ import express from 'express';
 import officeMiddleware from '../../middlewares/admin/office-middleware';
 import { jwtAccessVerify } from '../../middlewares/tokenVerify-middleware';
 import officeController from '../../controllers/admin/office-controller';
+<<<<<<< HEAD
 import substituteRouter from './substitute-router';
+=======
+import officeSubController from '../../controllers/admin/office-sub-controller';
+>>>>>>> f4e906d23abf421a2b40841da014d1ea90871636
 
 const router = express.Router();
 
@@ -21,6 +25,12 @@ router.delete('/deleteVenue/:id', jwtAccessVerify, officeMiddleware.isOffice, of
 router.put('/updateLocation', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateLocation)
 router.put('/updateVenue', jwtAccessVerify, officeMiddleware.isOffice, officeController.updateVenue)
 
+<<<<<<< HEAD
 router.use('/admin', substituteRouter)
+=======
+router.put('/sub/status', jwtAccessVerify, officeMiddleware.isOffice, officeSubController.updateSubstitutionStatus)
+router.put('/app/status', jwtAccessVerify, officeMiddleware.isOffice, officeSubController.updateApplicationStatus)
+
+>>>>>>> f4e906d23abf421a2b40841da014d1ea90871636
 
 export default router;
