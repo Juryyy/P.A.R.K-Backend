@@ -2,7 +2,7 @@ import { Response } from 'express';
 import userService from '../../services/user-service';
 import authService from '../../services/auth-service';
 import responseService from '../../services/response-service';
-import { RoleEnum, ResponseEnum, LevelEnum, AdminCentreEnum } from '@prisma/client';
+import { RoleEnum, ResponseEnum, LevelEnum, AdminCentreEnum, ExamLocation } from '@prisma/client';
 import dayOfExamsService from '../../services/dayOfExams-service';
 import logger from '../../configs/logger';
 import { URequest } from '../../types/URequest';
@@ -10,6 +10,8 @@ import crypto from 'crypto';
 import {sendEmail} from '../../middlewares/azure-email-middleware';
 import RegisterSchema from '../../helpers/Schemas/office-schemas';
 import locationsService from '../../services/locations-service';
+import path from "path";
+import fs from "fs/promises";
 
 export default {
     adminRegister: async (req: URequest, res: Response) => {
@@ -260,6 +262,85 @@ export default {
             const user = await userService.updateUserAdminCentre(id, adminCentre as AdminCentreEnum[]);
             logger.info(`User ${user.email} admin center updated by ${req.user?.firstName} ${req.user?.lastName}`);
             return res.status(200).json({ success: 'User admin center updated' });
+        } catch (error) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+    },
+
+    updateLocation: async (req: URequest, res: Response) => {
+        const { id, name, adminCentre } = req.body;
+        if (!id || id === '' || !name || name === '' || !adminCentre || adminCentre === '') {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+
+        try {
+            const centre = adminCentre as AdminCentreEnum[];
+            const examLocation = {id, name, adminCentre: centre} as ExamLocation;
+            const updatedLocation = await locationsService.updateLocation(examLocation);
+            logger.info(`Location ${updatedLocation.name} updated by ${req.user?.firstName} ${req.user?.lastName}`);
+            return res.status(200).json({ success: `Location ${updatedLocation.name} updated` });
+        } catch (error) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+    },
+
+    updateVenue: async (req: URequest, res: Response) => {
+        const { id, venue, location, link } = req.body;
+        let existLocation;
+        if (!id || id === '' || !venue || venue === '' || !location || location === '' || !link || link === '') {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+
+        try{
+            const nLocation = parseInt(location);
+            existLocation = await locationsService.getLocationById(nLocation)
+        }catch(error){
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+
+        try {
+            if(!existLocation){
+                return res.status(400).json({ error: 'Location not found' });
+            }
+            const data = {
+                id,
+                name: venue,
+                locationId: existLocation.id,
+                gLink : link
+            }
+            const updatedVenue = await locationsService.updateVenue(data);
+            logger.info(`Venue ${updatedVenue.name} updated by ${req.user?.firstName} ${req.user?.lastName}`);
+            return res.status(200).json({ success: `Venue ${updatedVenue.name} updated` });
+        } catch (error) {
+            logger.error(error);
+            return res.status(400).json({ error: 'Invalid data' });
+        }
+    },
+
+    deactivateUser: async (req: URequest, res: Response) => {
+        const { id } = req.params;
+        if (!id || id === '') {
+            return res.status(400).json({ error: 'Please fill all the fields' });
+        }
+        try {
+            const user = await userService.getUserById(parseInt(id));
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Delete old avatar if it exists
+        if (user.avatarUrl !== "testMan.jpg" && user.avatarUrl) {
+            const oldAvatarPath = path.join('static/images', user.avatarUrl);
+            await fs.unlink(oldAvatarPath).catch(err => logger.warn(`Failed to delete old avatar: ${err.message}`));
+        }
+
+            await userService.updateAvatarUrl(parseInt(id), "testMan.jpg");
+            await userService.deactivateUser(parseInt(id));
+            logger.info(`User ${user.email} deactivated by ${req.user?.firstName} ${req.user?.lastName}`);
+            return res.status(200).json({ success: 'User deactivated' });
         } catch (error) {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
