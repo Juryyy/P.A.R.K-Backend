@@ -1,4 +1,4 @@
-import {User, RoleEnum, PrismaClient, LevelEnum} from '@prisma/client';
+import {User, RoleEnum, PrismaClient, LevelEnum, AdminCentreEnum} from '@prisma/client';
 import logger from '../configs/logger';
 
 const prisma = new PrismaClient();
@@ -32,7 +32,7 @@ export default {
         });
     },
 
-    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" | "totaraDate" | "totaraDone" | "insperaAccount" >){
+    async createUser(user : Omit<User, "id" | "drivingLicense" | "adminNote" | "note" | "avatarUrl" | "noteLonger" | "level" | "totaraDate" | "totaraDone" | "insperaAccount" | "passwordUpdated" >){
         return await prisma.user.create({
             data: user
         });
@@ -104,6 +104,10 @@ export default {
                 noteLonger: true,
                 level: true,
                 isSenior: true,
+                totaraDate: true,
+                totaraDone: true,
+                insperaAccount: true,
+                adminCentre: true,
                 _count: {
                     select: {
                         supervisedExams: true,
@@ -151,6 +155,8 @@ export default {
                 totaraDate: true,
                 totaraDone: true,
                 insperaAccount: true,
+                passwordUpdated: true,
+                adminCentre: true,
                 _count: {
                     select: {
                         supervisedExams: true,
@@ -198,7 +204,8 @@ export default {
                 id: id
             },
             data: {
-                password: password
+                password: password,
+                passwordUpdated: true
             }
         });
     },
@@ -246,5 +253,52 @@ export default {
             }
         });
     },
+
+    async resetUserTotara(user : any){
+        if(user.totaraDate){
+            const today = new Date();
+            if(today.getFullYear() - user.totaraDate.getFullYear() !== 0){
+                return await prisma.user.update({
+                    where: {
+                        id: user.id
+                    },
+                    data: {
+                        totaraDone: false,
+                        totaraDate: null
+                    }
+                });
+            }
+        }
+    },
+
+    async updateUserAdminCentre(id : number, adminCentre : AdminCentreEnum[]){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                adminCentre: {
+                    set: adminCentre
+                }
+            }
+        });
+    },
+
+    async deactivateUser(id : number){
+        return await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                deactivated: true,
+                activatedAccount: false,
+                email: undefined,
+                phone: undefined,
+                note: undefined,
+                lastName: undefined,
+                dateOfBirth: undefined,
+            }
+        });
+    }
 
 }

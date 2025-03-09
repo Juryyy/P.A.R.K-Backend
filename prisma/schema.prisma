@@ -41,19 +41,27 @@ model User {
   responses        Response[]
   authorizations   Authorization[]
   files            File[]
+  adminCentre      AdminCentreEnum[] @default([Brno])
   dayReports       DayReport[] @relation("UserToDayReports")
   examConfirmations  ExamUserConfirmation[]
-
+  passwordUpdated   Boolean    @default(false)
+  requestedSubstitutions SubstitutionRequest[] @relation("SubstitutionRequestor")
+  substituteFor         SubstitutionRequest[] @relation("Substitutor")
+  substitutionApplications SubstitutionApplication[]
+  loginAttempt          LoginAttempt?
 }
 
 model DayOfExams {
   id                Int        @id @default(autoincrement())
-  date              DateTime   @unique
+  date              DateTime   
   isForInvigilators Boolean
   isForExaminers    Boolean
   responses         Response[]
+  adminCentre       AdminCentreEnum @default(Brno)
   exams             Exam[]
   isLocked          Boolean    @default(false)
+
+  @@unique([date, adminCentre])
 }
 
 model Response {
@@ -62,8 +70,9 @@ model Response {
   dayOfExams   DayOfExams   @relation(fields: [dayOfExamsId], references: [id])
   userId       Int
   user         User         @relation(fields: [userId], references: [id])
-  response     ResponseEnum @default(No)
+  response     ResponseEnum @default(Unanswered)
   assigned     Boolean      @default(false)
+  hasSeen      Boolean      @default(false)
 
   @@unique([dayOfExamsId, userId])
 }
@@ -83,6 +92,7 @@ model Exam {
   invigilators     User[]          @relation("ExamToInvigilator")
   examiners        User[]          @relation("ExamToExaminer")
   candidates       Candidate[]
+  adminCentre      AdminCentreEnum @default(Brno)
   dayOfExamsId     Int
   dayOfExams       DayOfExams      @relation(fields: [dayOfExamsId], references: [id])
   pdfUrl           String?
@@ -93,6 +103,7 @@ model Exam {
   schedule         String?
   dayReport        DayReport?      @relation("DayReportToExam")
   files            File[]
+  substitutions    SubstitutionRequest[]
   userConfirmations ExamUserConfirmation[]
 }
 
@@ -179,9 +190,10 @@ model Break {
 }
 
 model ExamLocation {
-  id     Int         @id @default(autoincrement())
-  name   String      @unique
-  venues ExamVenue[]
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  venues      ExamVenue[]
+  adminCentre AdminCentreEnum[] @default([Brno])
 }
 
 model ExamVenue {
@@ -195,17 +207,18 @@ model ExamVenue {
 }
 
 model Post {
-  id          Int         @id @default(autoincrement())
-  title       String
-  content     String
-  authorId    Int
-  author      User        @relation(name: "PostAuthor", fields: [authorId], references: [id])
-  published   Boolean     @default(false)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  taggedUsers User[]      @relation("TaggedUsers")
-  taggedRoles RoleEnum[]
-  files       File[]
+  id            Int         @id @default(autoincrement())
+  title         String
+  content       String
+  authorId      Int
+  author        User        @relation(name: "PostAuthor", fields: [authorId], references: [id])
+  published     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  taggedUsers   User[]      @relation("TaggedUsers")
+  taggedRoles   RoleEnum[]
+  files         File[]
+  adminCentre   AdminCentreEnum[] @default([Brno])
 }
 
 model File {
@@ -221,9 +234,17 @@ model File {
 model Authorization {
   id        Int      @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  expiresAt DateTime
   code      String
+  expiresAt DateTime
+  metadata  String?  
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model LoginAttempt {
+  userId      Int      @id
+  attempts    Int      @default(0)
+  lastAttempt DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model DayReport {
@@ -241,6 +262,52 @@ model DateLock {
   when        DateTime @unique
   first       DateTime
   last        DateTime
+  adminCentre AdminCentreEnum @default(Brno)
+}
+
+model SubstitutionRequest {
+  id                Int       @id @default(autoincrement())
+  examId            Int
+  exam              Exam      @relation(fields: [examId], references: [id])
+  requestedById     Int
+  requestedBy       User      @relation("SubstitutionRequestor", fields: [requestedById], references: [id])
+  requestedAt       DateTime  @default(now())
+  reason            String
+  status            SubstitutionStatusEnum @default(Open)
+  substitutorId     Int?
+  substitutor       User?     @relation("Substitutor", fields: [substitutorId], references: [id])
+  originalRole      RoleEnum
+  adminCentre       AdminCentreEnum @default(Brno)
+  applications      SubstitutionApplication[]
+  acceptedApplication SubstitutionApplication? @relation("AcceptedApplication", fields: [acceptedApplicationId], references: [id])
+  acceptedApplicationId Int? @unique
+
+  @@unique([examId, requestedById, originalRole])
+}
+
+model SubstitutionApplication {
+  id                  Int       @id @default(autoincrement())
+  substitutionId      Int
+  substitutionRequest SubstitutionRequest @relation(fields: [substitutionId], references: [id])
+  applicantId         Int
+  applicant           User      @relation(fields: [applicantId], references: [id])
+  appliedAt           DateTime  @default(now())
+  status             ApplicationStatusEnum @default(Pending)
+  acceptedFor        SubstitutionRequest? @relation("AcceptedApplication")
+
+  @@unique([substitutionId, applicantId])
+}
+
+enum ApplicationStatusEnum {
+  Pending
+  Accepted
+  Rejected
+}
+
+enum SubstitutionStatusEnum {
+  Open    
+  Assigned 
+  Closed
 }
 
 enum RoleEnum {
@@ -265,6 +332,7 @@ enum ResponseEnum {
   AM
   PM
   No
+  Unanswered
 }
 
 enum LevelEnum {
@@ -274,4 +342,9 @@ enum LevelEnum {
   B2
   C1
   C2
+}
+
+enum AdminCentreEnum {
+  Brno
+  Praha
 }

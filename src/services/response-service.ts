@@ -53,23 +53,38 @@ export default {
                 return users.find(u => u.id === id)
             });
 
+        const dayOfExams = await prisma.dayOfExams.findUnique({
+            where: {
+                id: dayOfExamsId
+            }
+        });
+
         for (let user of uniqueUsers) {
-            await createResponses(dayOfExamsId, user.id, ResponseEnum.No);
+            if(user.adminCentre.includes(dayOfExams?.adminCentre)) 
+                await createResponses(dayOfExamsId, user.id, ResponseEnum.Unanswered);
         }
     },
 
-    async updateResponse(dayOfExamsId: number, userId: number, response: ResponseEnum) {
-        return await prisma.response.update({
-            where: {
-                dayOfExamsId_userId: {
-                    dayOfExamsId: dayOfExamsId,
-                    userId: userId
-                }
-            },
-            data: {
-                response: response
-            }
+    async updateResponse(id: number, newResponse: ResponseEnum): Promise<boolean> {
+        const currentRecord = await prisma.response.findUnique({
+            where: { id },
+            select: { response: true }
         });
+    
+        if (!currentRecord) {
+            return false;
+        }
+    
+        if (currentRecord.response === newResponse) {
+            return false;
+        }
+    
+        await prisma.response.update({
+            where: { id },
+            data: { response: newResponse }
+        });
+    
+        return true;
     },
 
     async getResponsesForDay(dayOfExamsId: number) {
@@ -155,5 +170,17 @@ export default {
             }
         });
     },
+
+    async updateSeen(id: number) {
+       await prisma.response.update({
+            where: {
+                id
+            },
+            data: {
+                hasSeen: true
+            }
+        });
+        return true;
+    }
      
 }

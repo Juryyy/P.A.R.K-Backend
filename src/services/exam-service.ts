@@ -1,4 +1,4 @@
-import { PrismaClient, User, Exam, LevelEnum, TypeOfExamEnum } from "@prisma/client";
+import { PrismaClient, User, Exam, LevelEnum, TypeOfExamEnum, AdminCentreEnum } from "@prisma/client";
 import { remove } from "winston";
 import _, { get } from 'lodash';
 
@@ -10,7 +10,7 @@ export default {
         return await prisma.exam.findMany();
     },
 
-    async createExam(venue : string, location : string, type : TypeOfExamEnum, levels: LevelEnum[] , startTime : Date, endTime : Date, note :string , dayOfExamsId : number){
+    async createExam(venue : string, location : string, type : TypeOfExamEnum, levels: LevelEnum[] , startTime : Date, endTime : Date, note :string , dayOfExamsId : number, adminCentre: AdminCentreEnum){
         return await prisma.exam.create({
             data: {
                 venue,
@@ -21,6 +21,7 @@ export default {
                 endTime,
                 note,
                 dayOfExamsId,
+                adminCentre
             },
         });
     },
@@ -305,6 +306,6 @@ export default {
                 dayOfExamsId,
             },
         });
-    }
+    },
 
 }

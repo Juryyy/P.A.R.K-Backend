@@ -1,4 +1,4 @@
-import { PrismaClient, ExamLocation, ExamVenue, Prisma } from "@prisma/client";
+import { PrismaClient, ExamLocation, ExamVenue, Prisma, AdminCentreEnum } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -19,10 +19,13 @@ export default {
     return await prisma.examVenue.findMany();
   },
 
-  async addLocation(location : string) {
+  async addLocation(location : string, adminCentre : AdminCentreEnum[]) {
     return await prisma.examLocation.create({
       data: {
-        name : location
+        name : location,
+        adminCentre : {
+          set : adminCentre
+        }
       }
     });
 },

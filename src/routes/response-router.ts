@@ -9,5 +9,6 @@ const router = express.Router();
 router.put('/update', jwtAccessVerify, responseController.updateResponses);
 router.get('/responses', jwtAccessVerify,  responseController.getResponses);
 router.get('/responsesExamDay/:id', jwtAccessVerify, check.isOffice, responseController.getResponsesExamDay);
+router.get('/responses/new', jwtAccessVerify, responseController.getCountOfNewResponses);
 
 export default router;

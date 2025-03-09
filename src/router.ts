@@ -9,6 +9,7 @@ import staticRouter from './routes/static-router';
 import candidatesRouter from './routes/admin/candidates-router';
 import postRouter from './routes/post-router';
 import onedriveRouter from './routes/onedrive-router';
+import substituteRouter from './routes/substitute-router';
 
 const router = express.Router();
 
@@ -26,6 +27,7 @@ router.use('/posts', postRouter)
 router.use('/exams', examRouter)
 router.use('/posts', postRouter)
 router.use('/onedrive', onedriveRouter)
+router.use('/substitutions', substituteRouter)
 
 router.use('/static', staticRouter)
 

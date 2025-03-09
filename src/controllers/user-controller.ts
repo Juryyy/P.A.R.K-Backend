@@ -4,7 +4,7 @@ import { MURequest, URequest } from "../types/URequest";
 import sharp from "sharp";
 import logger from "../configs/logger";
 import util from "util";
-import { userInfoSchema } from "../helpers/Schemas/user-schema";
+import { userActivationSchema, userInfoSchema } from "../helpers/Schemas/user-schema";
 import path from "path";
 import fs from "fs/promises";
 
@@ -155,8 +155,13 @@ export default {
 
     }
 
+    const currentYear = new Date().getFullYear();
+    if (totaraDone && (!totaraDate || !parsedTotaraDate || parsedTotaraDate.getFullYear() !== currentYear)) {
+      return res.status(400).json({ error: "Invalid totara date" });
+    }
+
     try {
-      await userService.updateUserProfile(
+      const user = await userService.updateUserProfile(
         id,
         email,
         firstName,
@@ -170,7 +175,32 @@ export default {
         parsedDateOfBirth,
         parsedTotaraDate
       );
-      return res.status(200).json({ success: "User updated" });
+
+      try{
+      const activationData = {
+          phone: user.phone,
+          email: user.email,
+          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : null,
+          totaraDate: user.totaraDate ? new Date(user.totaraDate) : null,
+          totaraDone: Boolean(user.totaraDone),
+          passwordUpdated: Boolean(user.passwordUpdated)
+      };
+
+
+      const result = userActivationSchema.safeParse(activationData);
+
+      if(result.success){
+          await userService.activateAccount(user.id);
+          user.activatedAccount = true;
+      }
+
+      }catch(error){
+        logger.error(error);
+      }
+
+      const { password: pass, ...userWithoutPassword } = user;
+
+      return res.status(200).json(userWithoutPassword);
     } catch (error) {
       logger.error(error);
       console.log(error);

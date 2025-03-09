@@ -7,10 +7,11 @@ import { informAvailability } from "../middlewares/azure-email-middleware";
 import userService from '../services/user-service';
 import examService from '../services/exam-service';
 import dateLockService from '../services/dateLock-service';
+import { AdminCentreEnum } from '@prisma/client';
 
 export default {
     createDayOfExams: async (req: URequest, res: Response) => {
-        const { date, isForInvigilators, isForExaminers } = req.body;
+        const { date, isForInvigilators, isForExaminers, centre } = req.body;
         if (!date || date === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
@@ -18,10 +19,14 @@ export default {
         if (!isForInvigilators && !isForExaminers) {
             return res.status(400).json({ error: 'Please select at least one option' });
         }
+
+        if (!centre || centre === '' || !Object.values(AdminCentreEnum).includes(centre)) {
+            return res.status(400).json({ error: 'Please select a centre' });
+        }
     
         const dateObj = new Date(date);
         try {
-            const x = await dayOfExamsService.createDayOfExams(dateObj, isForInvigilators, isForExaminers);
+            const x = await dayOfExamsService.createDayOfExams(dateObj, isForInvigilators, isForExaminers, centre);
             await responseService.createResponsesForDay(x.id, isForInvigilators, isForExaminers);
         } catch (error) {
             logger.error(`Day of exams already exists: ${dateObj}`);
@@ -32,7 +37,13 @@ export default {
     },
 
     getDayOfExams: async (req: Request, res: Response) => {
-        const dayOfExams = await dayOfExamsService.getDayOfExams();
+        const centre = req.query.centre as AdminCentreEnum;
+    
+        if (!centre || !Object.values(AdminCentreEnum).includes(centre)) {
+            return res.status(400).json({ error: 'Please select a centre' });
+        }
+    
+        const dayOfExams = await dayOfExamsService.getDayOfExamsByCentre(centre);
         
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -91,13 +102,18 @@ export default {
     },
 
     informUsers: async (req: Request, res: Response) => {
-        const {startDate, endDate, dateOfSubmits} = req.body;
+        const {startDate, endDate, dateOfSubmits, centre} = req.body;
 
         if (!startDate || startDate === '' || !endDate || endDate === '' || !dateOfSubmits || dateOfSubmits === '') {
             return res.status(400).json({ error: 'Please fill all the fields' });
         }
+
+        if (!centre || centre === '' || !Object.values(AdminCentreEnum).includes(centre)) {
+            return res.status(400).json({ error: 'Please select a centre' });
+        }
+
         try{    
-            await dateLockService.createDateLock(new Date(dateOfSubmits), new Date(startDate), new Date(endDate));
+            await dateLockService.createDateLock(new Date(dateOfSubmits), new Date(startDate), new Date(endDate), centre);
         }catch(error){
             logger.error(`Date lock already exists: ${dateOfSubmits}`);
             return res.status(400).json({ error: 'Date lock already exists' });
@@ -120,8 +136,11 @@ export default {
         const availability = `Availability ${startMonth + 1}/${endMonth + 1}`;
 
         for (const user of users) {
-            const {email, firstName, lastName} = user;
-            await informAvailability(email, availability, startDateFormatted, endDateFormatted, dateOfSubmitsFormatted, firstName, lastName);
+            if(user.adminCentre.includes(centre)){ { 
+                const {email, firstName, lastName} = user;
+                await informAvailability(email, availability, startDateFormatted, endDateFormatted, dateOfSubmitsFormatted, firstName, lastName);
+            }   
+            }
         }
 
         return res.status(200).json({ success: 'Users informed' });
@@ -129,8 +148,14 @@ export default {
     },
 
     getAllDayOfExams: async (req: Request, res: Response) => {
+        const centre = req.query.centre as AdminCentreEnum;
+
+        if (!centre || !Object.values(AdminCentreEnum).includes(centre)) {
+            return res.status(400).json({ error: 'Please select a centre' });
+        }
+
         try {
-            const dayOfExams = await dayOfExamsService.getDayOfExams();
+            const dayOfExams = await dayOfExamsService.getDayOfExamsByCentre(centre);
     
             dayOfExams.sort((b, a) => {
                 return new Date(a.date).getTime() - new Date(b.date).getTime();

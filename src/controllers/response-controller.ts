@@ -1,4 +1,4 @@
-import { LevelEnum, ResponseEnum, User } from '@prisma/client';
+import { AdminCentreEnum, LevelEnum, ResponseEnum, User } from '@prisma/client';
 import { Response } from 'express';
 import responseService from '../services/response-service';
 import dayOfExamsService from '../services/dayOfExams-service';
@@ -35,24 +35,20 @@ export default {
                 return res.status(400).json({ error: 'Response does not exists' });
             }
 
-            const dayofExamsId = responseExists.dayOfExamsId;
-
-            const dayOfExamsExists = await dayOfExamsService.getDayOfExamsById(dayofExamsId);
-            if (!dayOfExamsExists) {
+            const dayOfExams = await dayOfExamsService.getDayOfExamsById(responseExists.dayOfExamsId);
+            if (!dayOfExams) {
                 return res.status(400).json({ error: 'Day of exams does not exists' });
-            }
-
-            const userExists = await userService.getUserById(userId);
-            if (!userExists) {
-                return res.status(401).json({ error: 'User does not exists' });
             }
 
             if (!(response in ResponseEnum)) {
                 return res.status(400).json({ error: 'Invalid response option' });
             }
             try {
-                if (!dayOfExamsExists.isLocked)
-                await responseService.updateResponse(dayofExamsId, userId, response);
+                if (!dayOfExams.isLocked){
+                    let updated = await responseService.updateResponse(id, response)
+                    if(updated)
+                    await responseService.updateSeen(id);
+                }
             } catch (error) {
                 logger.error(error);
                 return res.status(400).json({ error: 'Invalid data' });
@@ -78,14 +74,14 @@ export default {
         const currentDate = new Date();
         currentDate.setHours(0, 0, 0, 0);
 
-        let responsesForUser: { id: number, response: ResponseEnum, date: Date, isLocked: boolean }[] = [];
+        let responsesForUser: { id: number, response: ResponseEnum, date: Date, isLocked: boolean, hasSeen: boolean, centre: AdminCentreEnum }[] = [];
         for (let response of responses) {
             const dayOfExams = await dayOfExamsService.getDayOfExamsById(response.dayOfExamsId);
             if (!dayOfExams) {
                 return res.status(404).json({ error: 'Day of exams does not exists' });
             }
             if (dayOfExams.date >= currentDate) {
-                responsesForUser.push({ id: response.id, response: response.response, date: dayOfExams.date, isLocked: dayOfExams.isLocked });
+                responsesForUser.push({ id: response.id, response: response.response, date: dayOfExams.date, isLocked: dayOfExams.isLocked, hasSeen: response.hasSeen, centre: dayOfExams.adminCentre });
             }
         }
 
@@ -116,7 +112,7 @@ export default {
             if (!responses) {
                 return res.status(400).json({ error: 'Responses do not exists' });
             }
-            const responsesWithUser: { dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string[], assigned: boolean, userId: number, userNote?: string | null, userLevel: LevelEnum[] }[] = [];
+            const responsesWithUser: { dayOfExamsId: number, id: number, response: ResponseEnum, userName: string, userRole: string[], assigned: boolean, userId: number, userNote?: string | null, userLevel: LevelEnum[], adminCentre: AdminCentreEnum[]}[] = [];
             for (let response of responses) {
                 const user = await userService.getUserById(response.userId);
                 if (!user) {
@@ -131,7 +127,8 @@ export default {
                     assigned: response.assigned,
                     userId: user.id,
                     userNote: user.note ?? undefined,
-                    userLevel: user.level
+                    userLevel: user.level,
+                    adminCentre: user.adminCentre
                 });
             }
             return res.status(200).json(responsesWithUser);
@@ -139,5 +136,36 @@ export default {
             logger.error(error);
             return res.status(400).json({ error: 'Invalid data' });
         }
+    },
+
+    getCountOfNewResponses: async (req: URequest, res: Response) => {
+        const userId = req.user?.id;
+        if (!userId) {
+            return res.status(401).json({ error: 'Please login' });
+        }
+
+        const userExists = await userService.getUserById(userId);
+        if (!userExists) {
+            return res.status(401).json({ error: 'User does not exists' });
+        }
+
+        const responses = await responseService.getResponsesForUser(userId);
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
+
+
+
+        let newResponsesCount = 0;
+        for (let response of responses) {
+            const dayOfExams = await dayOfExamsService.getDayOfExamsById(response.dayOfExamsId);
+            if (!dayOfExams) {
+                return res.status(404).json({ error: 'Day of exams does not exists' });
+            }
+            if(response.hasSeen === false && dayOfExams.date >= currentDate) {
+                newResponsesCount++;
+            }
+        }
+
+        return res.status(200).json(newResponsesCount);
     }
 };
